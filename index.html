@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moolagi - Susu Segar Murni</title>
+    <!-- Font Awesome untuk Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --primary-blue: #0055D0;
+            --white: #FFFFFF;
+            --accent-yellow: #FFD600;
+            --text-dark: #333333;
+            --gray-light: #f4f4f4;
+            --shadow: 0 10px 30px rgba(0, 85, 208, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border_box;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--white);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* --- UTILITIES --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-yellow);
+            color: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(255, 214, 0, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.6);
+            background-color: #ffe033;
+        }
+
+        .btn-secondary {
+            background-color: var(--white);
+            color: var(--primary-blue);
+            border: 2px solid var(--white);
+        }
+
+        .btn-secondary:hover {
+            background-color: transparent;
+            color: var(--white);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* --- ANIMATIONS --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- NAVBAR --- */
+        header {
+            background-color: var(--primary-blue);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: var(--accent-yellow);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-yellow);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            position: relative;
+            height: 100vh;
+            background: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            padding-top: 80px; /* Offset for fixed header */
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            z-index: 2;
+        }
+
+        .hero-text {
+            flex: 1;
+            color: var(--white);
+            padding-right: 20px;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hero-image img {
+            max-width: 80%;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Floating Animation for Hero Image */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* --- WAVES --- */
+        .custom-shape-divider-bottom-1 {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            transform: rotate(180deg);
+        }
+
+        .custom-shape-divider-bottom-1 svg {
+            position: relative;
+            display: block;
+            width: calc(130% + 1.3px);
+            height: 150px;
+            animation: waveMove 10s linear infinite alternate;
+        }
+
+        .custom-shape-divider-bottom-1 .shape-fill {
+            fill: #FFFFFF;
+        }
+
+        @keyframes waveMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50px); }
+        }
+
+        /* --- FEATURES SECTION --- */
+        .features {
+            padding: 100px 0;
+            background-color: var(--white);
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 40px 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-blue);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary-blue);
+        }
+
+        /* --- PRODUCT SECTION --- */
+        .products {
+            padding: 100px 0;
+            background: linear-gradient(180deg, #ffffff 0%, #f0f8ff 100%);
+            position: relative;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow);
+        }
+
+        .product-img-box {
+            height: 250px;
+            background-color: #eaf4ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Simulated liquid background in card */
+        .product-img-box::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: var(--primary-blue);
+            top: -50%;
+            left: -50%;
+            border-radius: 40%;
+            opacity: 0.1;
+            animation: spin 10s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .product-img-box img {
+            height: 80%;
+            z-index: 2;
+            object-fit: contain;
+        }
+
+        .product-details {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .product-details h3 {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-yellow);
+            color: var(--primary-blue);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            z-index: 5;
+        }
+
+        /* --- CTA SECTION --- */
+        .cta-section {
+            background-color: var(--primary-blue);
+            padding: 80px 0;
+            text-align: center;
+            color: var(--white);
+            position: relative;
+        }
+        
+        .cta-curve-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+
+        .cta-curve-top svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 60px;
+        }
+
+        .cta-curve-top .shape-fill {
+            fill: #f0f8ff; /* Matches product section bottom */
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: #003d99; /* Darker blue */
+            color: var(--white);
+            padding: 50px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            color: var(--accent-yellow);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .footer-col p {
+            margin-bottom: 10px;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .social-links a {
+            color: var(--white);
+            font-size: 1.5rem;
+            margin-right: 15px;
+            transition: 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--accent-yellow);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-content {
+                flex-direction: column-reverse;
+                text-align: center;
+            }
+
+            .hero-text {
+                padding-right: 0;
+                margin-top: 30px;
+            }
+            
+            .nav-links {
+                position: absolute;
+                right: 0;
+                top: 70px;
+                background: var(--primary-blue);
+                flex-direction: column;
+                width: 100%;
+                text-align: center;
+                padding: 20px 0;
+                transform: translateY(-150%);
+                transition: 0.3s ease-in-out;
+                box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+            }
+
+            .hamburger {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <i class="fa-solid fa-cow"></i> Moolagi<span>.</span>
+                </a>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#home">Beranda</a></li>
+                    <li><a href="#features">Keunggulan</a></li>
+                    <li><a href="#products">Produk</a></li>
+                    <li><a href="#contact">Kontak</a></li>
+                </ul>
+                <div class="hamburger" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container hero-content">
+            <div class="hero-text reveal">
+                <h1>Kesegaran Alami <br> <span style="color: var(--accent-yellow);">Di Setiap Tetes</span></h1>
+                <p>Nikmati susu sapi murni berkualitas premium. Langsung dari peternakan lokal, diproses higienis untuk kesehatan keluarga Anda.</p>
+                <a href="#products" class="btn btn-primary">Pesan Sekarang <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="#features" class="btn btn-secondary" style="margin-left: 10px;">Pelajari Lebih</a>
+            </div>
+            <div class="hero-image reveal">
+                <!-- Placeholder Image: Botol Susu -->
+                <!-- Menggunakan SVG sederhana untuk ilustrasi jika gambar tidak load, atau img src placeholder -->
+                <img src="https://cdn-icons-png.flaticon.com/512/2405/2405451.png" alt="Susu Moolagi Segar">
+            </div>
+        </div>
+
+        <!-- SVG Wave Divider -->
+        <div class="custom-shape-divider-bottom-1">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title reveal">Mengapa Moolagi?</h2>
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <i class="fa-solid fa-leaf feature-icon"></i>
+                    <h3>100% Alami</h3>
+                    <p>Tanpa pengawet buatan dan pewarna. Murni dari alam untuk tubuh yang lebih sehat.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <i class="fa-solid fa-truck-fast feature-icon"></i>
+                    <h3>Pengiriman Cepat</h3>
+                    <p>Susu dikirim dalam kondisi dingin maksimal 24 jam setelah perah untuk menjaga kesegaran.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <i class="fa-solid fa-shield-heart feature-icon"></i>
+                    <h3>Higienis</h3>
+                    <p>Diproses dengan teknologi pasteurisasi modern yang membunuh bakteri jahat namun menjaga nutrisi.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products" id="products">
+        <div class="container">
+            <h2 class="section-title reveal">Pilihan Favorit</h2>
+            <div class="products-grid">
+                
+                <!-- Product 1 -->
+                <div class="product-card reveal">
+                    <div class="badge">Best Seller</div>
+                    <div class="product-img-box">
+                        <img src="https://cdn-icons-png.flaticon.com/512/822/822180.png" alt="Full Cream">
+                    </div>
+                    <div class="product-details">
+                        <h3>Moolagi Full Cream</h3>
+                        <span class="price">Rp 25.000</span>
+                        <p style="font-size: 0.9rem; margin-bottom: 15px; color: #666;">Rasa creamy yang original, kaya akan kalsium.</p>
+                        <button class="btn btn-primary" style="width: 100%;">Beli Sekarang</button>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="product-card reveal">
+                    <div class="product-img-box">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2442/2442007.png" alt="Coklat">
+                    </div>
+                    <div class="product-details">
+                        <h3>Moolagi Belgian Choco</h3>
+                        <span class="price">Rp 28.000</span>
+                        <p style="font-size: 0.9rem; margin-bottom: 15px; color: #666;">Perpaduan susu segar dengan coklat belgia asli.</p>
+                        <button class="btn btn-primary" style="width: 100%;">Beli Sekarang</button>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="product-card reveal">
+                    <div class="badge">Low Fat</div>
+                    <div class="product-img-box">
+                        <img src="https://cdn-icons-png.flaticon.com/512/931/931626.png" alt="Low Fat">
+                    </div>
+                    <div class="product-details">
+                        <h3>Moolagi Low Fat</h3>
+                        <span class="price">Rp 27.000</span>
+                        <p style="font-size: 0.9rem; margin-bottom: 15px; color: #666;">Tetap enak tanpa rasa bersalah. Rendah lemak.</p>
+                        <button class="btn btn-primary" style="width: 100%;">Beli Sekarang</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-curve-top">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        <div class="container reveal">
+            <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Siap Untuk Hidup Sehat?</h2>
+            <p style="margin-bottom: 30px; font-size: 1.1rem;">Berlangganan sekarang dan dapatkan diskon 20% untuk pembelian pertama Anda.</p>
+            <button class="btn btn-primary" style="font-size: 1.2rem; padding: 15px 40px;">Langganan Moolagi</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <a href="#" class="logo" style="margin-bottom: 20px;">
+                        <i class="fa-solid fa-cow"></i> Moolagi<span>.</span>
+                    </a>
+                    <p>Menyediakan susu segar berkualitas tinggi langsung ke depan pintu rumah Anda.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Hubungi Kami</h4>
+                    <p><i class="fa-solid fa-phone"></i> +62 812 3456 7890</p>
+                    <p><i class="fa-solid fa-envelope"></i> hello@moolagi.com</p>
+                    <p><i class="fa-solid fa-location-dot"></i> Jakarta, Indonesia</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Ikuti Kami</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2023 Moolagi Indonesia. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Interactivity -->
+    <script>
+        // Mobile Menu Toggle
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Smooth Scroll Reveal Animation
+        window.addEventListener('scroll', reveal);
+
+        function reveal() {
+            var reveals = document.querySelectorAll('.reveal');
+
+            for (var i = 0; i < reveals.length; i++) {
+                var windowheight = window.innerHeight;
+                var revealtop = reveals[i].getBoundingClientRect().top;
+                var revealpoint = 150;
+
+                if (revealtop < windowheight - revealpoint) {
+                    reveals[i].classList.add('active');
+                } else {
+                    reveals[i].classList.remove('active'); 
+                    // Note: Hapus 'else' jika ingin animasi hanya terjadi sekali saat scroll ke bawah
+                }
+            }
+        }
+
+        // Trigger reveal on load for hero section
+        reveal();
+    </script>
+</body>
+</html>
