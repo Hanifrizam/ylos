@@ -7,31 +7,37 @@
     <!-- Font Awesome untuk Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         /* --- RESET & VARIABLES --- */
         :root {
             --primary-blue: #0055D0;
+            --primary-dark: #003d99;
             --white: #FFFFFF;
             --accent-yellow: #FFD600;
             --text-dark: #333333;
-            --gray-light: #f4f4f4;
-            --shadow: 0 10px 30px rgba(0, 85, 208, 0.15);
+            --text-gray: #666666;
+            --gray-light: #f9f9f9;
+            --shadow: 0 10px 30px rgba(0, 85, 208, 0.1);
         }
 
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border_box;
+            box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
+        }
+
+        html {
             scroll-behavior: smooth;
         }
 
         body {
             background-color: var(--white);
             color: var(--text-dark);
-            overflow-x: hidden;
+            overflow-x: hidden; /* Mencegah scroll horizontal */
+            line-height: 1.6;
         }
 
         /* --- UTILITIES --- */
@@ -39,10 +45,13 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+            width: 100%;
         }
 
         .btn {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             padding: 12px 30px;
             border-radius: 50px;
             text-decoration: none;
@@ -50,46 +59,46 @@
             transition: all 0.3s ease;
             cursor: pointer;
             border: none;
+            font-size: 1rem;
+            gap: 8px;
         }
 
         .btn-primary {
             background-color: var(--accent-yellow);
             color: var(--primary-blue);
-            box-shadow: 0 4px 15px rgba(255, 214, 0, 0.4);
+            box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.6);
+            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.5);
             background-color: #ffe033;
         }
 
         .btn-secondary {
-            background-color: var(--white);
-            color: var(--primary-blue);
-            border: 2px solid var(--white);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
         }
 
         .btn-secondary:hover {
-            background-color: transparent;
-            color: var(--white);
+            background-color: var(--white);
+            color: var(--primary-blue);
         }
 
         .section-title {
             text-align: center;
             font-size: 2.5rem;
             color: var(--primary-blue);
-            margin-bottom: 1rem;
-            position: relative;
-            display: inline-block;
-            left: 50%;
-            transform: translateX(-50%);
+            margin-bottom: 3rem;
+            font-weight: 700;
         }
 
         /* --- ANIMATIONS --- */
         .reveal {
             opacity: 0;
-            transform: translateY(50px);
+            transform: translateY(30px);
             transition: all 0.8s ease-out;
         }
 
@@ -101,12 +110,12 @@
         /* --- NAVBAR --- */
         header {
             background-color: var(--primary-blue);
-            padding: 1rem 0;
+            padding: 15px 0;
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
         }
 
         nav {
@@ -116,13 +125,14 @@
         }
 
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--white);
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 10px;
+            z-index: 1001;
         }
 
         .logo span {
@@ -139,6 +149,7 @@
             color: var(--white);
             text-decoration: none;
             font-weight: 500;
+            font-size: 0.95rem;
             transition: color 0.3s;
         }
 
@@ -151,16 +162,18 @@
             cursor: pointer;
             color: var(--white);
             font-size: 1.5rem;
+            z-index: 1001;
         }
 
         /* --- HERO SECTION --- */
         .hero {
             position: relative;
-            height: 100vh;
+            min-height: 100vh; /* Menggunakan min-height agar fleksibel */
             background: var(--primary-blue);
             display: flex;
             align-items: center;
-            padding-top: 80px; /* Offset for fixed header */
+            padding-top: 100px; /* Offset header */
+            padding-bottom: 100px; /* Ruang untuk wave */
             overflow: hidden;
         }
 
@@ -168,14 +181,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
+            gap: 40px;
             z-index: 2;
         }
 
         .hero-text {
             flex: 1;
             color: var(--white);
-            padding-right: 20px;
         }
 
         .hero-text h1 {
@@ -185,9 +197,16 @@
         }
 
         .hero-text p {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin-bottom: 30px;
             opacity: 0.9;
+            max-width: 500px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
         .hero-image {
@@ -198,62 +217,57 @@
         }
 
         .hero-image img {
-            max-width: 80%;
+            width: 100%;
+            max-width: 450px; /* Membatasi ukuran gambar agar tidak terlalu besar */
+            height: auto;
             animation: float 4s ease-in-out infinite;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
         }
 
-        /* Floating Animation for Hero Image */
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
             100% { transform: translateY(0px); }
         }
 
-        /* --- WAVES --- */
-        .custom-shape-divider-bottom-1 {
+        /* --- WAVE DIVIDER --- */
+        .wave-bottom {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            overflow: hidden;
             line-height: 0;
             transform: rotate(180deg);
+            z-index: 1;
         }
 
-        .custom-shape-divider-bottom-1 svg {
-            position: relative;
+        .wave-bottom svg {
             display: block;
-            width: calc(130% + 1.3px);
-            height: 150px;
-            animation: waveMove 10s linear infinite alternate;
+            width: calc(100% + 1.3px);
+            height: 120px;
         }
 
-        .custom-shape-divider-bottom-1 .shape-fill {
+        .wave-bottom .shape-fill {
             fill: #FFFFFF;
-        }
-
-        @keyframes waveMove {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50px); }
         }
 
         /* --- FEATURES SECTION --- */
         .features {
-            padding: 100px 0;
+            padding: 80px 0;
             background-color: var(--white);
             text-align: center;
         }
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            /* Grid yang lebih pintar untuk responsivitas */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             gap: 30px;
-            margin-top: 50px;
         }
 
         .feature-card {
             background: var(--white);
-            padding: 40px 20px;
+            padding: 40px 30px;
             border-radius: 20px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.05);
             transition: 0.3s;
@@ -267,9 +281,16 @@
         }
 
         .feature-icon {
-            font-size: 3rem;
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 85, 208, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
             color: var(--primary-blue);
-            margin-bottom: 20px;
+            margin: 0 auto 20px;
         }
 
         .feature-card h3 {
@@ -277,18 +298,21 @@
             color: var(--primary-blue);
         }
 
+        .feature-card p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
         /* --- PRODUCT SECTION --- */
         .products {
-            padding: 100px 0;
+            padding: 80px 0;
             background: linear-gradient(180deg, #ffffff 0%, #f0f8ff 100%);
-            position: relative;
         }
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 40px;
-            margin-top: 50px;
         }
 
         .product-card {
@@ -298,10 +322,12 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             transition: 0.3s;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .product-card:hover {
-            transform: scale(1.02);
+            transform: translateY(-5px);
             box-shadow: var(--shadow);
         }
 
@@ -315,7 +341,6 @@
             overflow: hidden;
         }
         
-        /* Simulated liquid background in card */
         .product-img-box::after {
             content: '';
             position: absolute;
@@ -325,8 +350,8 @@
             top: -50%;
             left: -50%;
             border-radius: 40%;
-            opacity: 0.1;
-            animation: spin 10s linear infinite;
+            opacity: 0.05;
+            animation: spin 15s linear infinite;
         }
 
         @keyframes spin {
@@ -335,19 +360,27 @@
         }
 
         .product-img-box img {
-            height: 80%;
+            height: 70%; /* Mencegah gambar terlalu penuh */
             z-index: 2;
             object-fit: contain;
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover .product-img-box img {
+            transform: scale(1.1);
         }
 
         .product-details {
             padding: 25px;
             text-align: center;
+            flex-grow: 1; /* Agar tombol sejajar di bawah */
+            display: flex;
+            flex-direction: column;
         }
 
         .product-details h3 {
             color: var(--primary-blue);
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             margin-bottom: 10px;
         }
 
@@ -356,132 +389,226 @@
             font-size: 1.25rem;
             font-weight: 700;
             color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        .product-desc {
+            font-size: 0.9rem;
+            color: var(--text-gray);
             margin-bottom: 20px;
+            flex-grow: 1;
         }
 
         .badge {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             background: var(--accent-yellow);
             color: var(--primary-blue);
-            padding: 5px 15px;
+            padding: 6px 15px;
             border-radius: 20px;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 0.8rem;
             z-index: 5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         /* --- CTA SECTION --- */
         .cta-section {
             background-color: var(--primary-blue);
-            padding: 80px 0;
+            padding: 100px 0 80px;
             text-align: center;
             color: var(--white);
             position: relative;
+            margin-top: 50px;
         }
         
         .cta-curve-top {
             position: absolute;
-            top: 0;
+            top: -1px; /* Fix gap line */
             left: 0;
             width: 100%;
-            overflow: hidden;
             line-height: 0;
+            transform: rotate(180deg);
         }
 
         .cta-curve-top svg {
-            position: relative;
             display: block;
             width: calc(100% + 1.3px);
             height: 60px;
+            transform: rotate(180deg);
         }
 
         .cta-curve-top .shape-fill {
-            fill: #f0f8ff; /* Matches product section bottom */
+            fill: #f0f8ff; 
         }
 
         /* --- FOOTER --- */
         footer {
-            background-color: #003d99; /* Darker blue */
+            background-color: var(--primary-dark);
             color: var(--white);
-            padding: 50px 0 20px;
+            padding: 60px 0 20px;
         }
 
         .footer-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 40px;
             margin-bottom: 40px;
         }
 
         .footer-col h4 {
             color: var(--accent-yellow);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             font-size: 1.2rem;
         }
 
         .footer-col p {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             opacity: 0.8;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .footer-col i {
+            width: 20px;
+            margin-right: 10px;
+            color: var(--accent-yellow);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
         }
 
         .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
             color: var(--white);
-            font-size: 1.5rem;
-            margin-right: 15px;
+            border-radius: 50%;
             transition: 0.3s;
+            text-decoration: none;
         }
 
         .social-links a:hover {
-            color: var(--accent-yellow);
+            background: var(--accent-yellow);
+            color: var(--primary-blue);
+            transform: translateY(-3px);
         }
 
         .copyright {
             text-align: center;
-            padding-top: 20px;
+            padding-top: 30px;
             border-top: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             opacity: 0.7;
         }
 
-        /* --- RESPONSIVE --- */
-        @media (max-width: 768px) {
+        /* --- RESPONSIVE CSS (FIXED) --- */
+        @media (max-width: 1024px) {
             .hero-text h1 {
-                font-size: 2.5rem;
+                font-size: 3rem;
             }
-            
-            .hero-content {
-                flex-direction: column-reverse;
-                text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+                margin-bottom: 2rem;
             }
 
-            .hero-text {
-                padding-right: 0;
-                margin-top: 30px;
+            /* Navbar Mobile Fix */
+            .hamburger {
+                display: block;
             }
-            
+
             .nav-links {
-                position: absolute;
-                right: 0;
-                top: 70px;
-                background: var(--primary-blue);
+                position: fixed;
+                top: 0;
+                right: -100%; /* Sembunyikan di kanan */
+                width: 75%; /* Jangan full width agar user bisa klik luar */
+                height: 100vh;
+                background-color: var(--white); /* Background putih agar bersih */
                 flex-direction: column;
-                width: 100%;
-                text-align: center;
-                padding: 20px 0;
-                transform: translateY(-150%);
-                transition: 0.3s ease-in-out;
-                box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+                justify-content: center;
+                align-items: center;
+                transition: 0.4s ease-in-out;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+                padding: 50px 0;
+                z-index: 1000;
             }
 
             .nav-links.active {
-                transform: translateY(0);
+                right: 0;
             }
 
-            .hamburger {
-                display: block;
+            .nav-links a {
+                color: var(--text-dark);
+                font-size: 1.2rem;
+                margin: 15px 0;
+            }
+            
+            .nav-links a:hover {
+                color: var(--primary-blue);
+            }
+
+            /* Hero Mobile Fix */
+            .hero {
+                padding-top: 100px;
+                padding-bottom: 60px;
+                min-height: auto;
+                text-align: center;
+            }
+
+            .hero-content {
+                flex-direction: column-reverse; /* Gambar di atas teks (tapi karena HTML structure, kita mainkan urutan) */
+                gap: 40px;
+            }
+
+            .hero-text h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-text p {
+                font-size: 1rem;
+                margin: 0 auto 30px;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-image img {
+                max-width: 70%;
+            }
+
+            .btn {
+                padding: 10px 25px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-text h1 {
+                font-size: 1.8rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .feature-card, .product-card {
+                padding: 30px 20px;
             }
         }
     </style>
@@ -495,12 +622,14 @@
                 <a href="#" class="logo">
                     <i class="fa-solid fa-cow"></i> Moolagi<span>.</span>
                 </a>
+                
                 <ul class="nav-links" id="navLinks">
-                    <li><a href="#home">Beranda</a></li>
-                    <li><a href="#features">Keunggulan</a></li>
-                    <li><a href="#products">Produk</a></li>
-                    <li><a href="#contact">Kontak</a></li>
+                    <li><a href="#home" onclick="toggleMenu()">Beranda</a></li>
+                    <li><a href="#features" onclick="toggleMenu()">Keunggulan</a></li>
+                    <li><a href="#products" onclick="toggleMenu()">Produk</a></li>
+                    <li><a href="#contact" onclick="toggleMenu()">Kontak</a></li>
                 </ul>
+
                 <div class="hamburger" onclick="toggleMenu()">
                     <i class="fa-solid fa-bars"></i>
                 </div>
@@ -514,18 +643,19 @@
             <div class="hero-text reveal">
                 <h1>Kesegaran Alami <br> <span style="color: var(--accent-yellow);">Di Setiap Tetes</span></h1>
                 <p>Nikmati susu sapi murni berkualitas premium. Langsung dari peternakan lokal, diproses higienis untuk kesehatan keluarga Anda.</p>
-                <a href="#products" class="btn btn-primary">Pesan Sekarang <i class="fa-solid fa-arrow-right"></i></a>
-                <a href="#features" class="btn btn-secondary" style="margin-left: 10px;">Pelajari Lebih</a>
+                <div class="hero-buttons">
+                    <a href="#products" class="btn btn-primary">Pesan Sekarang <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="#features" class="btn btn-secondary">Pelajari Lebih</a>
+                </div>
             </div>
             <div class="hero-image reveal">
-                <!-- Placeholder Image: Botol Susu -->
-                <!-- Menggunakan SVG sederhana untuk ilustrasi jika gambar tidak load, atau img src placeholder -->
+                <!-- Gunakan gambar placeholder yang lebih bagus/bersih -->
                 <img src="https://cdn-icons-png.flaticon.com/512/2405/2405451.png" alt="Susu Moolagi Segar">
             </div>
         </div>
 
         <!-- SVG Wave Divider -->
-        <div class="custom-shape-divider-bottom-1">
+        <div class="wave-bottom">
             <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
                 <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
             </svg>
@@ -538,18 +668,24 @@
             <h2 class="section-title reveal">Mengapa Moolagi?</h2>
             <div class="features-grid">
                 <div class="feature-card reveal">
-                    <i class="fa-solid fa-leaf feature-icon"></i>
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
                     <h3>100% Alami</h3>
                     <p>Tanpa pengawet buatan dan pewarna. Murni dari alam untuk tubuh yang lebih sehat.</p>
                 </div>
                 <div class="feature-card reveal">
-                    <i class="fa-solid fa-truck-fast feature-icon"></i>
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-truck-fast"></i>
+                    </div>
                     <h3>Pengiriman Cepat</h3>
                     <p>Susu dikirim dalam kondisi dingin maksimal 24 jam setelah perah untuk menjaga kesegaran.</p>
                 </div>
                 <div class="feature-card reveal">
-                    <i class="fa-solid fa-shield-heart feature-icon"></i>
-                    <h3>Higienis</h3>
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-shield-heart"></i>
+                    </div>
+                    <h3>Higienis & Steril</h3>
                     <p>Diproses dengan teknologi pasteurisasi modern yang membunuh bakteri jahat namun menjaga nutrisi.</p>
                 </div>
             </div>
@@ -571,7 +707,7 @@
                     <div class="product-details">
                         <h3>Moolagi Full Cream</h3>
                         <span class="price">Rp 25.000</span>
-                        <p style="font-size: 0.9rem; margin-bottom: 15px; color: #666;">Rasa creamy yang original, kaya akan kalsium.</p>
+                        <p class="product-desc">Rasa creamy yang original, kaya akan kalsium untuk tulang kuat.</p>
                         <button class="btn btn-primary" style="width: 100%;">Beli Sekarang</button>
                     </div>
                 </div>
@@ -584,7 +720,7 @@
                     <div class="product-details">
                         <h3>Moolagi Belgian Choco</h3>
                         <span class="price">Rp 28.000</span>
-                        <p style="font-size: 0.9rem; margin-bottom: 15px; color: #666;">Perpaduan susu segar dengan coklat belgia asli.</p>
+                        <p class="product-desc">Perpaduan susu segar dengan coklat belgia asli yang mewah.</p>
                         <button class="btn btn-primary" style="width: 100%;">Beli Sekarang</button>
                     </div>
                 </div>
@@ -598,7 +734,7 @@
                     <div class="product-details">
                         <h3>Moolagi Low Fat</h3>
                         <span class="price">Rp 27.000</span>
-                        <p style="font-size: 0.9rem; margin-bottom: 15px; color: #666;">Tetap enak tanpa rasa bersalah. Rendah lemak.</p>
+                        <p class="product-desc">Tetap enak tanpa rasa bersalah. Rendah lemak dan kalori.</p>
                         <button class="btn btn-primary" style="width: 100%;">Beli Sekarang</button>
                     </div>
                 </div>
@@ -615,9 +751,9 @@
             </svg>
         </div>
         <div class="container reveal">
-            <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Siap Untuk Hidup Sehat?</h2>
-            <p style="margin-bottom: 30px; font-size: 1.1rem;">Berlangganan sekarang dan dapatkan diskon 20% untuk pembelian pertama Anda.</p>
-            <button class="btn btn-primary" style="font-size: 1.2rem; padding: 15px 40px;">Langganan Moolagi</button>
+            <h2 style="font-size: 2rem; margin-bottom: 20px; font-weight: 700;">Siap Untuk Hidup Sehat?</h2>
+            <p style="margin-bottom: 30px; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">Berlangganan sekarang dan dapatkan diskon 20% untuk pembelian pertama Anda. Pengiriman gratis untuk area Jakarta.</p>
+            <button class="btn btn-primary" style="font-size: 1.1rem; padding: 15px 40px; color: var(--primary-blue);">Langganan Moolagi</button>
         </div>
     </section>
 
@@ -629,13 +765,13 @@
                     <a href="#" class="logo" style="margin-bottom: 20px;">
                         <i class="fa-solid fa-cow"></i> Moolagi<span>.</span>
                     </a>
-                    <p>Menyediakan susu segar berkualitas tinggi langsung ke depan pintu rumah Anda.</p>
+                    <p>Menyediakan susu segar berkualitas tinggi langsung ke depan pintu rumah Anda dengan proses yang higienis dan cepat.</p>
                 </div>
                 <div class="footer-col">
                     <h4>Hubungi Kami</h4>
                     <p><i class="fa-solid fa-phone"></i> +62 812 3456 7890</p>
                     <p><i class="fa-solid fa-envelope"></i> hello@moolagi.com</p>
-                    <p><i class="fa-solid fa-location-dot"></i> Jakarta, Indonesia</p>
+                    <p><i class="fa-solid fa-location-dot"></i> Jakarta Selatan, Indonesia</p>
                 </div>
                 <div class="footer-col">
                     <h4>Ikuti Kami</h4>
@@ -643,6 +779,7 @@
                         <a href="#"><i class="fa-brands fa-instagram"></i></a>
                         <a href="#"><i class="fa-brands fa-facebook"></i></a>
                         <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#"><i class="fa-brands fa-tiktok"></i></a>
                     </div>
                 </div>
             </div>
@@ -657,8 +794,33 @@
         // Mobile Menu Toggle
         function toggleMenu() {
             const navLinks = document.getElementById('navLinks');
+            const hamburger = document.querySelector('.hamburger i');
+            
             navLinks.classList.toggle('active');
+            
+            // Ubah icon hamburger jadi X saat aktif
+            if (navLinks.classList.contains('active')) {
+                hamburger.classList.remove('fa-bars');
+                hamburger.classList.add('fa-xmark');
+                // Ubah warna hamburger jadi hitam saat menu putih muncul (opsional tergantung desain)
+                hamburger.style.color = '#333';
+            } else {
+                hamburger.classList.remove('fa-xmark');
+                hamburger.classList.add('fa-bars');
+                hamburger.style.color = '#fff';
+            }
         }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.querySelector('nav');
+            const navLinks = document.getElementById('navLinks');
+            const isClickInside = nav.contains(event.target);
+            
+            if (!isClickInside && navLinks.classList.contains('active')) {
+                toggleMenu();
+            }
+        });
 
         // Smooth Scroll Reveal Animation
         window.addEventListener('scroll', reveal);
@@ -669,18 +831,15 @@
             for (var i = 0; i < reveals.length; i++) {
                 var windowheight = window.innerHeight;
                 var revealtop = reveals[i].getBoundingClientRect().top;
-                var revealpoint = 150;
+                var revealpoint = 100;
 
                 if (revealtop < windowheight - revealpoint) {
                     reveals[i].classList.add('active');
-                } else {
-                    reveals[i].classList.remove('active'); 
-                    // Note: Hapus 'else' jika ingin animasi hanya terjadi sekali saat scroll ke bawah
                 }
             }
         }
 
-        // Trigger reveal on load for hero section
+        // Trigger reveal on load
         reveal();
     </script>
 </body>
