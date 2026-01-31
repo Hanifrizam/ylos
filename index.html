@@ -80,7 +80,10 @@
                     <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border focus:border-ylosPink outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-bold mb-1">Password</label>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-bold">Password</label>
+                        <a href="reset.html" class="text-xs text-ylosPink hover:underline">Lupa Password?</a>
+                    </div>
                     <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-lg border focus:border-ylosPink outline-none">
                 </div>
                 <button type="submit" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition">
@@ -192,8 +195,7 @@
     </div>
 
     <script>
-        // 1. INISIALISASI SUPABASE (Hanya sekali!)
-        // Ganti URL dan KEY di bawah ini dengan project Supabase kamu yang asli jika berubah
+        // INISIALISASI SUPABASE
         const supabaseClient = supabase.createClient(
             'https://jrslgkxwjvugvgakxwsd.supabase.co', 
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'
@@ -214,8 +216,6 @@
         async function handleRegister(e) {
             e.preventDefault();
             const btn = document.getElementById('btn-reg');
-            
-            // Simpan teks asli tombol
             const originalText = btn.innerText;
             btn.innerHTML = 'Memproses...';
             btn.disabled = true;
@@ -227,7 +227,7 @@
             const phone = document.getElementById('reg-phone').value;
             const packageType = document.getElementById('reg-package').value;
 
-            // 1. Sign Up User (Pakai supabaseClient)
+            // 1. Sign Up User
             const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                 email: email,
                 password: password
@@ -235,12 +235,12 @@
 
             if (authError) {
                 alert("Gagal Daftar: " + authError.message);
-                btn.innerText = originalText; // Kembalikan teks tombol
+                btn.innerText = originalText;
                 btn.disabled = false;
                 return;
             }
 
-            // 2. Simpan Detail ke Tabel Profiles (Pakai supabaseClient)
+            // 2. Simpan Detail ke Tabel Profiles
             if (authData.user) {
                 const { error: profileError } = await supabaseClient
                     .from('profiles')
@@ -260,9 +260,8 @@
                 }
 
                 alert("Berhasil Mendaftar! Silakan cek email jika perlu verifikasi, atau langsung login.");
-                showPage('login'); // Arahkan ke login setelah sukses
+                showPage('login');
             }
-            
             btn.innerText = originalText;
             btn.disabled = false;
         }
@@ -273,11 +272,9 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             const btn = e.target.querySelector('button');
-            
             const originalText = btn.innerText;
             btn.innerText = "Loading...";
 
-            // Pakai supabaseClient
             const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: email,
                 password: password
@@ -286,14 +283,11 @@
             if (error) {
                 alert("Login Gagal: " + error.message);
                 btn.innerText = originalText;
-            } else {
-                // Redirect otomatis ditangani oleh onAuthStateChange
             }
         }
 
         // --- FUNGSI LOGOUT ---
         async function logout() {
-            // Pakai supabaseClient
             await supabaseClient.auth.signOut();
             alert("Anda telah keluar.");
             showPage('home');
@@ -301,7 +295,6 @@
 
         // --- FUNGSI LOAD DATA DASHBOARD ---
         async function loadDashboard(userId) {
-            // Pakai supabaseClient
             const { data, error } = await supabaseClient
                 .from('profiles')
                 .select('*')
@@ -321,12 +314,11 @@
         }
 
         function contactAdmin() {
-             const phone = "6281234567890"; // Ganti No Admin
+             const phone = "6281234567890";
              window.open(`https://wa.me/${phone}?text=Halo Admin, saya ingin konfirmasi pembayaran untuk akun YLOS saya.`, '_blank');
         }
 
         // --- AUTH LISTENER ---
-        // Pakai supabaseClient
         supabaseClient.auth.onAuthStateChange((event, session) => {
             const navPublic = document.getElementById('nav-public');
             const navMember = document.getElementById('nav-member');
@@ -335,7 +327,6 @@
                 navPublic.classList.add('hidden');
                 navMember.classList.remove('hidden');
                 document.getElementById('user-display-name').innerText = session.user.email;
-                
                 loadDashboard(session.user.id);
                 showPage('dashboard');
             } else {
