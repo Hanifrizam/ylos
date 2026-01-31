@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YLOS - Member Area</title>
+    <title>YLOS - Youth Leader Organization Summit</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -27,48 +28,214 @@
         .hidden-section { display: none; }
         .active-section { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Style Tambahan dari Landing Page */
+        .blob {
+            position: absolute; filter: blur(40px); z-index: -1; opacity: 0.4;
+        }
+        .logo-hover:hover {
+            transform: scale(1.05); transition: transform 0.3s ease;
+        }
     </style>
 </head>
-<body class="font-sans text-gray-700 bg-gray-50">
+<body class="font-sans text-gray-700 bg-gray-50 antialiased overflow-x-hidden">
 
-    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm">
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex items-center gap-3 cursor-pointer" onclick="showPage('home')">
-                    <img src="LOGO YLOS 5x5.png" alt="Logo" class="h-12 w-auto object-contain">
-                    <span class="font-bold text-2xl tracking-tighter text-gray-800">YLOS<span class="text-ylosPink">.</span></span>
+            <div class="flex justify-between items-center h-24">
+                
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="showPage('home')">
+                    <img src="LOGO YLOS 5x5.png" alt="Logo" class="h-16 w-auto object-contain logo-hover">
+                    <div class="flex flex-col justify-center">
+                        <span class="font-extrabold text-2xl tracking-tighter text-gray-800 leading-none group-hover:text-ylosPink transition">YLOS</span>
+                        <span class="text-[0.6rem] font-bold tracking-widest text-gray-500 uppercase">Youth Leader Summit</span>
+                    </div>
                 </div>
 
-                <div id="nav-public" class="flex gap-4">
-                    <button onclick="showPage('login')" class="text-gray-600 hover:text-ylosPink font-bold px-4 py-2">Masuk</button>
-                    <button onclick="showPage('register')" class="bg-ylosPink text-white px-5 py-2 rounded-full font-bold shadow hover:bg-pink-600 transition">Daftar Akun</button>
+                <div id="nav-links" class="hidden md:flex items-center space-x-8">
+                    <a href="#home" onclick="showPage('home')" class="text-gray-600 hover:text-ylosPink transition font-medium text-sm uppercase tracking-wide">Beranda</a>
+                    <a href="#about" onclick="showPage('home')" class="text-gray-600 hover:text-ylosPink transition font-medium text-sm uppercase tracking-wide">Tentang</a>
+                    <a href="#trip" onclick="showPage('home')" class="text-gray-600 hover:text-ylosPink transition font-medium text-sm uppercase tracking-wide">Trip</a>
+                    <a href="#pricing" onclick="showPage('home')" class="text-gray-600 hover:text-ylosPink transition font-medium text-sm uppercase tracking-wide">Tiket</a>
                 </div>
 
-                <div id="nav-member" class="hidden flex items-center gap-4">
-                    <span id="user-display-name" class="text-sm font-bold text-gray-900 hidden md:block">Hi, User</span>
-                    <button onclick="logout()" class="border border-red-500 text-red-500 px-4 py-2 rounded-full font-bold hover:bg-red-50 text-sm">Keluar</button>
+                <div>
+                    <div id="nav-public" class="flex items-center gap-3">
+                        <button onclick="showPage('login')" class="text-gray-600 hover:text-ylosPink font-bold px-4 py-2 text-sm">Masuk</button>
+                        <button onclick="showPage('register')" class="bg-gradient-to-r from-ylosPink to-pink-500 text-white px-5 py-2.5 rounded-full font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition text-sm">
+                            Daftar
+                        </button>
+                    </div>
+
+                    <div id="nav-member" class="hidden flex items-center gap-4">
+                        <span id="user-display-name" class="text-sm font-bold text-gray-900 hidden md:block">Hi, User</span>
+                        <button onclick="showPage('dashboard')" class="text-ylosPink font-bold text-sm hover:underline">Dashboard</button>
+                        <button onclick="logout()" class="border border-red-500 text-red-500 px-4 py-2 rounded-full font-bold hover:bg-red-50 text-xs">Keluar</button>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div id="page-home" class="active-section pt-24">
-        <section class="text-center py-20 px-4 bg-white">
-            <h1 class="text-5xl font-extrabold text-gray-900 mb-6">Unlock Your Leadership</h1>
-            <p class="text-xl text-gray-500 max-w-2xl mx-auto mb-10">
-                Gabung di YLOS, platform kepemimpinan masa depan. Daftar sekarang untuk akses materi dan info trip.
-            </p>
-            <button onclick="showPage('register')" class="bg-gray-900 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-gray-800 transition">
-                Buat Akun Sekarang
-            </button>
-        </section>
-        <section class="py-16 bg-gray-50">
-            <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-3 gap-8 text-center">
-                <div class="bg-white p-6 rounded-xl shadow-sm"><h3 class="font-bold text-ylosPink text-xl">Leadership</h3><p>Materi kepemimpinan eksklusif.</p></div>
-                <div class="bg-white p-6 rounded-xl shadow-sm"><h3 class="font-bold text-ylosYellow text-xl">Global Network</h3><p>Koneksi teman se-Indonesia.</p></div>
-                <div class="bg-white p-6 rounded-xl shadow-sm"><h3 class="font-bold text-ylosGreen text-xl">Int'l Trip</h3><p>Kesempatan ke Singapore & Malaysia.</p></div>
+    <div id="page-home" class="active-section">
+        
+        <section id="home" class="relative pt-40 pb-20 lg:pt-52 lg:pb-32 overflow-hidden">
+            <div class="blob bg-ylosPink/30 w-96 h-96 rounded-full top-0 left-0 -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
+            <div class="blob bg-ylosYellow/30 w-80 h-80 rounded-full bottom-0 right-0 translate-x-1/3 translate-y-1/3 blur-3xl"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                <div class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white border border-gray-200 shadow-sm mb-8 animate-bounce">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-ylosGreen opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-ylosGreen"></span>
+                    </span>
+                    <span class="text-xs font-bold tracking-wide text-gray-600 uppercase">Pendaftaran Batch 1 Dibuka</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
+                    Unlock Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-ylosPink to-purple-600">Leadership.</span> <br>
+                    Explore the <span class="text-transparent bg-clip-text bg-gradient-to-r from-ylosGreen to-teal-500">World.</span>
+                </h1>
+                
+                <p class="mt-6 text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Youth Leader Organization Summit (YLOS) mengajak siswa SMA/SMK untuk mengasah potensi kepemimpinan sambil studi banding internasional.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="showPage('register')" class="bg-gray-900 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-gray-800 transition transform hover:-translate-y-1">
+                        Amankan Kursi
+                    </button>
+                    <a href="#trip" class="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-full font-bold text-lg shadow-sm hover:bg-gray-50 transition flex items-center justify-center gap-2 group">
+                        Lihat Tujuan Trip 
+                        <span class="group-hover:translate-x-1 transition-transform">✈️</span>
+                    </a>
+                </div>
             </div>
         </section>
+
+        <section id="about" class="py-24 bg-gray-50/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900">Kenapa Kamu Harus Join YLOS?</h2>
+                    <div class="h-1 w-20 bg-ylosYellow mx-auto mt-4 rounded-full"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-ylosPink transition duration-300 group">
+                        <div class="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-ylosPink transition-colors">
+                            <span class="text-2xl text-ylosPink group-hover:text-white">🤝</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900">Leadership & Network</h3>
+                        <p class="text-gray-600 leading-relaxed">Bertemu dengan ratusan pemimpin muda se-Indonesia dan bangun jaringan profesional.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-ylosYellow transition duration-300 group">
+                        <div class="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-ylosYellow transition-colors">
+                            <span class="text-2xl text-yellow-600 group-hover:text-white">💡</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900">Critical Thinking</h3>
+                        <p class="text-gray-600 leading-relaxed">Asah kemampuan memecahkan masalah melalui studi kasus nyata dan mentoring eksklusif.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-ylosGreen transition duration-300 group">
+                        <div class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-ylosGreen transition-colors">
+                            <span class="text-2xl text-ylosGreen group-hover:text-white">🌍</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900">Global Experience</h3>
+                        <p class="text-gray-600 leading-relaxed">Perluas wawasan dengan kunjungan ke universitas top dunia dan perusahaan multinasional.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="trip" class="py-24 relative overflow-hidden bg-gray-900">
+            <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-ylosPink opacity-10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-ylosGreen opacity-10 rounded-full blur-3xl"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center gap-16">
+                <div class="lg:w-1/2 text-white">
+                    <span class="text-ylosYellow font-bold tracking-wider uppercase text-sm mb-2 block">Highlight Program</span>
+                    <h2 class="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight">International Trip: <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-ylosYellow to-orange-400">Singapore & Malaysia</span></h2>
+                    <p class="text-gray-300 text-lg mb-8 leading-relaxed">
+                        Rasakan pengalaman belajar langsung di negara tetangga. Bukan sekadar jalan-jalan, tapi membuka mata akan peluang global.
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/10 p-3 rounded-lg backdrop-blur-sm"><span class="text-2xl">🎓</span></div>
+                            <div><h4 class="font-bold text-xl">University Visit</h4><p class="text-gray-400 text-sm">Kunjungan ke kampus terbaik (NTU/NUS/UM).</p></div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="bg-white/10 p-3 rounded-lg backdrop-blur-sm"><span class="text-2xl">🏢</span></div>
+                            <div><h4 class="font-bold text-xl">Company Visit</h4><p class="text-gray-400 text-sm">Melihat budaya kerja perusahaan global.</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 w-full">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-ylosPink to-ylosYellow rounded-2xl transform rotate-6 opacity-30"></div>
+                        <div class="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10">
+                            <img src="https://images.unsplash.com/photo-1565967511849-76a60a516170?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Singapore" class="w-full h-auto object-cover transform hover:scale-105 transition duration-700">
+                            <div class="absolute bottom-0 left-0 bg-gradient-to-t from-black/80 to-transparent w-full p-8">
+                                <p class="text-white font-bold text-xl">📍 Marina Bay Sands, Singapore</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing" class="py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Pilih Paket Perjalananmu</h2>
+                <p class="text-gray-500 mb-12">Investasi sekali untuk pengalaman seumur hidup.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div class="border border-gray-200 rounded-[2rem] p-8 hover:shadow-xl transition relative bg-white flex flex-col">
+                        <div class="mb-4 text-left"><span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Basic</span></div>
+                        <h3 class="text-2xl font-bold text-gray-900 text-left">Regular Pass</h3>
+                        <div class="text-left mt-2 mb-6"><span class="text-4xl font-extrabold text-gray-900">IDR 3.500k</span></div>
+                        <ul class="text-left space-y-4 mb-8 text-gray-600 flex-1">
+                            <li class="flex items-center gap-3"><span class="text-green-500">✓</span> Akses Materi</li>
+                            <li class="flex items-center gap-3"><span class="text-green-500">✓</span> Hotel Bintang 3</li>
+                            <li class="flex items-center gap-3"><span class="text-green-500">✓</span> Tiket Pesawat Ekonomi</li>
+                            <li class="flex items-center gap-3"><span class="text-green-500">✓</span> Sertifikat Nasional</li>
+                        </ul>
+                        <button onclick="showPage('register')" class="block w-full py-4 rounded-xl border-2 border-gray-900 font-bold text-gray-900 hover:bg-gray-900 hover:text-white transition text-center">
+                            Pilih Regular
+                        </button>
+                    </div>
+
+                    <div class="border-2 border-ylosPink rounded-[2rem] p-8 shadow-2xl relative bg-white flex flex-col transform md:-translate-y-4">
+                        <div class="absolute top-0 right-0 bg-ylosPink text-white text-xs font-bold px-4 py-2 rounded-bl-2xl rounded-tr-[1.8rem]">BEST VALUE</div>
+                        <div class="mb-4 text-left"><span class="bg-pink-100 text-ylosPink px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Recommended</span></div>
+                        <h3 class="text-2xl font-bold text-gray-900 text-left">VIP Delegate</h3>
+                        <div class="text-left mt-2 mb-6"><span class="text-4xl font-extrabold text-gray-900">IDR 4.800k</span></div>
+                        <ul class="text-left space-y-4 mb-8 text-gray-600 flex-1">
+                            <li class="flex items-center gap-3"><strong>✓ Priority Seating</strong></li>
+                            <li class="flex items-center gap-3">✓ Hotel Bintang 4</li>
+                            <li class="flex items-center gap-3">✓ Tiket Pesawat & Bagasi</li>
+                            <li class="flex items-center gap-3"><strong>✓ Sertifikat Internasional</strong></li>
+                            <li class="flex items-center gap-3">✓ Exclusive Merchandise Kit</li>
+                        </ul>
+                        <button onclick="showPage('register')" class="block w-full py-4 rounded-xl bg-gradient-to-r from-ylosPink to-pink-600 text-white font-bold hover:shadow-lg hover:to-pink-700 transition text-center">
+                            Daftar VIP Sekarang
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-gray-900 text-white pt-16 pb-8 border-t border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 text-center">
+                <div class="mb-6 flex justify-center items-center gap-3">
+                    <img src="LOGO YLOS 5x5.png" alt="Logo" class="h-10 w-auto brightness-200 grayscale hover:grayscale-0 hover:brightness-100 transition duration-500">
+                    <span class="font-bold text-xl tracking-tight">YLOS 2025</span>
+                </div>
+                <p class="text-gray-400 mb-8 max-w-md mx-auto text-sm">Platform pengembangan kepemimpinan pemuda nomor 1 di Indonesia.</p>
+                <div class="border-t border-gray-800 pt-8">
+                    <p class="text-gray-600 text-xs">© 2025 Youth Leader Organization Summit.</p>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <div id="page-login" class="hidden-section pt-32 pb-20 min-h-screen">
@@ -90,7 +257,7 @@
                     Masuk
                 </button>
             </form>
-            <p class="text-center mt-4 text-sm">Belum punya akun? <a href="#" onclick="showPage('register')" class="text-ylosPink font-bold">Daftar disini</a></p>
+            <p class="text-center mt-4 text-sm">Belum punya akun? <button onclick="showPage('register')" class="text-ylosPink font-bold hover:underline">Daftar disini</button></p>
         </div>
     </div>
 
@@ -125,15 +292,15 @@
                 <div>
                     <label class="block text-sm font-bold mb-1">Pilih Paket</label>
                     <select id="reg-package" class="w-full px-4 py-3 rounded-lg border focus:border-ylosPink outline-none bg-white">
-                        <option value="Regular">Regular Pass</option>
-                        <option value="VIP">VIP Delegate</option>
+                        <option value="Regular Pass">Regular Pass - IDR 3.500k</option>
+                        <option value="VIP Delegate">VIP Delegate - IDR 4.800k</option>
                     </select>
                 </div>
                 <button type="submit" id="btn-reg" class="w-full bg-ylosPink text-white font-bold py-3 rounded-xl hover:bg-pink-600 transition">
                     Daftar Sekarang
                 </button>
             </form>
-            <p class="text-center mt-4 text-sm">Sudah punya akun? <a href="#" onclick="showPage('login')" class="text-ylosPink font-bold">Login disini</a></p>
+            <p class="text-center mt-4 text-sm">Sudah punya akun? <button onclick="showPage('login')" class="text-ylosPink font-bold hover:underline">Login disini</button></p>
         </div>
     </div>
 
@@ -173,7 +340,6 @@
                             <p class="text-sm text-gray-600 mt-1">Silakan selesaikan administrasi untuk mendapatkan akses ke grup eksklusif Telegram.</p>
                         </div>
                     </div>
-
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                         <h3 class="text-lg font-bold text-gray-900 mb-4">📚 Modul Persiapan</h3>
                         <div class="grid gap-4">
@@ -195,30 +361,35 @@
     </div>
 
     <script>
-        // INISIALISASI SUPABASE
+        // --- 1. INISIALISASI SUPABASE ---
+        // GANTI URL & KEY DENGAN PROJECT KAMU (Yang dari settingan project sebelumnya)
         const supabaseClient = supabase.createClient(
             'https://jrslgkxwjvugvgakxwsd.supabase.co', 
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'
         );
         
-        // --- MANAJEMEN NAVIGASI ---
+        // --- 2. MANAJEMEN NAVIGASI ---
         function showPage(pageId) {
+            // Sembunyikan semua halaman
             ['page-home', 'page-login', 'page-register', 'page-dashboard'].forEach(id => {
                 document.getElementById(id).classList.remove('active-section');
                 document.getElementById(id).classList.add('hidden-section');
             });
+            
+            // Tampilkan halaman yang diminta
             document.getElementById('page-' + pageId).classList.remove('hidden-section');
             document.getElementById('page-' + pageId).classList.add('active-section');
+            
+            // Scroll ke atas
             window.scrollTo(0,0);
         }
 
-        // --- FUNGSI REGISTER ---
+        // --- 3. FUNGSI REGISTER ---
         async function handleRegister(e) {
             e.preventDefault();
             const btn = document.getElementById('btn-reg');
             const originalText = btn.innerText;
-            btn.innerHTML = 'Memproses...';
-            btn.disabled = true;
+            btn.innerHTML = 'Memproses...'; btn.disabled = true;
 
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
@@ -227,20 +398,18 @@
             const phone = document.getElementById('reg-phone').value;
             const packageType = document.getElementById('reg-package').value;
 
-            // 1. Sign Up User
+            // Step A: Buat User di Auth
             const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                email: email,
-                password: password
+                email: email, password: password
             });
 
             if (authError) {
                 alert("Gagal Daftar: " + authError.message);
-                btn.innerText = originalText;
-                btn.disabled = false;
+                btn.innerText = originalText; btn.disabled = false;
                 return;
             }
 
-            // 2. Simpan Detail ke Tabel Profiles
+            // Step B: Simpan Data ke Tabel Profiles
             if (authData.user) {
                 const { error: profileError } = await supabaseClient
                     .from('profiles')
@@ -254,19 +423,15 @@
 
                 if (profileError) {
                     alert("Gagal Simpan Profil: " + profileError.message);
-                    btn.innerText = originalText;
-                    btn.disabled = false;
-                    return;
+                } else {
+                    alert("Berhasil Mendaftar! Silakan cek email/login.");
+                    showPage('login');
                 }
-
-                alert("Berhasil Mendaftar! Silakan cek email jika perlu verifikasi, atau langsung login.");
-                showPage('login');
             }
-            btn.innerText = originalText;
-            btn.disabled = false;
+            btn.innerText = originalText; btn.disabled = false;
         }
 
-        // --- FUNGSI LOGIN ---
+        // --- 4. FUNGSI LOGIN ---
         async function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
@@ -276,8 +441,7 @@
             btn.innerText = "Loading...";
 
             const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password
+                email: email, password: password
             });
 
             if (error) {
@@ -286,14 +450,14 @@
             }
         }
 
-        // --- FUNGSI LOGOUT ---
+        // --- 5. FUNGSI LOGOUT ---
         async function logout() {
             await supabaseClient.auth.signOut();
             alert("Anda telah keluar.");
             showPage('home');
         }
 
-        // --- FUNGSI LOAD DATA DASHBOARD ---
+        // --- 6. LOAD DASHBOARD DATA ---
         async function loadDashboard(userId) {
             const { data, error } = await supabaseClient
                 .from('profiles')
@@ -315,25 +479,36 @@
 
         function contactAdmin() {
              const phone = "6281234567890";
-             window.open(`https://wa.me/${phone}?text=Halo Admin, saya ingin konfirmasi pembayaran untuk akun YLOS saya.`, '_blank');
+             window.open(`https://wa.me/${phone}?text=Halo Admin, saya ingin konfirmasi pembayaran akun YLOS saya.`, '_blank');
         }
 
-        // --- AUTH LISTENER ---
+        // --- 7. SECURITY & NAVIGATION HANDLER ---
         supabaseClient.auth.onAuthStateChange((event, session) => {
             const navPublic = document.getElementById('nav-public');
             const navMember = document.getElementById('nav-member');
+            const navLinks = document.getElementById('nav-links'); // Menu tengah
+
+            // DETEKSI KHUSUS: User datang dari link Reset Password di email
+            if (event === 'PASSWORD_RECOVERY') {
+                window.location.href = 'reset.html'; 
+                return;
+            }
 
             if (session) {
+                // USER LOGIN: Tampilkan Dashboard & Menu Member
                 navPublic.classList.add('hidden');
+                navLinks.classList.add('hidden'); // Sembunyikan menu landing page agar fokus dashboard
                 navMember.classList.remove('hidden');
+                
                 document.getElementById('user-display-name').innerText = session.user.email;
                 loadDashboard(session.user.id);
                 showPage('dashboard');
             } else {
+                // USER LOGOUT: Tampilkan Home & Menu Publik
                 navPublic.classList.remove('hidden');
+                navLinks.classList.remove('hidden');
                 navMember.classList.add('hidden');
                 
-                // Cek agar tidak melempar user yang sedang di halaman login/register kembali ke home
                 const isAuthPage = document.getElementById('page-login').classList.contains('active-section') || 
                                    document.getElementById('page-register').classList.contains('active-section');
                                    
