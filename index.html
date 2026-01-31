@@ -29,7 +29,6 @@
         .active-section { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* Style Tambahan */
         .blob { position: absolute; filter: blur(40px); z-index: -1; opacity: 0.4; }
         .logo-hover:hover { transform: scale(1.05); transition: transform 0.3s ease; }
     </style>
@@ -108,11 +107,9 @@
     </nav>
 
     <div id="page-home" class="active-section">
-        
         <section id="home" class="relative pt-32 pb-16 lg:pt-52 lg:pb-32 overflow-hidden px-4">
             <div class="blob bg-ylosPink/30 w-80 h-80 rounded-full top-0 left-0 -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
             <div class="blob bg-ylosYellow/30 w-60 h-60 rounded-full bottom-0 right-0 translate-x-1/3 translate-y-1/3 blur-3xl"></div>
-
             <div class="max-w-7xl mx-auto text-center relative z-10">
                 <div class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white border border-gray-200 shadow-sm mb-8 animate-bounce">
                     <span class="flex h-2 w-2 relative">
@@ -121,23 +118,19 @@
                     </span>
                     <span class="text-xs font-bold tracking-wide text-gray-600 uppercase">Pendaftaran Batch 1 Dibuka</span>
                 </div>
-                
                 <h1 class="text-4xl md:text-7xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
                     Unlock Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-ylosPink to-purple-600">Leadership.</span> <br>
                     Explore the <span class="text-transparent bg-clip-text bg-gradient-to-r from-ylosGreen to-teal-500">World.</span>
                 </h1>
-                
                 <p class="mt-4 md:mt-6 text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed px-2">
                     Youth Leader Organization Summit (YLOS) mengajak siswa SMA/SMK untuk mengasah potensi kepemimpinan sambil studi banding internasional.
                 </p>
-                
                 <div class="flex flex-col sm:flex-row justify-center gap-4 px-4">
                     <button onclick="showPage('register')" class="bg-gray-900 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-gray-800 transition transform hover:-translate-y-1 w-full sm:w-auto">
                         Amankan Kursi
                     </button>
                     <a href="#trip" class="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-full font-bold text-lg shadow-sm hover:bg-gray-50 transition flex items-center justify-center gap-2 group w-full sm:w-auto">
-                        Lihat Tujuan Trip 
-                        <span class="group-hover:translate-x-1 transition-transform">✈️</span>
+                        Lihat Tujuan Trip <span class="group-hover:translate-x-1 transition-transform">✈️</span>
                     </a>
                 </div>
             </div>
@@ -149,28 +142,21 @@
                     <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Kenapa Kamu Harus Join YLOS?</h2>
                     <div class="h-1 w-20 bg-ylosYellow mx-auto mt-4 rounded-full"></div>
                 </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                     <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-ylosPink transition duration-300 group">
-                        <div class="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-ylosPink transition-colors">
-                            <span class="text-2xl text-ylosPink group-hover:text-white">🤝</span>
-                        </div>
+                        <div class="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-ylosPink transition-colors"><span class="text-2xl text-ylosPink group-hover:text-white">🤝</span></div>
                         <h3 class="text-xl font-bold mb-3 text-gray-900">Leadership & Network</h3>
                         <p class="text-gray-600 leading-relaxed">Bertemu dengan ratusan pemimpin muda se-Indonesia dan bangun jaringan profesional.</p>
                     </div>
                     <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-ylosYellow transition duration-300 group">
-                        <div class="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-ylosYellow transition-colors">
-                            <span class="text-2xl text-yellow-600 group-hover:text-white">💡</span>
-                        </div>
+                        <div class="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-ylosYellow transition-colors"><span class="text-2xl text-yellow-600 group-hover:text-white">💡</span></div>
                         <h3 class="text-xl font-bold mb-3 text-gray-900">Critical Thinking</h3>
-                        <p class="text-gray-600 leading-relaxed">Asah kemampuan memecahkan masalah melalui studi kasus nyata dan mentoring eksklusif.</p>
+                        <p class="text-gray-600 leading-relaxed">Asah kemampuan memecahkan masalah melalui studi kasus nyata.</p>
                     </div>
                     <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-ylosGreen transition duration-300 group">
-                        <div class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-ylosGreen transition-colors">
-                            <span class="text-2xl text-ylosGreen group-hover:text-white">🌍</span>
-                        </div>
+                        <div class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-ylosGreen transition-colors"><span class="text-2xl text-ylosGreen group-hover:text-white">🌍</span></div>
                         <h3 class="text-xl font-bold mb-3 text-gray-900">Global Experience</h3>
-                        <p class="text-gray-600 leading-relaxed">Perluas wawasan dengan kunjungan ke universitas top dunia dan perusahaan multinasional.</p>
+                        <p class="text-gray-600 leading-relaxed">Perluas wawasan dengan kunjungan ke universitas top dunia.</p>
                     </div>
                 </div>
             </div>
@@ -179,25 +165,11 @@
         <section id="trip" class="py-16 md:py-24 relative overflow-hidden bg-gray-900">
             <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-ylosPink opacity-10 rounded-full blur-3xl"></div>
             <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-ylosGreen opacity-10 rounded-full blur-3xl"></div>
-
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
                 <div class="lg:w-1/2 text-white">
                     <span class="text-ylosYellow font-bold tracking-wider uppercase text-sm mb-2 block">Highlight Program</span>
                     <h2 class="text-3xl md:text-5xl font-extrabold mb-6 leading-tight">International Trip: <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-ylosYellow to-orange-400">Singapore & Malaysia</span></h2>
-                    <p class="text-gray-300 text-lg mb-8 leading-relaxed">
-                        Rasakan pengalaman belajar langsung di negara tetangga. Bukan sekadar jalan-jalan, tapi membuka mata akan peluang global.
-                    </p>
-                    
-                    <div class="space-y-6">
-                        <div class="flex items-start gap-4">
-                            <div class="bg-white/10 p-3 rounded-lg backdrop-blur-sm"><span class="text-2xl">🎓</span></div>
-                            <div><h4 class="font-bold text-xl">University Visit</h4><p class="text-gray-400 text-sm">Kunjungan ke kampus terbaik (NTU/NUS/UM).</p></div>
-                        </div>
-                        <div class="flex items-start gap-4">
-                            <div class="bg-white/10 p-3 rounded-lg backdrop-blur-sm"><span class="text-2xl">🏢</span></div>
-                            <div><h4 class="font-bold text-xl">Company Visit</h4><p class="text-gray-400 text-sm">Melihat budaya kerja perusahaan global.</p></div>
-                        </div>
-                    </div>
+                    <p class="text-gray-300 text-lg mb-8 leading-relaxed">Rasakan pengalaman belajar langsung di negara tetangga.</p>
                 </div>
                 <div class="lg:w-1/2 w-full">
                     <div class="relative">
@@ -216,9 +188,7 @@
         <section id="pricing" class="py-16 md:py-24 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Pilih Paket Perjalananmu</h2>
-                <p class="text-gray-500 mb-8 md:mb-12">Investasi sekali untuk pengalaman seumur hidup.</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto mt-12">
                     <div class="border border-gray-200 rounded-[2rem] p-6 md:p-8 hover:shadow-xl transition relative bg-white flex flex-col">
                         <div class="mb-4 text-left"><span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Basic</span></div>
                         <h3 class="text-2xl font-bold text-gray-900 text-left">Regular Pass</h3>
@@ -229,11 +199,8 @@
                             <li class="flex items-center gap-3"><span class="text-green-500">✓</span> Tiket Pesawat Ekonomi</li>
                             <li class="flex items-center gap-3"><span class="text-green-500">✓</span> Sertifikat Nasional</li>
                         </ul>
-                        <button onclick="showPage('register')" class="block w-full py-4 rounded-xl border-2 border-gray-900 font-bold text-gray-900 hover:bg-gray-900 hover:text-white transition text-center">
-                            Pilih Regular
-                        </button>
+                        <button onclick="showPage('register')" class="block w-full py-4 rounded-xl border-2 border-gray-900 font-bold text-gray-900 hover:bg-gray-900 hover:text-white transition text-center">Pilih Regular</button>
                     </div>
-
                     <div class="border-2 border-ylosPink rounded-[2rem] p-6 md:p-8 shadow-2xl relative bg-white flex flex-col transform md:-translate-y-4">
                         <div class="absolute top-0 right-0 bg-ylosPink text-white text-xs font-bold px-4 py-2 rounded-bl-2xl rounded-tr-[1.8rem]">BEST VALUE</div>
                         <div class="mb-4 text-left"><span class="bg-pink-100 text-ylosPink px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Recommended</span></div>
@@ -244,11 +211,8 @@
                             <li class="flex items-center gap-3">✓ Hotel Bintang 4</li>
                             <li class="flex items-center gap-3">✓ Tiket Pesawat & Bagasi</li>
                             <li class="flex items-center gap-3"><strong>✓ Sertifikat Internasional</strong></li>
-                            <li class="flex items-center gap-3">✓ Exclusive Merchandise Kit</li>
                         </ul>
-                        <button onclick="showPage('register')" class="block w-full py-4 rounded-xl bg-gradient-to-r from-ylosPink to-pink-600 text-white font-bold hover:shadow-lg hover:to-pink-700 transition text-center">
-                            Daftar VIP Sekarang
-                        </button>
+                        <button onclick="showPage('register')" class="block w-full py-4 rounded-xl bg-gradient-to-r from-ylosPink to-pink-600 text-white font-bold hover:shadow-lg hover:to-pink-700 transition text-center">Daftar VIP Sekarang</button>
                     </div>
                 </div>
             </div>
@@ -261,9 +225,7 @@
                     <span class="font-bold text-xl tracking-tight">YLOS 2025</span>
                 </div>
                 <p class="text-gray-400 mb-8 max-w-md mx-auto text-sm">Platform pengembangan kepemimpinan pemuda nomor 1 di Indonesia.</p>
-                <div class="border-t border-gray-800 pt-8">
-                    <p class="text-gray-600 text-xs">© 2025 Youth Leader Organization Summit.</p>
-                </div>
+                <div class="border-t border-gray-800 pt-8"><p class="text-gray-600 text-xs">© 2025 Youth Leader Organization Summit.</p></div>
             </div>
         </footer>
     </div>
@@ -283,9 +245,7 @@
                     </div>
                     <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-lg border focus:border-ylosPink outline-none">
                 </div>
-                <button type="submit" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition">
-                    Masuk
-                </button>
+                <button type="submit" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition">Masuk</button>
             </form>
             <p class="text-center mt-4 text-sm">Belum punya akun? <button onclick="showPage('register')" class="text-ylosPink font-bold hover:underline">Daftar disini</button></p>
         </div>
@@ -326,9 +286,16 @@
                         <option value="VIP Delegate">VIP Delegate - IDR 4.800k</option>
                     </select>
                 </div>
-                <button type="submit" id="btn-reg" class="w-full bg-ylosPink text-white font-bold py-3 rounded-xl hover:bg-pink-600 transition">
-                    Daftar Sekarang
-                </button>
+
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <label class="block text-sm font-bold mb-2 text-gray-700">Verifikasi Keamanan</label>
+                    <div class="flex items-center gap-4">
+                        <div id="captcha-question" class="bg-gray-200 text-gray-800 px-4 py-3 rounded-lg font-mono font-bold text-lg select-none tracking-widest min-w-[100px] text-center">...</div>
+                        <input type="number" id="captcha-input" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-ylosPink outline-none transition" placeholder="Hasil?">
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">*Hitung penjumlahan di atas untuk lanjut.</p>
+                </div>
+                <button type="submit" id="btn-reg" class="w-full bg-ylosPink text-white font-bold py-3 rounded-xl hover:bg-pink-600 transition">Daftar Sekarang</button>
             </form>
             <p class="text-center mt-4 text-sm">Sudah punya akun? <button onclick="showPage('login')" class="text-ylosPink font-bold hover:underline">Login disini</button></p>
         </div>
@@ -356,9 +323,7 @@
                             <p class="text-xs text-gray-500 uppercase font-bold">Status Pembayaran</p>
                             <span id="dash-status" class="inline-block mt-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold">Loading...</span>
                         </div>
-                        <button onclick="contactAdmin()" class="w-full bg-green-500 text-white py-2 rounded-lg font-bold text-sm hover:bg-green-600">
-                            Konfirmasi ke Admin WA
-                        </button>
+                        <button onclick="contactAdmin()" class="w-full bg-green-500 text-white py-2 rounded-lg font-bold text-sm hover:bg-green-600">Konfirmasi ke Admin WA</button>
                     </div>
                 </div>
 
@@ -376,10 +341,7 @@
                             <div class="flex items-center justify-between p-4 border rounded-xl hover:bg-gray-50 cursor-pointer">
                                 <div class="flex items-center gap-3">
                                     <div class="bg-blue-100 p-2 rounded-lg text-blue-600">📄</div>
-                                    <div>
-                                        <p class="font-bold text-sm">Rundown Acara YLOS 2025</p>
-                                        <p class="text-xs text-gray-400">PDF • 2.4 MB</p>
-                                    </div>
+                                    <div><p class="font-bold text-sm">Rundown Acara YLOS 2025</p><p class="text-xs text-gray-400">PDF • 2.4 MB</p></div>
                                 </div>
                                 <span class="text-ylosPink text-sm font-bold">Download</span>
                             </div>
@@ -391,48 +353,76 @@
     </div>
 
     <script>
-        // --- 1. INISIALISASI SUPABASE ---
+        // 1. SUPABASE SETUP (Ganti URL & Key jika perlu)
         const supabaseClient = supabase.createClient(
             'https://jrslgkxwjvugvgakxwsd.supabase.co', 
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'
         );
         
-        // --- 2. MANAJEMEN NAVIGASI ---
+        let userSession = null;
+        let captchaCorrectAnswer = 0;
+
+        // 2. CAPTCHA GENERATOR
+        function generateCaptcha() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            captchaCorrectAnswer = num1 + num2;
+            
+            const captchaEl = document.getElementById('captcha-question');
+            if (captchaEl) captchaEl.innerText = `${num1} + ${num2} = ?`;
+            
+            const inputEl = document.getElementById('captcha-input');
+            if (inputEl) inputEl.value = '';
+        }
+
+        // 3. NAVIGASI
         function showPage(pageId) {
-            // Sembunyikan semua halaman
+            // Guard: Kalau sudah login, dilarang ke login/register
+            if (userSession && (pageId === 'login' || pageId === 'register')) {
+                pageId = 'dashboard';
+            }
+
+            // Kalau buka register, acak soal baru
+            if (pageId === 'register') {
+                generateCaptcha();
+            }
+
             ['page-home', 'page-login', 'page-register', 'page-dashboard'].forEach(id => {
                 document.getElementById(id).classList.remove('active-section');
                 document.getElementById(id).classList.add('hidden-section');
             });
             
-            // Tampilkan halaman target
             document.getElementById('page-' + pageId).classList.remove('hidden-section');
             document.getElementById('page-' + pageId).classList.add('active-section');
             
-            // Tutup mobile menu jika terbuka
+            // Tutup menu mobile
             document.getElementById('mobile-menu').classList.add('hidden');
-            
-            // Scroll ke atas
             window.scrollTo(0,0);
         }
 
-        // --- NEW: FUNGSI MOBILE MENU ---
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
-            if (menu.classList.contains('hidden')) {
-                menu.classList.remove('hidden');
-            } else {
-                menu.classList.add('hidden');
-            }
+            if (menu.classList.contains('hidden')) menu.classList.remove('hidden');
+            else menu.classList.add('hidden');
         }
 
         function mobileLinkClick(pageId) {
             showPage(pageId);
         }
 
-        // --- 3. FUNGSI REGISTER ---
+        // 4. REGISTER FUNCTION
         async function handleRegister(e) {
             e.preventDefault();
+            
+            // Cek Captcha
+            const userAnswer = parseInt(document.getElementById('captcha-input').value);
+            if (userAnswer !== captchaCorrectAnswer) {
+                alert("⛔ Captcha Salah! Silakan hitung ulang.");
+                generateCaptcha();
+                document.getElementById('captcha-input').focus();
+                return;
+            }
+
             const btn = document.getElementById('btn-reg');
             const originalText = btn.innerText;
             btn.innerHTML = 'Memproses...'; btn.disabled = true;
@@ -444,7 +434,7 @@
             const phone = document.getElementById('reg-phone').value;
             const packageType = document.getElementById('reg-package').value;
 
-            // Step A: Buat User di Auth
+            // Auth Sign Up
             const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                 email: email, password: password
             });
@@ -452,19 +442,16 @@
             if (authError) {
                 alert("Gagal Daftar: " + authError.message);
                 btn.innerText = originalText; btn.disabled = false;
+                generateCaptcha();
                 return;
             }
 
-            // Step B: Simpan Data ke Tabel Profiles
+            // Save Profile
             if (authData.user) {
                 const { error: profileError } = await supabaseClient
                     .from('profiles')
                     .insert([{ 
-                        id: authData.user.id, 
-                        full_name: fullName,
-                        school: school,
-                        phone: phone,
-                        package_type: packageType
+                        id: authData.user.id, full_name: fullName, school: school, phone: phone, package_type: packageType
                     }]);
 
                 if (profileError) {
@@ -477,7 +464,7 @@
             btn.innerText = originalText; btn.disabled = false;
         }
 
-        // --- 4. FUNGSI LOGIN ---
+        // 5. LOGIN FUNCTION
         async function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
@@ -496,14 +483,15 @@
             }
         }
 
-        // --- 5. FUNGSI LOGOUT ---
+        // 6. LOGOUT
         async function logout() {
             await supabaseClient.auth.signOut();
+            userSession = null;
             alert("Anda telah keluar.");
             showPage('home');
         }
 
-        // --- 6. LOAD DASHBOARD DATA ---
+        // 7. DASHBOARD DATA
         async function loadDashboard(userId) {
             const { data, error } = await supabaseClient
                 .from('profiles')
@@ -513,69 +501,58 @@
 
             if (data) {
                 document.getElementById('dash-name').innerText = data.full_name;
-                document.getElementById('mobile-user-name').innerText = data.full_name; // Update nama di mobile menu
+                document.getElementById('mobile-user-name').innerText = data.full_name;
                 document.getElementById('dash-package').innerText = data.package_type;
                 document.getElementById('dash-status').innerText = data.payment_status;
                 
-                const statusBadge = document.getElementById('dash-status');
                 if(data.payment_status === 'Lunas') {
-                    statusBadge.className = 'inline-block mt-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold';
+                    document.getElementById('dash-status').className = 'inline-block mt-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold';
                 }
             }
         }
 
         function contactAdmin() {
              const phone = "6281234567890";
-             window.open(`https://wa.me/${phone}?text=Halo Admin, saya ingin konfirmasi pembayaran akun YLOS saya.`, '_blank');
+             window.open(`https://wa.me/${phone}?text=Halo Admin, konfirmasi pembayaran YLOS.`, '_blank');
         }
 
-        // --- 7. SECURITY & NAVIGATION HANDLER ---
+        // 8. SESSION LISTENER
         supabaseClient.auth.onAuthStateChange((event, session) => {
-            // Desktop Elements
-            const navPublic = document.getElementById('nav-public');
-            const navMember = document.getElementById('nav-member');
+            userSession = session;
             
-            // Mobile Elements (NEW)
-            const mobileNavPublic = document.getElementById('mobile-nav-public');
-            const mobileNavMember = document.getElementById('mobile-nav-member');
-
-            // DETEKSI KHUSUS: User datang dari link Reset Password di email
+            // Redirect jika dari email reset password
             if (event === 'PASSWORD_RECOVERY') {
                 window.location.href = 'reset.html'; 
                 return;
             }
 
-            if (session) {
-                // USER LOGIN: Tampilkan Dashboard & Menu Member
-                
-                // Desktop
-                navPublic.classList.add('hidden');
-                navMember.classList.remove('hidden');
+            const elements = {
+                deskPublic: document.getElementById('nav-public'),
+                deskMember: document.getElementById('nav-member'),
+                mobPublic: document.getElementById('mobile-nav-public'),
+                mobMember: document.getElementById('mobile-nav-member')
+            };
 
-                // Mobile
-                mobileNavPublic.classList.add('hidden');
-                mobileNavMember.classList.remove('hidden');
+            if (session) {
+                // LOGIN
+                elements.deskPublic.classList.add('hidden');
+                elements.mobPublic.classList.add('hidden');
+                elements.deskMember.classList.remove('hidden');
+                elements.mobMember.classList.remove('hidden');
                 
                 document.getElementById('user-display-name').innerText = session.user.email;
                 loadDashboard(session.user.id);
                 showPage('dashboard');
             } else {
-                // USER LOGOUT: Tampilkan Home & Menu Publik
-                
-                // Desktop
-                navPublic.classList.remove('hidden');
-                navMember.classList.add('hidden');
+                // LOGOUT
+                elements.deskPublic.classList.remove('hidden');
+                elements.mobPublic.classList.remove('hidden');
+                elements.deskMember.classList.add('hidden');
+                elements.mobMember.classList.add('hidden');
 
-                // Mobile
-                mobileNavPublic.classList.remove('hidden');
-                mobileNavMember.classList.add('hidden');
-                
                 const isAuthPage = document.getElementById('page-login').classList.contains('active-section') || 
                                    document.getElementById('page-register').classList.contains('active-section');
-                                   
-                if (!isAuthPage) {
-                    showPage('home');
-                }
+                if (!isAuthPage) showPage('home');
             }
         });
     </script>
