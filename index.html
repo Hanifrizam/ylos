@@ -193,7 +193,6 @@
                     <p class="text-gray-300 text-lg mb-8 leading-relaxed">
                         Rasakan pengalaman belajar langsung di negara tetangga. Bukan sekadar jalan-jalan, tapi membuka mata akan peluang global.
                     </p>
-                    
                     <div class="space-y-6">
                         <div class="flex items-start gap-4">
                             <div class="bg-white/10 p-3 rounded-lg backdrop-blur-sm"><span class="text-2xl">🎓</span></div>
@@ -465,52 +464,59 @@
         function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
         function mobileLinkClick(id) { showPage(id); }
 
-        // 4. ACTION FUNCTIONS (WITH SWEETALERT & EMAIL VERIFICATION LOGIC)
+        // 4. ACTION FUNCTIONS (UPDATED FOR TRIGGER LOGIC)
         async function handleRegister(e) {
             e.preventDefault();
+            
+            // 1. Cek Captcha
             if(parseInt(document.getElementById('captcha-input').value) !== captchaCorrectAnswer) {
                 Swal.fire({ icon: 'error', title: 'Captcha Salah!', text: 'Silakan hitung ulang penjumlahan.' });
                 generateCaptcha(); return;
             }
-            const btn = document.getElementById('btn-reg'); btn.innerText='...'; btn.disabled=true;
+
+            const btn = document.getElementById('btn-reg'); 
+            btn.innerText='Memproses...'; 
+            btn.disabled=true;
             
+            // 2. Ambil Data Input
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
-            const meta = {
+            
+            // Data Metadata (Ini yang akan dikirim ke Trigger Database)
+            const metadata = {
                 full_name: document.getElementById('reg-name').value,
                 school: document.getElementById('reg-school').value,
                 phone: document.getElementById('reg-phone').value,
                 package_type: document.getElementById('reg-package').value
             };
 
-            // Sign Up dengan redirect ke index.html setelah klik email
+            // 3. Sign Up ke Supabase (Sekaligus kirim Metadata)
             const { data, error } = await supabaseClient.auth.signUp({ 
                 email: email, 
                 password: password,
                 options: {
-                    emailRedirectTo: 'https://ylos.site' // Pastikan ini sesuai domain kamu
+                    emailRedirectTo: 'https://ylos.site',
+                    data: metadata // <--- PENTING: Data dikirim di sini untuk ditangkap Trigger
                 }
             });
 
+            // 4. Handle Error / Sukses
             if(error) { 
                 Swal.fire({ icon: 'error', title: 'Gagal Daftar', text: error.message });
                 btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); return; 
             }
 
             if(data.user) {
-                // Simpan profil (walaupun belum verifikasi, data profil tetap bisa masuk)
-                await supabaseClient.from('profiles').insert([{ id: data.user.id, ...meta }]);
-                
-                // === PESAN VERIFIKASI EMAIL (PENTING) ===
                 Swal.fire({ 
-                    icon: 'info', 
-                    title: 'Cek Email Kamu!', 
-                    html: `Link verifikasi telah dikirim ke <b>${email}</b>.<br>Silakan klik link tersebut untuk mengaktifkan akun dan login.`,
-                    confirmButtonText: 'Siap, Saya Cek!'
+                    icon: 'success', 
+                    title: 'Berhasil Mendaftar!', 
+                    html: `Link verifikasi telah dikirim ke <b>${email}</b>.<br>Cek Inbox/Spam, klik linknya, lalu login.`,
+                    confirmButtonText: 'Siap!'
                 }).then(() => {
                     showPage('login');
                 });
             }
+            
             btn.innerText='Daftar Sekarang'; btn.disabled=false;
         }
 
