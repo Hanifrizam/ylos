@@ -33,7 +33,7 @@
         .blob { position: absolute; filter: blur(40px); z-index: -1; opacity: 0.4; }
         .logo-hover:hover { transform: scale(1.05); transition: transform 0.3s ease; }
         
-        /* Custom SweetAlert Style supaya cocok sama tema YLOS */
+        /* Custom SweetAlert Style */
         div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
             background-color: #FF85B3 !important;
             border-radius: 12px;
@@ -465,7 +465,7 @@
         function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
         function mobileLinkClick(id) { showPage(id); }
 
-        // 4. ACTION FUNCTIONS (WITH SWEETALERT)
+        // 4. ACTION FUNCTIONS (WITH SWEETALERT & EMAIL VERIFICATION LOGIC)
         async function handleRegister(e) {
             e.preventDefault();
             if(parseInt(document.getElementById('captcha-input').value) !== captchaCorrectAnswer) {
@@ -483,15 +483,31 @@
                 package_type: document.getElementById('reg-package').value
             };
 
-            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+            // Sign Up dengan redirect ke index.html setelah klik email
+            const { data, error } = await supabaseClient.auth.signUp({ 
+                email: email, 
+                password: password,
+                options: {
+                    emailRedirectTo: 'https://ylos.site' // Pastikan ini sesuai domain kamu
+                }
+            });
+
             if(error) { 
                 Swal.fire({ icon: 'error', title: 'Gagal Daftar', text: error.message });
                 btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); return; 
             }
 
             if(data.user) {
+                // Simpan profil (walaupun belum verifikasi, data profil tetap bisa masuk)
                 await supabaseClient.from('profiles').insert([{ id: data.user.id, ...meta }]);
-                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Akun dibuat. Silakan login untuk pembayaran.' }).then(() => {
+                
+                // === PESAN VERIFIKASI EMAIL (PENTING) ===
+                Swal.fire({ 
+                    icon: 'info', 
+                    title: 'Cek Email Kamu!', 
+                    html: `Link verifikasi telah dikirim ke <b>${email}</b>.<br>Silakan klik link tersebut untuk mengaktifkan akun dan login.`,
+                    confirmButtonText: 'Siap, Saya Cek!'
+                }).then(() => {
                     showPage('login');
                 });
             }
@@ -502,15 +518,20 @@
             e.preventDefault();
             const btn = e.target.querySelector('button'); btn.innerText = "Loading...";
             
-            const { error } = await supabaseClient.auth.signInWithPassword({
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: document.getElementById('login-email').value,
                 password: document.getElementById('login-password').value
             });
             
             if(error) {
-                Swal.fire({ icon: 'error', title: 'Login Gagal', text: error.message });
+                let msg = error.message;
+                if (msg.includes("Email not confirmed")) {
+                    msg = "Email belum diverifikasi. Cek inbox/spam email kamu.";
+                }
+                Swal.fire({ icon: 'error', title: 'Login Gagal', text: msg });
                 btn.innerText = "Masuk";
             }
+            // Jika sukses, onAuthStateChange akan jalan otomatis
         }
 
         async function logout() {
@@ -523,18 +544,27 @@
         // --- PAYMENT LOGIC (UPGRADED UI) ---
         function openLynkPayment() {
             Swal.fire({
-                title: 'Pembayaran Dibuka',
-                html: `<p class="mb-4 text-sm text-gray-600">Anda akan diarahkan ke halaman pembayaran aman via LYNK.</p>
-                       <ul class="text-left text-sm text-gray-500 list-disc pl-5 mb-4">
-                         <li>Pilih metode pembayaran (QRIS/VA)</li>
-                         <li>Selesaikan transfer</li>
-                         <li>Tunggu verifikasi admin (1x24 jam)</li>
-                       </ul>`,
-                icon: 'info',
+                title: 'Pembayaran Dibuka 💳',
+                html: `
+                    <div class="text-left text-sm text-gray-600 space-y-3">
+                        <p>Anda akan diarahkan ke halaman pembayaran aman via <b>LYNK</b>.</p>
+                        <ul class="list-disc pl-5 text-gray-500">
+                            <li>Pilih metode (QRIS / VA / E-Wallet)</li>
+                            <li>Selesaikan pembayaran</li>
+                            <li>Tunggu verifikasi admin (Maks 1x24 jam)</li>
+                        </ul>
+                    </div>
+                `,
+                imageUrl: 'LOGO YLOS 5x5.png', // Logo di popup
+                imageWidth: 80,
+                imageHeight: 80,
+                imageAlt: 'Logo YLOS',
                 showCancelButton: true,
                 confirmButtonText: 'Lanjut Bayar ➔',
                 cancelButtonText: 'Batal',
-                confirmButtonColor: '#FF85B3'
+                confirmButtonColor: '#FF85B3',
+                cancelButtonColor: '#d33',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.open(LYNK_PAYMENT_URL, '_blank');
@@ -581,7 +611,7 @@
             }
         }
 
-        // 5. SESSION LISTENER
+        // 5. SESSION LISTENER (THE GATEKEEPER)
         supabaseClient.auth.onAuthStateChange((event, session) => {
             userSession = session;
             if(event === 'PASSWORD_RECOVERY') { window.location.href = 'reset.html'; return; }
@@ -592,12 +622,14 @@
             };
 
             if(session) {
+                // LOGIN SUKSES
                 els.dp.classList.add('hidden'); els.mp.classList.add('hidden');
                 els.dm.classList.remove('hidden'); els.mm.classList.remove('hidden');
                 document.getElementById('user-display-name').innerText = session.user.email;
                 loadDashboard(session.user.id);
                 showPage('dashboard');
             } else {
+                // LOGOUT
                 els.dp.classList.remove('hidden'); els.mp.classList.remove('hidden');
                 els.dm.classList.add('hidden'); els.mm.classList.add('hidden');
                 if(!document.getElementById('page-login').classList.contains('active-section') && !document.getElementById('page-register').classList.contains('active-section')) showPage('home');
