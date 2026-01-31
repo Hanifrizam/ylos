@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YLOS - Reset Password</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { ylosPink: '#FF85B3', ylosYellow: '#FFD700', ylosGreen: '#9ACD32', ylosDark: '#2D3748' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-sans text-gray-700 bg-gray-50 flex items-center justify-center min-h-screen">
+
+    <div class="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
+        
+        <div class="text-center mb-6">
+            <h2 id="judul-halaman" class="text-2xl font-bold">Reset Password 🔒</h2>
+            <p id="deskripsi-halaman" class="text-gray-500 text-sm mt-2">Masukkan email kamu untuk mendapatkan link reset.</p>
+        </div>
+
+        <form id="form-request" onsubmit="handleResetRequest(event)" class="space-y-4 block">
+            <div>
+                <label class="block text-sm font-bold mb-1">Email Terdaftar</label>
+                <input type="email" id="reset-email" required class="w-full px-4 py-3 rounded-lg border focus:border-ylosPink outline-none">
+            </div>
+            <button type="submit" id="btn-reset" class="w-full bg-ylosPink text-white font-bold py-3 rounded-xl hover:bg-pink-600 transition">
+                Kirim Link Reset
+            </button>
+        </form>
+
+        <form id="form-update" onsubmit="handleUpdatePassword(event)" class="space-y-4 hidden">
+            <div>
+                <label class="block text-sm font-bold mb-1">Password Baru</label>
+                <input type="password" id="new-password" required class="w-full px-4 py-3 rounded-lg border focus:border-ylosPink outline-none" placeholder="Min. 6 karakter">
+            </div>
+            <button type="submit" id="btn-update" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition">
+                Simpan Password Baru
+            </button>
+        </form>
+
+        <div class="text-center mt-6">
+            <a href="index.html" class="text-sm text-gray-400 hover:text-ylosPink">Kembali ke Login</a>
+        </div>
+    </div>
+
+    <script>
+        // --- KONFIGURASI SUPABASE (Copy dari index.html) ---
+        // GANTI URL & KEY DENGAN PUNYA KAMU
+        const supabaseClient = supabase.createClient(
+            'https://jrslgkxwjvugvgakxwsd.supabase.co', 
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'
+        );
+
+        // --- CEK APAKAH INI USER DARI EMAIL? ---
+        // Supabase memberi tanda '#access_token=...' di URL kalau dari email
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'PASSWORD_RECOVERY') {
+                // Tampilkan Form Update, Sembunyikan Form Request
+                document.getElementById('form-request').classList.add('hidden');
+                document.getElementById('form-update').classList.remove('hidden');
+                document.getElementById('judul-halaman').innerText = "Password Baru ✨";
+                document.getElementById('deskripsi-halaman').innerText = "Silakan buat password baru kamu.";
+            }
+        });
+
+        // --- FUNGSI 1: KIRIM EMAIL ---
+        async function handleResetRequest(e) {
+            e.preventDefault();
+            const email = document.getElementById('reset-email').value;
+            const btn = document.getElementById('btn-reset');
+            btn.innerText = "Mengirim..."; btn.disabled = true;
+
+            // Redirect URL diarahkan KHUSUS ke file ini (reset.html)
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: 'https://ylos.site/reset.html' 
+            });
+
+            if (error) alert("Error: " + error.message);
+            else alert("Cek email kamu! Klik link yang dikirim.");
+            
+            btn.innerText = "Kirim Link Reset"; btn.disabled = false;
+        }
+
+        // --- FUNGSI 2: SIMPAN PASSWORD BARU ---
+        async function handleUpdatePassword(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('new-password').value;
+            const btn = document.getElementById('btn-update');
+            btn.innerText = "Menyimpan...";
+
+            const { error } = await supabaseClient.auth.updateUser({ password: newPass });
+
+            if (error) {
+                alert("Gagal: " + error.message);
+            } else {
+                alert("Sukses! Silakan login.");
+                window.location.href = "index.html"; // Balik ke file utama
+            }
+            btn.innerText = "Simpan Password Baru";
+        }
+    </script>
+</body>
+</html>
