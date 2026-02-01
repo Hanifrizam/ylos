@@ -5,18 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YLOS - Youth Leader Organization Summit</title>
     
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-L9GFQ0GM95"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-L9GFQ0GM95');
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-L9GFQ0GM95');
     </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
         tailwind.config = {
@@ -33,7 +35,6 @@
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         .hidden-section { display: none; }
         .active-section { display: block; animation: fadeIn 0.5s; }
@@ -42,7 +43,6 @@
         .blob { position: absolute; filter: blur(40px); z-index: -1; opacity: 0.4; }
         .logo-hover:hover { transform: scale(1.05); transition: transform 0.3s ease; }
         
-        /* Custom SweetAlert Style */
         div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
             background-color: #FF85B3 !important;
             border-radius: 12px;
@@ -76,18 +76,20 @@
                     <a href="#about" onclick="showPage('home')" class="text-gray-600 hover:text-ylosPink transition font-medium text-sm uppercase tracking-wide">Tentang</a>
                     <a href="#trip" onclick="showPage('home')" class="text-gray-600 hover:text-ylosPink transition font-medium text-sm uppercase tracking-wide">Trip</a>
                     <a href="#pricing" onclick="showPage('home')" class="text-gray-600 hover:text-ylosPink transition font-medium text-sm uppercase tracking-wide">Tiket</a>
+                    <a href="admin.html" id="nav-desktop-admin" class="hidden text-pink-600 font-bold text-sm border border-pink-200 px-3 py-1 rounded bg-pink-50 hover:bg-pink-100 transition">ADMIN PANEL</a>
                 </div>
 
                 <div class="hidden md:block">
                     <div id="nav-public" class="flex items-center gap-3">
                         <button onclick="showPage('login')" class="text-gray-600 hover:text-ylosPink font-bold px-4 py-2 text-sm">Masuk</button>
-                        <button onclick="showPage('register')" class="bg-gradient-to-r from-ylosPink to-pink-500 text-white px-5 py-2.5 rounded-full font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition text-sm">
-                            Daftar
-                        </button>
+                        <button onclick="showPage('register')" class="bg-gradient-to-r from-ylosPink to-pink-500 text-white px-5 py-2.5 rounded-full font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition text-sm">Daftar</button>
                     </div>
                     <div id="nav-member" class="hidden flex items-center gap-4">
                         <span id="user-display-name" class="text-sm font-bold text-gray-900">Hi, User</span>
-                        <button onclick="showPage('dashboard')" class="text-ylosPink font-bold text-sm hover:underline">Dashboard</button>
+                        
+                        <button id="btn-dash-user" onclick="showPage('dashboard')" class="text-ylosPink font-bold text-sm hover:underline">Dashboard</button>
+                        <button id="btn-dash-admin" onclick="window.location.href='admin.html'" class="hidden bg-gray-800 text-white px-4 py-2 rounded-full font-bold text-xs hover:bg-black transition">Kontrol Admin</button>
+                        
                         <button onclick="logout()" class="border border-red-500 text-red-500 px-4 py-2 rounded-full font-bold hover:bg-red-50 text-xs">Keluar</button>
                     </div>
                 </div>
@@ -105,9 +107,7 @@
                 
                 <div id="mobile-nav-public" class="space-y-3 pt-2">
                     <button onclick="mobileLinkClick('login')" class="w-full text-left px-4 py-3 text-base font-bold text-gray-600 hover:text-ylosPink hover:bg-gray-50 rounded-xl">🔑 Masuk</button>
-                    <button onclick="mobileLinkClick('register')" class="w-full text-center bg-gradient-to-r from-ylosPink to-pink-500 text-white px-5 py-3 rounded-xl font-bold shadow-md">
-                        🚀 Daftar Akun
-                    </button>
+                    <button onclick="mobileLinkClick('register')" class="w-full text-center bg-gradient-to-r from-ylosPink to-pink-500 text-white px-5 py-3 rounded-xl font-bold shadow-md">🚀 Daftar Akun</button>
                 </div>
 
                 <div id="mobile-nav-member" class="hidden space-y-3 pt-2">
@@ -115,7 +115,9 @@
                         <span id="mobile-user-name" class="text-sm font-bold text-gray-900 block">Hi, User</span>
                         <span class="text-xs text-green-600 font-bold">● Online</span>
                     </div>
-                    <button onclick="mobileLinkClick('dashboard')" class="w-full text-left px-4 py-3 text-base font-bold text-ylosPink hover:bg-pink-50 rounded-xl">📊 Buka Dashboard</button>
+                    <button id="btn-mobile-dash-user" onclick="mobileLinkClick('dashboard')" class="w-full text-left px-4 py-3 text-base font-bold text-ylosPink hover:bg-pink-50 rounded-xl">📊 Buka Dashboard</button>
+                    <button id="btn-mobile-dash-admin" onclick="window.location.href='admin.html'" class="hidden w-full text-left px-4 py-3 text-base font-bold text-gray-800 bg-gray-100 rounded-xl">🛠️ Kontrol Admin</button>
+                    
                     <button onclick="logout()" class="w-full text-left px-4 py-3 text-base font-bold text-red-500 hover:bg-red-50 rounded-xl">🚪 Keluar</button>
                 </div>
             </div>
@@ -123,7 +125,6 @@
     </nav>
 
     <div id="page-home" class="active-section">
-        
         <section id="home" class="relative pt-32 pb-16 lg:pt-52 lg:pb-32 overflow-hidden px-4">
             <div class="blob bg-ylosPink/30 w-80 h-80 rounded-full top-0 left-0 -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
             <div class="blob bg-ylosYellow/30 w-60 h-60 rounded-full bottom-0 right-0 translate-x-1/3 translate-y-1/3 blur-3xl"></div>
@@ -147,12 +148,9 @@
                 </p>
                 
                 <div class="flex flex-col sm:flex-row justify-center gap-4 px-4">
-                    <button onclick="showPage('register')" class="bg-gray-900 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-gray-800 transition transform hover:-translate-y-1 w-full sm:w-auto">
-                        Amankan Kursi
-                    </button>
+                    <button onclick="showPage('register')" class="bg-gray-900 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-gray-800 transition transform hover:-translate-y-1 w-full sm:w-auto">Amankan Kursi</button>
                     <a href="#trip" class="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-full font-bold text-lg shadow-sm hover:bg-gray-50 transition flex items-center justify-center gap-2 group w-full sm:w-auto">
-                        Lihat Tujuan Trip 
-                        <span class="group-hover:translate-x-1 transition-transform">✈️</span>
+                        Lihat Tujuan Trip <span class="group-hover:translate-x-1 transition-transform">✈️</span>
                     </a>
                 </div>
             </div>
@@ -199,9 +197,7 @@
                 <div class="lg:w-1/2 text-white">
                     <span class="text-ylosYellow font-bold tracking-wider uppercase text-sm mb-2 block">Highlight Program</span>
                     <h2 class="text-3xl md:text-5xl font-extrabold mb-6 leading-tight">International Trip: <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-ylosYellow to-orange-400">Singapore & Malaysia</span></h2>
-                    <p class="text-gray-300 text-lg mb-8 leading-relaxed">
-                        Rasakan pengalaman belajar langsung di negara tetangga. Bukan sekadar jalan-jalan, tapi membuka mata akan peluang global.
-                    </p>
+                    <p class="text-gray-300 text-lg mb-8 leading-relaxed">Rasakan pengalaman belajar langsung di negara tetangga. Bukan sekadar jalan-jalan, tapi membuka mata akan peluang global.</p>
                     <div class="space-y-6">
                         <div class="flex items-start gap-4">
                             <div class="bg-white/10 p-3 rounded-lg backdrop-blur-sm"><span class="text-2xl">🎓</span></div>
@@ -243,9 +239,7 @@
                             <li class="flex items-center gap-3"><span class="text-green-500">✓</span> Tiket Pesawat Ekonomi</li>
                             <li class="flex items-center gap-3"><span class="text-green-500">✓</span> Sertifikat Nasional</li>
                         </ul>
-                        <button onclick="showPage('register')" class="block w-full py-4 rounded-xl border-2 border-gray-900 font-bold text-gray-900 hover:bg-gray-900 hover:text-white transition text-center">
-                            Pilih Regular
-                        </button>
+                        <button onclick="showPage('register')" class="block w-full py-4 rounded-xl border-2 border-gray-900 font-bold text-gray-900 hover:bg-gray-900 hover:text-white transition text-center">Pilih Regular</button>
                     </div>
 
                     <div class="border-2 border-ylosPink rounded-[2rem] p-6 md:p-8 shadow-2xl relative bg-white flex flex-col transform md:-translate-y-4">
@@ -260,9 +254,7 @@
                             <li class="flex items-center gap-3"><strong>✓ Sertifikat Internasional</strong></li>
                             <li class="flex items-center gap-3">✓ Exclusive Merchandise Kit</li>
                         </ul>
-                        <button onclick="showPage('register')" class="block w-full py-4 rounded-xl bg-gradient-to-r from-ylosPink to-pink-600 text-white font-bold hover:shadow-lg hover:to-pink-700 transition text-center">
-                            Daftar VIP Sekarang
-                        </button>
+                        <button onclick="showPage('register')" class="block w-full py-4 rounded-xl bg-gradient-to-r from-ylosPink to-pink-600 text-white font-bold hover:shadow-lg hover:to-pink-700 transition text-center">Daftar VIP Sekarang</button>
                     </div>
                 </div>
             </div>
@@ -297,9 +289,7 @@
                     </div>
                     <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-lg border focus:border-ylosPink outline-none">
                 </div>
-                <button type="submit" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition">
-                    Masuk
-                </button>
+                <button type="submit" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition">Masuk</button>
             </form>
             <p class="text-center mt-4 text-sm">Belum punya akun? <button onclick="showPage('register')" class="text-ylosPink font-bold hover:underline">Daftar disini</button></p>
         </div>
@@ -369,39 +359,36 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                 
-                <div class="md:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Invoice & Payment</h3>
-                    <div class="space-y-4">
-                        <div class="bg-gray-50 p-4 rounded-xl">
-                            <p class="text-xs text-gray-500 uppercase font-bold">Paket Dipilih</p>
-                            <p id="dash-package" class="text-lg font-bold text-ylosPink">Loading...</p>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-xl">
-                            <p class="text-xs text-gray-500 uppercase font-bold">Status Pembayaran</p>
-                            <span id="dash-status" class="inline-block mt-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold">Loading...</span>
-                        </div>
-                        
-                        <div id="payment-actions">
-                            <button onclick="openLynkPayment()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-xl font-bold text-sm hover:shadow-lg transition flex items-center justify-center gap-2 shadow-md animate-pulse">
-                                💳 Bayar & Finalisasi
-                            </button>
-                            <p class="text-center text-xs text-gray-400 mt-2">Via LYNK (Aman & Terpercaya)</p>
-                            <button onclick="contactAdmin()" class="w-full mt-2 border border-gray-300 text-gray-500 py-2 rounded-lg font-bold text-xs hover:bg-gray-50">
-                                Butuh Bantuan? Chat Admin
-                            </button>
-                        </div>
-                        
-                        <div id="wa-group-access" class="hidden space-y-3">
-                            <button onclick="joinWaGroup()" class="w-full bg-green-500 text-white py-3 rounded-xl font-bold text-sm hover:bg-green-600 transition flex items-center justify-center gap-2 shadow-lg">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                                Gabung Grup WhatsApp
-                            </button>
-                            <p class="text-xs text-green-600 text-center font-bold">Akses Khusus Member Lunas</p>
+                <div class="md:col-span-1 space-y-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Invoice & Payment</h3>
+                        <div class="space-y-4">
+                            <div class="bg-gray-50 p-4 rounded-xl">
+                                <p class="text-xs text-gray-500 uppercase font-bold">Paket Dipilih</p>
+                                <p id="dash-package" class="text-lg font-bold text-ylosPink">Loading...</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-xl">
+                                <p class="text-xs text-gray-500 uppercase font-bold">Status Pembayaran</p>
+                                <span id="dash-status" class="inline-block mt-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold">Loading...</span>
+                            </div>
+                            
+                            <div id="payment-actions">
+                                <button onclick="openLynkPayment()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-xl font-bold text-sm hover:shadow-lg transition flex items-center justify-center gap-2 shadow-md animate-pulse">
+                                    💳 Bayar & Finalisasi
+                                </button>
+                                <p class="text-center text-xs text-gray-400 mt-2">Via LYNK (Aman & Terpercaya)</p>
+                                <button onclick="contactAdmin()" class="w-full mt-2 border border-gray-300 text-gray-500 py-2 rounded-lg font-bold text-xs hover:bg-gray-50">Butuh Bantuan? Chat Admin</button>
+                            </div>
+                            
+                            <div id="wa-group-access" class="hidden space-y-3">
+                                <button onclick="joinWaGroup()" class="w-full bg-green-500 text-white py-3 rounded-xl font-bold text-sm hover:bg-green-600 transition flex items-center justify-center gap-2 shadow-lg">
+                                    <i class="fa-brands fa-whatsapp text-lg"></i> Gabung Grup WhatsApp
+                                </button>
+                                <p class="text-xs text-green-600 text-center font-bold">Akses Khusus Member Lunas</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="md:col-span-2 space-y-6">
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                         <h3 class="text-lg font-bold text-gray-900 mb-4">📢 Status Akun</h3>
                         <div class="border-l-4 border-ylosPink bg-pink-50 p-4 rounded-r-lg">
@@ -409,46 +396,58 @@
                             <p id="dash-announce-desc" class="text-sm text-gray-600 mt-1">Silakan klik tombol bayar. Setelah membayar, admin akan memverifikasi data kamu (Maks. 1x24 Jam).</p>
                         </div>
                     </div>
+                </div>
+
+                <div class="md:col-span-2 space-y-6">
                     
+                    <div id="announcement-container" class="hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-bell text-pink-500"></i> Pengumuman Terbaru
+                        </h3>
+                        <div id="announcement-content" class="space-y-4">
+                            </div>
+                    </div>
+
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">📚 Modul Persiapan</h3>
-                        <div class="grid gap-4">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-book-open text-purple-600"></i> Modul & Materi
+                        </h3>
+                        
+                        <div class="space-y-4">
                             <div class="flex items-center justify-between p-4 border rounded-xl hover:bg-gray-50 cursor-pointer">
                                 <div class="flex items-center gap-3">
-                                    <div class="bg-blue-100 p-2 rounded-lg text-blue-600">📄</div>
+                                    <div class="bg-blue-100 p-2 rounded-lg text-blue-600"><i class="fa-solid fa-file-pdf"></i></div>
                                     <div><p class="font-bold text-sm">Rundown Acara</p><p class="text-xs text-gray-400">Public Access</p></div>
                                 </div>
                                 <span class="text-ylosPink text-sm font-bold">Download</span>
                             </div>
-                            <div id="module-premium" class="flex items-center justify-between p-4 border border-gray-200 bg-gray-50 rounded-xl opacity-60">
-                                <div class="flex items-center gap-3">
-                                    <div class="bg-gray-200 p-2 rounded-lg text-gray-500">🔒</div>
-                                    <div><p class="font-bold text-sm text-gray-500">Materi Exclusive YLOS</p><p class="text-xs text-gray-400">Locked</p></div>
-                                </div>
-                                <span class="text-xs bg-gray-200 px-2 py-1 rounded text-gray-500">Lunas Only</span>
+
+                            <div id="modules-content" class="space-y-3">
+                                <p class="text-center text-sm text-gray-400 py-4">Belum ada materi tambahan.</p>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. SUPABASE SETUP
+        // 1. SUPABASE
         const supabaseClient = supabase.createClient(
             'https://jrslgkxwjvugvgakxwsd.supabase.co', 
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'
         );
         
-        // 2. CONFIG DATA
+        // 2. CONFIG
         const LYNK_PAYMENT_URL = "https://youthleaderorganizationsummit.id/ylos.id/er400x4wrlp1/checkout?token=cGFyYW1zPSU1QiU1RCZiaWRfcHJpY2U9MCZxdHlfcHJvZD0x";
         const WA_GROUP_LINK = "https://chat.whatsapp.com/GANTIDENGANLINKGRUPMU"; 
         
         let userSession = null;
         let captchaCorrectAnswer = 0;
 
-        // 3. UTILS & NAVIGATION
+        // 3. UTILS
         function generateCaptcha() {
             const n1 = Math.floor(Math.random()*10)+1, n2 = Math.floor(Math.random()*10)+1;
             captchaCorrectAnswer = n1 + n2;
@@ -473,52 +472,34 @@
         function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
         function mobileLinkClick(id) { showPage(id); }
 
-        // 4. ACTION FUNCTIONS (UPDATED FOR TRIGGER LOGIC & CHECK DUPLICATE EMAIL)
+        // 4. AUTH
         async function handleRegister(e) {
             e.preventDefault();
             
-            // 1. Cek Captcha
             if(parseInt(document.getElementById('captcha-input').value) !== captchaCorrectAnswer) {
                 Swal.fire({ icon: 'error', title: 'Captcha Salah!', text: 'Silakan hitung ulang penjumlahan.' });
                 generateCaptcha(); return;
             }
 
             const btn = document.getElementById('btn-reg'); 
-            btn.innerText='Memproses...'; 
-            btn.disabled=true;
+            btn.innerText='Memproses...'; btn.disabled=true;
             
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
             
-            // ============================================================
-            // LANGKAH BARU: Cek Email Manual Dulu (BYPASS SUPABASE)
-            // ============================================================
+            // CEK EMAIL MANUAL (BYPASS)
             try {
-                const { data: isEmailExist, error: checkError } = await supabaseClient
-                    .rpc('check_email_exists', { email_input: email });
-
-                // Jika fungsi berhasil jalan dan hasilnya TRUE (Email Ada)
+                const { data: isEmailExist } = await supabaseClient.rpc('check_email_exists', { email_input: email });
                 if (isEmailExist === true) {
                     Swal.fire({ 
                         icon: 'warning', 
                         title: 'Email Sudah Terdaftar! ⚠️', 
                         html: `Email <b>${email}</b> sudah ada di sistem.<br>Silakan langsung login saja.`,
-                        showCancelButton: true,
-                        confirmButtonText: 'Login Sekarang',
-                        cancelButtonText: 'Coba Email Lain',
-                        confirmButtonColor: '#FF85B3'
-                    }).then((result) => {
-                        if (result.isConfirmed) showPage('login');
-                    });
-                    
-                    btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); 
-                    return; // Stop proses disini!
+                        showCancelButton: true, confirmButtonText: 'Login Sekarang', cancelButtonText: 'Coba Email Lain', confirmButtonColor: '#FF85B3'
+                    }).then((result) => { if (result.isConfirmed) showPage('login'); });
+                    btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); return;
                 }
-            } catch (err) {
-                console.log("Gagal cek email:", err);
-                // Lanjut saja kalau pengecekan error (fallback)
-            }
-            // ============================================================
+            } catch (err) { console.log("Gagal cek email:", err); }
 
             const metadata = {
                 full_name: document.getElementById('reg-name').value,
@@ -527,40 +508,31 @@
                 package_type: document.getElementById('reg-package').value
             };
 
-            // 2. Lanjut Sign Up (Jika lolos pengecekan di atas)
             const { data, error } = await supabaseClient.auth.signUp({ 
-                email: email, 
-                password: password,
-                options: {
-                    emailRedirectTo: 'https://ylos.site',
-                    data: metadata 
-                }
+                email: email, password: password,
+                options: { emailRedirectTo: 'https://ylos.site', data: metadata }
             });
 
-            // 3. Handle Error Lain (Jaga-jaga)
             if(error) { 
                 Swal.fire({ icon: 'error', title: 'Gagal Daftar', text: error.message });
                 btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); return; 
             }
 
-            // 4. Sukses
             if(data.user) {
                 Swal.fire({ 
-                    icon: 'success', 
-                    title: 'Berhasil Mendaftar!', 
+                    icon: 'success', title: 'Berhasil Mendaftar!', 
                     html: `Link verifikasi telah dikirim ke <b>${email}</b>.<br>Cek Inbox/Spam, klik linknya, lalu login.`,
                     confirmButtonText: 'Siap!'
-                }).then(() => {
-                    showPage('login');
-                });
+                }).then(() => showPage('login'));
             }
-            
             btn.innerText='Daftar Sekarang'; btn.disabled=false;
         }
 
         async function handleLogin(e) {
             e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.innerText = "Loading...";
+            const btn = e.target.querySelector('button'); 
+            const originalText = btn.innerText;
+            btn.innerText = "Loading...";
             
             const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: document.getElementById('login-email').value,
@@ -569,93 +541,168 @@
             
             if(error) {
                 let msg = error.message;
-                if (msg.includes("Email not confirmed")) {
-                    msg = "Email belum diverifikasi. Cek inbox/spam email kamu.";
-                }
+                if (msg.includes("Email not confirmed")) msg = "Email belum diverifikasi. Cek inbox/spam email kamu.";
                 Swal.fire({ icon: 'error', title: 'Login Gagal', text: msg });
-                btn.innerText = "Masuk";
+                btn.innerText = originalText;
+            } else {
+                // SUKSES: Tampilkan Popup dulu sebelum pindah halaman
+                btn.innerText = "Sukses!";
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Login Berhasil! 👋',
+                    text: 'Selamat datang kembali di YLOS.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                // onAuthStateChange akan otomatis jalan setelah ini
             }
-            // Jika sukses, onAuthStateChange akan jalan otomatis
         }
 
-        async function logout() {
+       async function logout() {
+            // Gunakan 'await' pada Swal agar reload menunggu popup selesai tampil
+            await Swal.fire({ 
+                icon: 'success', 
+                title: 'Logout Berhasil', 
+                text: 'Sampai jumpa lagi!', 
+                timer: 1500, 
+                showConfirmButton: false 
+            });
+            
             await supabaseClient.auth.signOut();
             userSession = null;
-            Swal.fire({ icon: 'success', title: 'Logout', text: 'Anda telah keluar.', timer: 1500, showConfirmButton: false });
-            showPage('home');
+            window.location.reload(); // Reload baru jalan setelah popup selesai
         }
 
-        // --- PAYMENT LOGIC (UPGRADED UI) ---
         function openLynkPayment() {
             Swal.fire({
                 title: 'Pembayaran Dibuka 💳',
-                html: `
-                    <div class="text-left text-sm text-gray-600 space-y-3">
-                        <p>Anda akan diarahkan ke halaman pembayaran aman via <b>LYNK</b>.</p>
-                        <ul class="list-disc pl-5 text-gray-500">
-                            <li>Pilih metode (QRIS / VA / E-Wallet)</li>
-                            <li>Selesaikan pembayaran</li>
-                            <li>Tunggu verifikasi admin (Maks 1x24 jam)</li>
-                        </ul>
-                    </div>
-                `,
-                imageUrl: 'LOGO YLOS 5x5.png', // Logo di popup
-                imageWidth: 80,
-                imageHeight: 80,
-                imageAlt: 'Logo YLOS',
-                showCancelButton: true,
-                confirmButtonText: 'Lanjut Bayar ➔',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#FF85B3',
-                cancelButtonColor: '#d33',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.open(LYNK_PAYMENT_URL, '_blank');
-                }
-            });
+                html: `Anda akan diarahkan ke halaman pembayaran aman via <b>LYNK</b>.`,
+                imageUrl: 'LOGO YLOS 5x5.png', imageWidth: 80, imageHeight: 80,
+                showCancelButton: true, confirmButtonText: 'Lanjut Bayar ➔', cancelButtonText: 'Batal', confirmButtonColor: '#FF85B3', cancelButtonColor: '#d33'
+            }).then((result) => { if (result.isConfirmed) window.open(LYNK_PAYMENT_URL, '_blank'); });
         }
 
         function joinWaGroup() { window.open(WA_GROUP_LINK, '_blank'); }
-        function contactAdmin() { window.open(`https://wa.me/6281234567890?text=Halo Admin, saya butuh bantuan soal pembayaran.`, '_blank'); }
+        function contactAdmin() { window.open(`https://wa.me/6281234567890?text=Halo Admin, saya butuh bantuan.`, '_blank'); }
 
-        // --- DASHBOARD LOADER ---
+        // 5. DASHBOARD & CMS LOGIC
         async function loadDashboard(userId) {
-            const { data } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
-            if(data) {
-                document.getElementById('dash-name').innerText = data.full_name;
-                document.getElementById('mobile-user-name').innerText = data.full_name;
-                document.getElementById('dash-package').innerText = data.package_type;
+            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
+            if(profile) {
+                document.getElementById('dash-name').innerText = profile.full_name;
+                document.getElementById('mobile-user-name').innerText = profile.full_name;
+                document.getElementById('dash-package').innerText = profile.package_type;
                 
                 const els = {
                     badge: document.getElementById('dash-status'),
                     actions: document.getElementById('payment-actions'),
                     wa: document.getElementById('wa-group-access'),
-                    mod: document.getElementById('module-premium'),
                     title: document.getElementById('dash-announce-title'),
                     desc: document.getElementById('dash-announce-desc')
                 };
 
-                if(data.payment_status === 'Lunas') {
+                const isLunas = profile.payment_status === 'Lunas';
+
+                if(isLunas) {
                     els.badge.innerText = 'LUNAS (Verified)';
                     els.badge.className = 'inline-block mt-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold';
                     els.actions.classList.add('hidden');
                     els.wa.classList.remove('hidden');
                     els.title.innerText = "Selamat Datang, Delegates!";
-                    els.desc.innerText = "Akunmu sudah aktif. Silakan bergabung ke Grup WhatsApp dan unduh materi persiapan.";
-                    els.mod.classList.remove('opacity-60', 'bg-gray-50');
-                    els.mod.classList.add('bg-white', 'hover:bg-purple-50', 'cursor-pointer', 'border-purple-200');
-                    els.mod.innerHTML = `<div class="flex items-center gap-3"><div class="bg-purple-100 p-2 rounded-lg text-purple-600">🎬</div><div><p class="font-bold text-sm text-gray-900">Materi Exclusive YLOS</p><p class="text-xs text-green-600">Download PDF/Video</p></div></div><span class="text-xs bg-purple-600 text-white px-3 py-1 rounded font-bold">Akses</span>`;
+                    els.desc.innerText = "Akunmu sudah aktif.";
                 } else {
                     els.badge.innerText = 'Menunggu Pembayaran';
                     els.badge.className = 'inline-block mt-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold';
                     els.actions.classList.remove('hidden');
                     els.wa.classList.add('hidden');
                 }
+
+                // CHECK ADMIN ROLE
+                if(profile.role === 'admin') {
+                    // Tampilkan link Admin di Desktop
+                    document.getElementById('nav-desktop-admin').classList.remove('hidden');
+                    
+                    // Logic Desktop: Sembunyikan Dashboard, Tampilkan Kontrol Admin
+                    document.getElementById('btn-dash-user').classList.add('hidden');
+                    document.getElementById('btn-dash-admin').classList.remove('hidden');
+
+                    // Logic Mobile: Sama
+                    document.getElementById('btn-mobile-dash-user').classList.add('hidden');
+                    document.getElementById('btn-mobile-dash-admin').classList.remove('hidden');
+                } else {
+                    // User Biasa
+                    document.getElementById('nav-desktop-admin').classList.add('hidden');
+                    document.getElementById('btn-dash-user').classList.remove('hidden');
+                    document.getElementById('btn-dash-admin').classList.add('hidden');
+                    document.getElementById('btn-mobile-dash-user').classList.remove('hidden');
+                    document.getElementById('btn-mobile-dash-admin').classList.add('hidden');
+                }
+
+                // LOAD KONTEN CMS
+                loadCMSContent(isLunas);
             }
         }
 
-        // 5. SESSION LISTENER (THE GATEKEEPER)
+        async function loadCMSContent(isLunas) {
+            // A. PENGUMUMAN
+            const { data: announcements } = await supabaseClient
+                .from('announcements')
+                .select('*')
+                .eq('is_active', true)
+                .order('created_at', {ascending: false});
+            
+            if(announcements && announcements.length > 0) {
+                document.getElementById('announcement-container').classList.remove('hidden');
+                const container = document.getElementById('announcement-content');
+                container.innerHTML = '';
+                announcements.forEach(ann => {
+                    container.innerHTML += `
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                            <h4 class="font-bold text-gray-800 text-sm">${ann.title}</h4>
+                            <p class="text-sm text-gray-600 mt-1">${ann.content}</p>
+                            <span class="text-xs text-gray-400 mt-2 block">${new Date(ann.created_at).toLocaleDateString()}</span>
+                        </div>
+                    `;
+                });
+            }
+
+            // B. MODUL
+            const { data: modules } = await supabaseClient
+                .from('modules')
+                .select('*')
+                .order('created_at', {ascending: false});
+            
+            const modContainer = document.getElementById('modules-content');
+            if(modules && modules.length > 0) {
+                modContainer.innerHTML = '';
+                modules.forEach(mod => {
+                    let isLocked = mod.is_premium && !isLunas;
+                    let icon = mod.category === 'Video' ? 'fa-play-circle' : 'fa-file-alt';
+                    let action = isLocked 
+                        ? `<span class="text-xs bg-gray-200 text-gray-500 px-2 py-1 rounded"><i class="fa-solid fa-lock"></i> Locked</span>`
+                        : `<a href="${mod.link_url}" target="_blank" class="text-xs font-bold text-white bg-purple-600 px-3 py-1 rounded hover:bg-purple-700">Buka</a>`;
+                    
+                    let opacity = isLocked ? 'opacity-60 grayscale' : '';
+
+                    modContainer.innerHTML += `
+                        <div class="flex items-center justify-between p-3 border rounded-xl bg-white hover:shadow-sm transition ${opacity}">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-purple-100 w-8 h-8 rounded-lg flex items-center justify-center text-purple-600 text-sm">
+                                    <i class="fa-solid ${icon}"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-sm line-clamp-1">${mod.title}</h4>
+                                    <p class="text-xs text-gray-500">${mod.category}</p>
+                                </div>
+                            </div>
+                            ${action}
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // 6. SESSION LISTENER
         supabaseClient.auth.onAuthStateChange((event, session) => {
             userSession = session;
             if(event === 'PASSWORD_RECOVERY') { window.location.href = 'reset.html'; return; }
@@ -666,14 +713,12 @@
             };
 
             if(session) {
-                // LOGIN SUKSES
                 els.dp.classList.add('hidden'); els.mp.classList.add('hidden');
                 els.dm.classList.remove('hidden'); els.mm.classList.remove('hidden');
                 document.getElementById('user-display-name').innerText = session.user.email;
                 loadDashboard(session.user.id);
-                showPage('dashboard');
+                if(window.location.hash !== '#home') showPage('dashboard');
             } else {
-                // LOGOUT
                 els.dp.classList.remove('hidden'); els.mp.classList.remove('hidden');
                 els.dm.classList.add('hidden'); els.mm.classList.add('hidden');
                 if(!document.getElementById('page-login').classList.contains('active-section') && !document.getElementById('page-register').classList.contains('active-section')) showPage('home');
