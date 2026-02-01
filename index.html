@@ -35,6 +35,43 @@
             }
         }
     </script>
+<script>
+    async function initTracking() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if(session) {
+            const channel = supabaseClient.channel('online-users', {
+                config: { presence: { key: session.user.id } }
+            });
+
+            channel.on('presence', { event: 'sync' }, () => {
+                // User online
+            }).subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    // Kirim data diri ke admin
+                    const userState = {
+                        email: session.user.email,
+                        page: window.location.hash || 'Home',
+                        login_time: new Date().toLocaleTimeString()
+                    };
+                    await channel.track(userState);
+                }
+            });
+
+            // Update status saat ganti menu/halaman
+            window.addEventListener('hashchange', async () => {
+                const newState = {
+                    email: session.user.email,
+                    page: window.location.hash || 'Home',
+                    login_time: new Date().toLocaleTimeString()
+                };
+                await channel.track(newState);
+            });
+        }
+    }
+    // Jalankan tracking
+    setTimeout(initTracking, 2000); 
+</script>
+
     <style>
         .hidden-section { display: none; }
         .active-section { display: block; animation: fadeIn 0.5s; }
@@ -413,18 +450,8 @@
                             <i class="fa-solid fa-book-open text-purple-600"></i> Modul & Materi
                         </h3>
                         
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 border rounded-xl hover:bg-gray-50 cursor-pointer">
-                                <div class="flex items-center gap-3">
-                                    <div class="bg-blue-100 p-2 rounded-lg text-blue-600"><i class="fa-solid fa-file-pdf"></i></div>
-                                    <div><p class="font-bold text-sm">Rundown Acara</p><p class="text-xs text-gray-400">Public Access</p></div>
-                                </div>
-                                <span class="text-ylosPink text-sm font-bold">Download</span>
-                            </div>
-
-                            <div id="modules-content" class="space-y-3">
-                                <p class="text-center text-sm text-gray-400 py-4">Belum ada materi tambahan.</p>
-                            </div>
+                        <div id="modules-content" class="space-y-3">
+                            <p class="text-center text-sm text-gray-400 py-4 italic">Belum ada materi yang diposting admin.</p>
                         </div>
                     </div>
 
@@ -545,7 +572,6 @@
                 Swal.fire({ icon: 'error', title: 'Login Gagal', text: msg });
                 btn.innerText = originalText;
             } else {
-                // SUKSES: Tampilkan Popup dulu sebelum pindah halaman
                 btn.innerText = "Sukses!";
                 Swal.fire({
                     icon: 'success',
@@ -554,23 +580,14 @@
                     timer: 1500,
                     showConfirmButton: false
                 });
-                // onAuthStateChange akan otomatis jalan setelah ini
             }
         }
 
-       async function logout() {
-            // Gunakan 'await' pada Swal agar reload menunggu popup selesai tampil
-            await Swal.fire({ 
-                icon: 'success', 
-                title: 'Logout Berhasil', 
-                text: 'Sampai jumpa lagi!', 
-                timer: 1500, 
-                showConfirmButton: false 
-            });
-            
+        async function logout() {
+            await Swal.fire({ icon: 'success', title: 'Logout Berhasil', text: 'Sampai jumpa lagi!', timer: 1500, showConfirmButton: false });
             await supabaseClient.auth.signOut();
             userSession = null;
-            window.location.reload(); // Reload baru jalan setelah popup selesai
+            window.location.reload();
         }
 
         function openLynkPayment() {
@@ -587,59 +604,65 @@
 
         // 5. DASHBOARD & CMS LOGIC
         async function loadDashboard(userId) {
+            // ============================================
+            // 1. CEK MODE PREVIEW (DARI ADMIN PANEL)
+            // ============================================
+            const urlParams = new URLSearchParams(window.location.search);
+            const isPreviewMode = urlParams.get('preview') === 'true';
+
+            // Ambil Profil Asli
             const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
+            
             if(profile) {
+                // Jika sedang di-preview Admin, kita 'palsukan' datanya seolah-olah User Lunas
+                if (isPreviewMode) {
+                    profile.role = 'user'; // Paksa jadi user biasa
+                    profile.payment_status = 'Lunas'; // Paksa jadi Lunas agar admin lihat semua fitur
+                    profile.full_name = "Tampilan Peserta (Preview)";
+                }
+
                 document.getElementById('dash-name').innerText = profile.full_name;
                 document.getElementById('mobile-user-name').innerText = profile.full_name;
                 document.getElementById('dash-package').innerText = profile.package_type;
                 
-                const els = {
-                    badge: document.getElementById('dash-status'),
-                    actions: document.getElementById('payment-actions'),
-                    wa: document.getElementById('wa-group-access'),
-                    title: document.getElementById('dash-announce-title'),
-                    desc: document.getElementById('dash-announce-desc')
-                };
-
+                // Logic Status Badge & Tombol
+                const statusEl = document.getElementById('dash-status');
+                const btnPay = document.getElementById('btn-pay-now');
+                
                 const isLunas = profile.payment_status === 'Lunas';
 
                 if(isLunas) {
-                    els.badge.innerText = 'LUNAS (Verified)';
-                    els.badge.className = 'inline-block mt-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold';
-                    els.actions.classList.add('hidden');
-                    els.wa.classList.remove('hidden');
-                    els.title.innerText = "Selamat Datang, Delegates!";
-                    els.desc.innerText = "Akunmu sudah aktif.";
+                    statusEl.innerText = 'LUNAS (Verified)';
+                    statusEl.className = 'inline-block mt-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold';
+                    if(btnPay) btnPay.classList.add('hidden');
                 } else {
-                    els.badge.innerText = 'Menunggu Pembayaran';
-                    els.badge.className = 'inline-block mt-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold';
-                    els.actions.classList.remove('hidden');
-                    els.wa.classList.add('hidden');
+                    statusEl.innerText = 'Menunggu Pembayaran';
+                    statusEl.className = 'inline-block mt-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold';
+                    if(btnPay) btnPay.classList.remove('hidden');
                 }
 
-                // CHECK ADMIN ROLE
+                // ============================================================
+                // LOGIC ROLE (ADMIN VS USER)
+                // ============================================================
+                
                 if(profile.role === 'admin') {
-                    // Tampilkan link Admin di Desktop
+                    // JIKA ADMIN (Bukan Preview):
                     document.getElementById('nav-desktop-admin').classList.remove('hidden');
-                    
-                    // Logic Desktop: Sembunyikan Dashboard, Tampilkan Kontrol Admin
                     document.getElementById('btn-dash-user').classList.add('hidden');
                     document.getElementById('btn-dash-admin').classList.remove('hidden');
-
-                    // Logic Mobile: Sama
                     document.getElementById('btn-mobile-dash-user').classList.add('hidden');
                     document.getElementById('btn-mobile-dash-admin').classList.remove('hidden');
                 } else {
-                    // User Biasa
+                    // JIKA USER BIASA (Atau Admin lagi Preview):
                     document.getElementById('nav-desktop-admin').classList.add('hidden');
                     document.getElementById('btn-dash-user').classList.remove('hidden');
                     document.getElementById('btn-dash-admin').classList.add('hidden');
                     document.getElementById('btn-mobile-dash-user').classList.remove('hidden');
                     document.getElementById('btn-mobile-dash-admin').classList.add('hidden');
-                }
 
-                // LOAD KONTEN CMS
-                loadCMSContent(isLunas);
+                    // Load Konten User
+                    loadCMSContent(isLunas);
+                }
             }
         }
 
@@ -703,6 +726,8 @@
         }
 
         // 6. SESSION LISTENER
+       // 6. SESSION LISTENER
+        // 6. SESSION LISTENER (Update Fix: Auto-Switch ke Dashboard)
         supabaseClient.auth.onAuthStateChange((event, session) => {
             userSession = session;
             if(event === 'PASSWORD_RECOVERY') { window.location.href = 'reset.html'; return; }
@@ -713,15 +738,38 @@
             };
 
             if(session) {
+                // 1. Update Navbar (Sembunyikan Login, Munculkan Menu Member)
                 els.dp.classList.add('hidden'); els.mp.classList.add('hidden');
                 els.dm.classList.remove('hidden'); els.mm.classList.remove('hidden');
                 document.getElementById('user-display-name').innerText = session.user.email;
+                
+                // 2. Isi Data Dashboard
                 loadDashboard(session.user.id);
-                if(window.location.hash !== '#home') showPage('dashboard');
+                
+                // 3. LOGIKA AUTO-SWITCH (PENTING!)
+                // Cek: Apakah user sedang berada di halaman Login atau Register?
+                // Jika IYA, berarti dia baru saja Login -> Pindahkan ke Dashboard.
+                const isLoginPage = document.getElementById('page-login').classList.contains('active-section');
+                const isRegisterPage = document.getElementById('page-register').classList.contains('active-section');
+
+                if (isLoginPage || isRegisterPage) {
+                    showPage('dashboard'); 
+                }
+                
+                // Jika user me-refresh halaman saat di dashboard, biarkan tetap di dashboard
+                if (window.location.hash === '#dashboard') {
+                     showPage('dashboard');
+                }
+
             } else {
+                // LOGOUT
                 els.dp.classList.remove('hidden'); els.mp.classList.remove('hidden');
                 els.dm.classList.add('hidden'); els.mm.classList.add('hidden');
-                if(!document.getElementById('page-login').classList.contains('active-section') && !document.getElementById('page-register').classList.contains('active-section')) showPage('home');
+                
+                // Jika logout saat di dashboard, tendang ke home
+                if(document.getElementById('page-dashboard').classList.contains('active-section')) {
+                    showPage('home');
+                }
             }
         });
     </script>
