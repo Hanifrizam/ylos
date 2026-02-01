@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YLOS - Reset Password</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-L9GFQ0GM95"></script>
-        <script>
+    <script>
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-        
           gtag('config', 'G-L9GFQ0GM95');
     </script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
         tailwind.config = {
@@ -31,11 +30,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         .blob { position: absolute; filter: blur(40px); z-index: -1; opacity: 0.4; }
-        /* Animasi masuk */
         .fade-in { animation: fadeIn 0.8s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Custom SweetAlert Button */
         div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
             background-color: #FF85B3 !important;
             border-radius: 12px;
@@ -79,9 +76,20 @@
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                     </div>
-                    <input type="password" id="new-password" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-ylosPink focus:ring-2 focus:ring-pink-100 outline-none transition bg-white/50" placeholder="Minimal 8 karakter, dengan kapital dan angka">
+                    <input type="password" id="new-password" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-ylosPink focus:ring-2 focus:ring-pink-100 outline-none transition bg-white/50" placeholder="Minimal 6 karakter">
                 </div>
             </div>
+
+            <div>
+                <label class="block text-sm font-bold mb-2 text-gray-700">Konfirmasi Password</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <input type="password" id="confirm-password" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-ylosPink focus:ring-2 focus:ring-pink-100 outline-none transition bg-white/50" placeholder="Ketik ulang password baru">
+                </div>
+            </div>
+
             <button type="submit" id="btn-update" class="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl hover:bg-gray-800 hover:shadow-lg transition duration-300">
                 Simpan Password Baru
             </button>
@@ -151,12 +159,24 @@
             btn.disabled = false;
         }
 
-        // 4. LOGIC UPDATE PASSWORD
+        // 4. LOGIC UPDATE PASSWORD (DENGAN KONFIRMASI & LOGOUT)
         async function handleUpdatePassword(e) {
             e.preventDefault();
             const newPass = document.getElementById('new-password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
             const btn = document.getElementById('btn-update');
             const originalText = btn.innerText;
+
+            // Validasi: Cek kecocokan password
+            if (newPass !== confirmPass) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Password Tidak Sama',
+                    text: 'Pastikan kolom password baru dan konfirmasi isinya sama.',
+                    confirmButtonColor: '#FFD700'
+                });
+                return;
+            }
 
             btn.innerHTML = '<span class="animate-pulse">Menyimpan...</span>'; 
             btn.disabled = true;
@@ -171,14 +191,19 @@
                     confirmButtonColor: '#2D3748'
                 });
             } else {
+                // UPDATE SUKSES: Lakukan Logout Paksa
+                await supabaseClient.auth.signOut();
+
                 Swal.fire({
                     icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Password kamu sudah diperbarui. Silakan login.',
-                    confirmButtonText: 'Login Sekarang',
-                    confirmButtonColor: '#FF85B3'
+                    title: 'Berhasil Diubah!',
+                    text: 'Password aman. Silakan LOGIN ULANG dengan password baru.',
+                    confirmButtonText: 'Siap, Login Sekarang',
+                    confirmButtonColor: '#FF85B3',
+                    allowOutsideClick: false // Paksa user klik tombol
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // Arahkan kembali ke halaman utama (Login)
                         window.location.href = "index.html";
                     }
                 });
@@ -189,5 +214,3 @@
     </script>
 </body>
 </html>
-
-
