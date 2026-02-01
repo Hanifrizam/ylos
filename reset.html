@@ -3,590 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YLOS Admin Panel</title>
+    <title>YLOS - Reset Password</title>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-L9GFQ0GM95"></script>
+    <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-L9GFQ0GM95');
+    </script>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { ylosPink: '#FF85B3', ylosYellow: '#FFD700', ylosGreen: '#9ACD32', ylosDark: '#2D3748' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .blob { position: absolute; filter: blur(40px); z-index: -1; opacity: 0.4; }
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Sidebar Styling */
-        .sidebar-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; border-left: 3px solid transparent; }
-        .sidebar-item:hover { background-color: #FFF5F7; color: #DB2777; }
-        .sidebar-item.active { background-color: #FFF5F7; color: #DB2777; border-left-color: #DB2777; font-weight: 700; }
-        
-        /* Tab Logic (STRICT) */
-        .content-section { display: none !important; animation: fadeIn 0.4s ease-out; }
-        .content-section.active { display: flex !important; flex-direction: column; }
-        
-        /* Drag & Drop */
-        .draggable-item { cursor: grab; transition: transform 0.2s, box-shadow 0.2s; }
-        .draggable-item:active { cursor: grabbing; transform: scale(1.01); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .drag-handle { cursor: grab; }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* SweetAlert Customization */
         div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
-            background-color: #DB2777 !important; /* Pink YLOS */
+            background-color: #FF85B3 !important;
             border-radius: 12px;
         }
     </style>
 </head>
-<body class="bg-gray-50/80 text-gray-800 h-screen overflow-hidden flex">
+<body class="font-sans text-gray-700 bg-gray-50 flex items-center justify-center min-h-screen relative overflow-hidden px-4">
 
-    <aside class="w-72 bg-white border-r border-gray-100 hidden md:flex flex-col z-30 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
-        <div class="h-20 flex items-center px-8 border-b border-gray-50">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white font-bold text-lg">Y</div>
-                <span class="text-xl font-extrabold text-gray-900 tracking-tight">YLOS <span class="text-pink-500">Admin</span></span>
-            </div>
-        </div>
+    <div class="blob bg-ylosPink/30 w-96 h-96 rounded-full top-0 left-0 -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
+    <div class="blob bg-ylosYellow/30 w-80 h-80 rounded-full bottom-0 right-0 translate-x-1/3 translate-y-1/3 blur-3xl"></div>
+
+    <div class="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/50 relative z-10 fade-in">
         
-        <div class="flex-1 overflow-y-auto py-6 space-y-1 px-3">
-            <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-2">Main Menu</p>
-            <div onclick="switchTab('dashboard')" id="menu-dashboard" class="sidebar-item active px-4 py-3.5 rounded-xl flex items-center gap-3 text-gray-600 font-medium text-sm">
-                <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+        <div class="text-center mb-8">
+            <div class="flex justify-center mb-4">
+                <img src="LOGO YLOS 5x5.png" alt="YLOS Logo" class="h-16 w-auto object-contain drop-shadow-md">
             </div>
-            <div onclick="switchTab('users')" id="menu-users" class="sidebar-item px-4 py-3.5 rounded-xl flex items-center gap-3 text-gray-600 font-medium text-sm">
-                <i class="fa-solid fa-users w-5 text-center"></i> Data Peserta
-            </div>
-            <div onclick="switchTab('verification')" id="menu-verification" class="sidebar-item px-4 py-3.5 rounded-xl flex items-center gap-3 text-gray-600 font-medium text-sm">
-                <i class="fa-solid fa-envelope-open-text w-5 text-center"></i> Cek Verifikasi
-            </div>
-            
-            <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-6">Content Management</p>
-            <div onclick="switchTab('announcements')" id="menu-announcements" class="sidebar-item px-4 py-3.5 rounded-xl flex items-center gap-3 text-gray-600 font-medium text-sm">
-                <i class="fa-solid fa-bullhorn w-5 text-center"></i> Pengumuman
-            </div>
-            <div onclick="switchTab('modules')" id="menu-modules" class="sidebar-item px-4 py-3.5 rounded-xl flex items-center gap-3 text-gray-600 font-medium text-sm">
-                <i class="fa-solid fa-layer-group w-5 text-center"></i> Modul & Materi
-            </div>
-
-            <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-6">System</p>
-            <div onclick="switchTab('preview')" id="menu-preview" class="sidebar-item px-4 py-3.5 rounded-xl flex items-center gap-3 text-gray-600 font-medium text-sm">
-                <i class="fa-solid fa-mobile-screen-button w-5 text-center"></i> Live Preview
-            </div>
+            <h2 id="judul-halaman" class="text-2xl font-extrabold text-gray-900">Lupa Password? 🔒</h2>
+            <p id="deskripsi-halaman" class="text-gray-500 text-sm mt-2">Jangan khawatir. Masukkan emailmu dan kami akan mengirimkan link untuk meresetnya.</p>
         </div>
 
-        <div class="p-6 border-t border-gray-50">
-            <button onclick="window.location.href='index.html'" class="w-full mb-3 flex items-center justify-center gap-2 text-sm font-semibold text-gray-500 hover:text-pink-600 py-2.5 rounded-xl hover:bg-gray-50 transition">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat Website
+        <form id="form-request" onsubmit="handleResetRequest(event)" class="space-y-5 block">
+            <div>
+                <label class="block text-sm font-bold mb-2 text-gray-700">Email Terdaftar</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
+                    </div>
+                    <input type="email" id="reset-email" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-ylosPink focus:ring-2 focus:ring-pink-100 outline-none transition bg-white/50" placeholder="contoh@email.com">
+                </div>
+            </div>
+            <button type="submit" id="btn-reset" class="w-full bg-gradient-to-r from-ylosPink to-pink-500 text-white font-bold py-3.5 rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition duration-300">
+                Kirim Link Reset
             </button>
-            <button onclick="logout()" class="w-full bg-red-50 text-red-600 py-3 rounded-xl font-bold text-sm hover:bg-red-100 transition shadow-sm flex items-center justify-center gap-2">
-                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+        </form>
+
+        <form id="form-update" onsubmit="handleUpdatePassword(event)" class="space-y-5 hidden">
+            <div>
+                <label class="block text-sm font-bold mb-2 text-gray-700">Password Baru</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    </div>
+                    <input type="password" id="new-password" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-ylosPink focus:ring-2 focus:ring-pink-100 outline-none transition bg-white/50" placeholder="Minimal 6 karakter">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold mb-2 text-gray-700">Konfirmasi Password</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <input type="password" id="confirm-password" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-ylosPink focus:ring-2 focus:ring-pink-100 outline-none transition bg-white/50" placeholder="Ketik ulang password baru">
+                </div>
+            </div>
+
+            <button type="submit" id="btn-update" class="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl hover:bg-gray-800 hover:shadow-lg transition duration-300">
+                Simpan Password Baru
             </button>
+        </form>
+
+        <div class="text-center mt-8 pt-6 border-t border-gray-100">
+            <a href="index.html" class="text-sm font-bold text-gray-400 hover:text-ylosPink transition flex items-center justify-center gap-2 group">
+                <span class="group-hover:-translate-x-1 transition-transform">←</span> Kembali ke Login
+            </a>
         </div>
-    </aside>
-
-    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 md:hidden flex-shrink-0 z-40">
-            <span class="font-bold text-lg text-gray-800">YLOS Admin</span>
-            <button onclick="logout()" class="text-red-500 p-2"><i class="fa-solid fa-power-off"></i></button>
-        </header>
-
-        <div class="flex-1 overflow-y-auto p-6 md:p-8 lg:p-12 scroll-smooth">
-            
-            <div id="section-dashboard" class="content-section active space-y-8">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-                        <p class="text-gray-500 mt-1">Pantau aktivitas pendaftaran dan user secara realtime.</p>
-                    </div>
-                    <span class="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100 text-sm font-bold text-green-600">
-                        <span class="relative flex h-3 w-3">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                        </span>
-                        System Online
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100 flex items-center gap-4 transition hover:-translate-y-1">
-                        <div class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-2xl"><i class="fa-solid fa-users"></i></div>
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Total Peserta</p>
-                            <h3 class="text-3xl font-bold text-gray-900 mt-1" id="stat-total">0</h3>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100 flex items-center gap-4 transition hover:-translate-y-1">
-                        <div class="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center text-green-600 text-2xl"><i class="fa-solid fa-circle-check"></i></div>
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Lunas (Verified)</p>
-                            <h3 class="text-3xl font-bold text-green-600 mt-1" id="stat-lunas">0</h3>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100 flex items-center gap-4 transition hover:-translate-y-1">
-                        <div class="w-14 h-14 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-600 text-2xl"><i class="fa-solid fa-clock"></i></div>
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Pending</p>
-                            <h3 class="text-3xl font-bold text-yellow-600 mt-1" id="stat-pending">0</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100">
-                        <h3 class="font-bold text-gray-800 text-lg mb-6">Aktivitas Halaman (Realtime)</h3>
-                        <div class="h-72 w-full">
-                            <canvas id="userChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col h-[26rem]">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-bold text-gray-800 text-lg">User Online</h3>
-                            <span id="online-count" class="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-xs font-bold">0 Active</span>
-                        </div>
-                        <div id="active-user-list" class="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
-                            <div class="text-center py-10">
-                                <i class="fa-solid fa-ghost text-gray-200 text-4xl mb-3"></i>
-                                <p class="text-gray-400 text-sm">Belum ada user aktif.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="section-users" class="content-section space-y-6">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <h2 class="text-xl font-bold text-gray-800 pl-2">Data Peserta</h2>
-                    <div class="flex gap-3 w-full md:w-auto">
-                        <div class="relative flex-1 md:w-64">
-                            <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-sm"></i>
-                            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama, sekolah..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none transition text-sm font-medium">
-                        </div>
-                        <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md shadow-green-200 transition flex items-center gap-2">
-                            <i class="fa-solid fa-file-excel"></i> Export
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="bg-gray-50/50 text-gray-500 text-xs font-bold uppercase tracking-wider border-b border-gray-100">
-                                <tr>
-                                    <th class="px-6 py-4">Nama Lengkap</th>
-                                    <th class="px-6 py-4">Asal Sekolah</th>
-                                    <th class="px-6 py-4">Kontak Info</th>
-                                    <th class="px-6 py-4">Status Pembayaran</th>
-                                    <th class="px-6 py-4 text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="userTableBody" class="divide-y divide-gray-50 text-sm font-medium text-gray-700">
-                                <tr><td colspan="5" class="p-8 text-center text-gray-400">Loading data...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="section-announcements" class="content-section space-y-6">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-bold text-gray-900">Kelola Pengumuman</h2>
-                    <span class="text-xs bg-white border border-gray-200 text-gray-500 px-3 py-1.5 rounded-lg shadow-sm font-medium">
-                        <i class="fa-solid fa-grip-vertical mr-1"></i> Drag list untuk atur urutan
-                    </span>
-                </div>
-                
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h3 class="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wide">Buat Baru</h3>
-                    <div class="space-y-4">
-                        <input type="text" id="announce-title" placeholder="Judul Pengumuman (Contoh: Link Zoom Technical Meeting)" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-pink-500 outline-none transition font-medium">
-                        <textarea id="announce-content" rows="2" placeholder="Isi detail pengumuman..." class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-pink-500 outline-none transition font-medium"></textarea>
-                        <div class="flex justify-end">
-                            <button onclick="addAnnouncement()" class="bg-pink-600 hover:bg-pink-700 text-white px-8 py-2.5 rounded-xl font-bold shadow-lg shadow-pink-200 transition transform hover:-translate-y-0.5">
-                                <i class="fa-solid fa-paper-plane mr-2"></i> Posting
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="announcement-list" class="space-y-3"></div>
-            </div>
-
-            <div id="section-modules" class="content-section space-y-6">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-bold text-gray-900">Kelola Modul & Materi</h2>
-                     <span class="text-xs bg-white border border-gray-200 text-gray-500 px-3 py-1.5 rounded-lg shadow-sm font-medium">
-                        <i class="fa-solid fa-grip-vertical mr-1"></i> Drag list untuk atur urutan
-                    </span>
-                </div>
-                
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h3 class="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wide">Upload Materi Baru</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                        <div class="space-y-1">
-                            <label class="text-xs font-bold text-gray-400 ml-1">JUDUL MATERI</label>
-                            <input type="text" id="mod-title" placeholder="Contoh: Guidebook 2025" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-purple-500 outline-none transition">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-xs font-bold text-gray-400 ml-1">LINK FILE (GDRIVE/YOUTUBE)</label>
-                            <input type="text" id="mod-link" placeholder="https://..." class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-purple-500 outline-none transition">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-xs font-bold text-gray-400 ml-1">KATEGORI</label>
-                            <select id="mod-category" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white outline-none">
-                                <option value="Guidebook">📚 Guidebook</option>
-                                <option value="Materi">📝 Materi Belajar</option>
-                                <option value="Video">▶️ Video Rekaman</option>
-                            </select>
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-xs font-bold text-gray-400 ml-1">AKSESIBILITAS</label>
-                            <select id="mod-premium" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white outline-none">
-                                <option value="false">🔓 Free (Semua Peserta)</option>
-                                <option value="true">💎 Premium (Khusus Lunas)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button onclick="addModule()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-purple-200 transition flex justify-center items-center gap-2">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Materi
-                    </button>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-gray-50 text-xs font-bold text-gray-400 uppercase">
-                            <tr>
-                                <th class="px-6 py-3 w-10">#</th>
-                                <th class="px-6 py-3">Judul Materi</th>
-                                <th class="px-6 py-3">Kategori</th>
-                                <th class="px-6 py-3">Status Akses</th>
-                                <th class="px-6 py-3 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="module-list" class="divide-y divide-gray-50 text-sm"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="section-verification" class="content-section space-y-6">
-                <div class="bg-gradient-to-r from-orange-50 to-amber-50 p-6 rounded-2xl border border-orange-100 flex items-start gap-4">
-                    <div class="bg-orange-100 p-3 rounded-xl text-orange-600"><i class="fa-solid fa-triangle-exclamation text-xl"></i></div>
-                    <div>
-                        <h2 class="text-lg font-bold text-orange-900">Pusat Bantuan Verifikasi</h2>
-                        <p class="text-orange-800/70 text-sm mt-1">Gunakan fitur ini jika ada peserta yang melapor tidak menerima email verifikasi. Anda bisa mengirim ulang link (Resend) atau mengirim email manual.</p>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-gray-50 text-xs font-bold text-gray-500 uppercase">
-                            <tr>
-                                <th class="px-6 py-4">Nama Pendaftar</th>
-                                <th class="px-6 py-4">Email</th>
-                                <th class="px-6 py-4">WhatsApp</th>
-                                <th class="px-6 py-4 text-center">Aksi Bantuan</th>
-                            </tr>
-                        </thead>
-                        <tbody id="verification-list" class="divide-y divide-gray-50 text-sm"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="section-preview" class="content-section h-full flex flex-col space-y-4" style="height: calc(100vh - 120px);">
-                <div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex-shrink-0">
-                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                        <i class="fa-solid fa-mobile-screen-button text-pink-500"></i> Simulasi Tampilan User
-                    </h2>
-                    <div class="flex items-center gap-3">
-                        <div class="bg-gray-100 p-1 rounded-lg flex">
-                            <button onclick="setPreviewMode('desktop')" id="btn-desktop" class="px-4 py-1.5 rounded-md text-sm font-bold bg-white shadow-sm text-gray-800 transition">Desktop</button>
-                            <button onclick="setPreviewMode('mobile')" id="btn-mobile" class="px-4 py-1.5 rounded-md text-sm font-bold text-gray-500 hover:text-gray-800 transition">Mobile</button>
-                        </div>
-                        <button onclick="reloadPreview()" class="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg text-gray-500 hover:text-pink-600 hover:border-pink-200 transition">
-                            <i class="fa-solid fa-rotate-right"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="flex-1 bg-gray-100 rounded-2xl p-6 border border-gray-200 shadow-inner overflow-hidden flex justify-center items-start">
-                     <div id="preview-wrapper" class="w-full h-full bg-white shadow-2xl rounded-2xl border-[6px] border-gray-800 overflow-hidden transition-all duration-300 relative">
-                        <iframe id="preview-frame" src="index.html?preview=true#dashboard" class="w-full h-full" frameborder="0"></iframe>
-                     </div>
-                </div>
-            </div>
-
-        </div>
-    </main>
+    </div>
 
     <script>
+        // 1. SUPABASE CONFIG
         const supabaseClient = supabase.createClient(
             'https://jrslgkxwjvugvgakxwsd.supabase.co', 
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'
         );
 
-        let allUsers = [];
-        let activityChart;
-        const activeUsersMap = new Map();
-
-        // --- AUTH CHECK ---
-        async function checkAdmin() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) { window.location.href = 'index.html'; return; }
-            fetchUsers();
-            fetchAnnouncements();
-            fetchModules();
-            initChart();
-            initRealtimeDashboard();
-        }
-
-        // --- TAB SWITCHER ---
-        function switchTab(tabId) {
-            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-            
-            const target = document.getElementById('section-' + tabId);
-            if(target) target.classList.add('active');
-            document.getElementById('menu-' + tabId).classList.add('active');
-        }
-
-        // --- FETCH USERS ---
-        async function fetchUsers() {
-            try {
-                const { data, error } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                allUsers = data || [];
-                renderTable(allUsers);
-                renderVerificationList(allUsers);
-                document.getElementById('stat-total').innerText = allUsers.length;
-                document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length;
-                document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length;
-            } catch (err) {
-                console.error(err);
+        // 2. DETEKSI LINK RESET DARI EMAIL
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'PASSWORD_RECOVERY') {
+                // Switch Tampilan ke Mode Ganti Password
+                document.getElementById('form-request').classList.add('hidden');
+                document.getElementById('form-update').classList.remove('hidden');
+                
+                // Update Teks Judul
+                document.getElementById('judul-halaman').innerText = "Password Baru ✨";
+                document.getElementById('deskripsi-halaman').innerText = "Silakan buat password baru yang aman untuk akunmu.";
+                document.getElementById('deskripsi-halaman').classList.add('text-green-600', 'font-medium');
             }
+        });
+
+        // 3. LOGIC REQUEST LINK
+        async function handleResetRequest(e) {
+            e.preventDefault();
+            const email = document.getElementById('reset-email').value;
+            const btn = document.getElementById('btn-reset');
+            const originalText = btn.innerText;
+            
+            btn.innerHTML = '<span class="animate-pulse">Mengirim...</span>'; 
+            btn.disabled = true;
+
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: 'https://ylos.site/reset.html' 
+            });
+
+            if (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Mengirim',
+                    text: error.message || 'Terjadi kesalahan, coba lagi nanti.',
+                    confirmButtonColor: '#2D3748'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cek Email Kamu!',
+                    text: 'Link reset password telah dikirim ke ' + email,
+                    confirmButtonText: 'Oke, Saya Cek',
+                    confirmButtonColor: '#FF85B3'
+                });
+                document.getElementById('reset-email').value = '';
+            }
+            
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
 
-        function renderTable(users) {
-            const tbody = document.getElementById('userTableBody');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            if(users.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400 italic">Belum ada peserta terdaftar.</td></tr>`;
+        // 4. LOGIC UPDATE PASSWORD (DENGAN KONFIRMASI & LOGOUT)
+        async function handleUpdatePassword(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('new-password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
+            const btn = document.getElementById('btn-update');
+            const originalText = btn.innerText;
+
+            // Validasi: Cek kecocokan password
+            if (newPass !== confirmPass) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Password Tidak Sama',
+                    text: 'Pastikan kolom password baru dan konfirmasi isinya sama.',
+                    confirmButtonColor: '#FFD700'
+                });
                 return;
             }
-            users.forEach(user => {
-                let badge = user.payment_status === 'Lunas' 
-                    ? `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200"><i class="fa-solid fa-check mr-1"></i> Lunas</span>` 
-                    : `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700 border border-yellow-200"><i class="fa-solid fa-hourglass-half mr-1"></i> Pending</span>`;
-                let btnAction = user.payment_status === 'Lunas'
-                    ? `<button onclick="updateStatus('${user.id}', 'Pending')" class="text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-yellow-200">Batalkan</button>`
-                    : `<button onclick="updateStatus('${user.id}', 'Lunas')" class="text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-green-200">Verifikasi</button>`;
-                tbody.innerHTML += `
-                    <tr class="hover:bg-gray-50 transition group">
-                        <td class="px-6 py-4 font-bold text-gray-800">${user.full_name || '-'}</td>
-                        <td class="px-6 py-4 text-gray-500">${user.school || '-'}</td>
-                        <td class="px-6 py-4"><div class="text-xs font-bold text-gray-700">${user.email}</div><div class="text-xs text-gray-500">${user.phone}</div></td>
-                        <td class="px-6 py-4">${badge}</td>
-                        <td class="px-6 py-4 text-center"><div class="flex items-center justify-center gap-2">${btnAction}<button onclick="deleteUser('${user.id}')" class="text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button></div></td>
-                    </tr>
-                `;
-            });
-        }
 
-        // --- VERIFICATION LIST ---
-        function renderVerificationList(users) {
-            const vBody = document.getElementById('verification-list');
-            if(!vBody) return;
-            vBody.innerHTML = '';
-            users.slice(0, 20).forEach(u => {
-                vBody.innerHTML += `
-                    <tr class="hover:bg-gray-50 transition border-b border-gray-50">
-                        <td class="px-6 py-4 font-bold text-gray-800">${u.full_name}</td>
-                        <td class="px-6 py-4 text-blue-600 text-xs font-mono">${u.email}</td>
-                        <td class="px-6 py-4 text-xs font-mono">${u.phone}</td>
-                        <td class="px-6 py-4 text-center"><div class="flex justify-center gap-2">
-                            <button onclick="resendEmail('${u.email}')" class="bg-gray-800 hover:bg-black text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"><i class="fa-regular fa-paper-plane"></i> Resend Link</button>
-                            <a href="mailto:${u.email}?subject=Bantuan Verifikasi YLOS&body=Halo ${u.full_name}..." class="border border-gray-300 text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"><i class="fa-regular fa-envelope"></i> Manual</a>
-                        </div></td>
-                    </tr>
-                `;
-            });
-        }
+            btn.innerHTML = '<span class="animate-pulse">Menyimpan...</span>'; 
+            btn.disabled = true;
 
-        // --- ACTIONS (WITH SWEETALERT NOTIFICATIONS) ---
-        async function updateStatus(id, status) {
-            Swal.fire({ title: 'Updating...', didOpen: () => Swal.showLoading(), backdrop: `rgba(0,0,0,0.4)` });
-            await supabaseClient.from('profiles').update({ payment_status: status }).eq('id', id);
-            Swal.close(); fetchUsers();
-        }
-        async function deleteUser(id) {
-            const res = await Swal.fire({ title: 'Hapus User?', text: "Data tidak bisa dikembalikan!", icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Hapus', confirmButtonColor: '#d33' });
-            if(res.isConfirmed) { await supabaseClient.from('profiles').delete().eq('id', id); fetchUsers(); }
-        }
-        
-        // NOTIFIKASI RESEND EMAIL
-        async function resendEmail(email) {
-            Swal.fire({ title: 'Mengirim...', didOpen: () => Swal.showLoading() });
-            const { error } = await supabaseClient.auth.resend({ type: 'signup', email: email, options: { emailRedirectTo: 'https://ylos.site' }});
-            if(error) Swal.fire('Gagal', error.message, 'error');
-            else Swal.fire({ icon: 'success', title: 'Terkirim!', text: `Link verifikasi baru dikirim ke ${email}`, confirmButtonColor: '#DB2777' });
-        }
-        
-        function filterTable() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allUsers.filter(u => (u.full_name && u.full_name.toLowerCase().includes(term)) || (u.school && u.school.toLowerCase().includes(term)));
-            renderTable(filtered);
-        }
+            const { error } = await supabaseClient.auth.updateUser({ password: newPass });
 
-        // --- ANNOUNCEMENTS (WITH NOTIFICATION) ---
-        async function fetchAnnouncements() {
-            const { data } = await supabaseClient.from('announcements').select('*').order('order_index', { ascending: true });
-            const list = document.getElementById('announcement-list');
-            if(list && data) {
-                list.innerHTML = '';
-                data.forEach(item => {
-                    list.innerHTML += `
-                        <div data-id="${item.id}" class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex justify-between items-center draggable-item mb-3 hover:border-pink-300 transition group">
-                            <div class="flex items-center gap-4">
-                                <div class="drag-handle text-gray-300 group-hover:text-gray-500 cursor-move px-2 py-2"><i class="fa-solid fa-grip-vertical text-xl"></i></div>
-                                <div><h4 class="font-bold text-gray-800 text-lg">${item.title}</h4><p class="text-sm text-gray-500 mt-0.5">${item.content}</p></div>
-                            </div>
-                            <button onclick="delAnnounce('${item.id}')" class="text-red-300 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    `;
+            if (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Update',
+                    text: error.message,
+                    confirmButtonColor: '#2D3748'
                 });
-                new Sortable(list, { handle: '.drag-handle', animation: 150, onEnd: (evt) => updateOrder(evt, 'announcements') });
-            }
-        }
-        
-        async function addAnnouncement() {
-            const title = document.getElementById('announce-title').value;
-            const content = document.getElementById('announce-content').value;
-            if(!title) return;
-            
-            await supabaseClient.from('announcements').insert({ title, content });
-            document.getElementById('announce-title').value = ''; 
-            document.getElementById('announce-content').value = '';
-            
-            fetchAnnouncements(); 
-            reloadPreview();
-            
-            // NOTIFIKASI SUKSES
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil Diposting!',
-                text: 'Pengumuman baru telah muncul di dashboard peserta.',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-        
-        async function delAnnounce(id) { await supabaseClient.from('announcements').delete().eq('id', id); fetchAnnouncements(); reloadPreview(); }
+            } else {
+                // UPDATE SUKSES: Lakukan Logout Paksa
+                await supabaseClient.auth.signOut();
 
-        // --- MODULES (WITH NOTIFICATION) ---
-        async function fetchModules() {
-            const { data } = await supabaseClient.from('modules').select('*').order('order_index', { ascending: true });
-            const list = document.getElementById('module-list');
-            if(list && data) {
-                list.innerHTML = '';
-                data.forEach((mod, index) => {
-                    let badge = mod.is_premium ? `<span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-bold border border-purple-200">💎 Premium</span>` : `<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold border border-blue-200">🔓 Free</span>`;
-                    list.innerHTML += `
-                        <tr data-id="${mod.id}" class="bg-white border-b border-gray-50 hover:bg-gray-50 draggable-item transition">
-                            <td class="px-6 py-4"><span class="drag-handle text-gray-300 hover:text-gray-500 cursor-move"><i class="fa-solid fa-grip-vertical"></i></span></td>
-                            <td class="px-6 py-4 font-bold text-gray-800">${mod.title}</td>
-                            <td class="px-6 py-4 text-xs text-gray-500 font-mono uppercase bg-gray-100 rounded px-2 w-fit">${mod.category}</td>
-                            <td class="px-6 py-4">${badge}</td>
-                            <td class="px-6 py-4 text-center"><button onclick="delModule('${mod.id}')" class="text-red-300 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button></td>
-                        </tr>
-                    `;
-                });
-                new Sortable(list, { handle: '.drag-handle', animation: 150, onEnd: (evt) => updateOrder(evt, 'modules') });
-            }
-        }
-        
-        async function addModule() {
-            const title = document.getElementById('mod-title').value;
-            const link = document.getElementById('mod-link').value;
-            if(!title) return;
-
-            await supabaseClient.from('modules').insert({
-                title: title, 
-                link_url: link,
-                category: document.getElementById('mod-category').value, 
-                is_premium: document.getElementById('mod-premium').value === 'true'
-            });
-            
-            fetchModules(); 
-            reloadPreview();
-            
-            // NOTIFIKASI SUKSES
-            Swal.fire({
-                icon: 'success',
-                title: 'Materi Ditambahkan!',
-                text: 'Materi baru siap diakses peserta.',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-        
-        async function delModule(id) { await supabaseClient.from('modules').delete().eq('id', id); fetchModules(); reloadPreview(); }
-        async function updateOrder(evt, table) {
-            const items = evt.to.children;
-            for (let i = 0; i < items.length; i++) { await supabaseClient.from(table).update({ order_index: i }).eq('id', items[i].getAttribute('data-id')); }
-            reloadPreview();
-        }
-
-        // --- REALTIME & UTILS ---
-        function initChart() {
-            const ctx = document.getElementById('userChart');
-            if(ctx) {
-                activityChart = new Chart(ctx.getContext('2d'), {
-                    type: 'bar',
-                    data: { labels: ['Home', 'Dashboard', 'Trip', 'Tiket'], datasets: [{ label: 'User Aktif', data: [0,0,0,0], backgroundColor: ['#FF85B3', '#3B82F6', '#10B981', '#F59E0B'], borderRadius: 8 }] },
-                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
-                });
-            }
-        }
-        function initRealtimeDashboard() {
-            const channel = supabaseClient.channel('online-users');
-            channel.on('presence', { event: 'sync' }, () => {
-                const state = channel.presenceState();
-                let counts = { 'Home': 0, 'Dashboard': 0, 'Trip': 0, 'Tiket': 0 };
-                let total = 0; let html = '';
-                for (const id in state) {
-                    const u = state[id][0];
-                    if(u.email) {
-                        total++;
-                        let p = u.page.replace('#',''); p = p.charAt(0).toUpperCase() + p.slice(1);
-                        if(counts[p] !== undefined) counts[p]++;
-                        html += `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-pink-200 hover:bg-pink-50 transition"><div class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div><div><p class="text-xs font-bold text-gray-900">${u.email}</p><p class="text-[10px] text-gray-500">Halaman: <span class="font-bold text-pink-600">${p}</span></p></div></div><span class="text-[10px] font-mono text-gray-400">${u.login_time}</span></div>`;
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil Diubah!',
+                    text: 'Password aman. Silakan LOGIN ULANG dengan password baru.',
+                    confirmButtonText: 'Siap, Login Sekarang',
+                    confirmButtonColor: '#FF85B3',
+                    allowOutsideClick: false // Paksa user klik tombol
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Arahkan kembali ke halaman utama (Login)
+                        window.location.href = "index.html";
                     }
-                }
-                document.getElementById('online-count').innerText = total + " Active";
-                document.getElementById('active-user-list').innerHTML = html || `<div class="text-center py-10"><i class="fa-solid fa-ghost text-gray-200 text-4xl mb-3"></i><p class="text-gray-400 text-sm">Sepi...</p></div>`;
-                if(activityChart) { activityChart.data.datasets[0].data = Object.values(counts); activityChart.update(); }
-            }).subscribe();
+                });
+            }
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
-        function setPreviewMode(mode) {
-            const w = document.getElementById('preview-wrapper');
-            const bd = document.getElementById('btn-desktop'), bm = document.getElementById('btn-mobile');
-            if(mode==='mobile') { w.classList.remove('w-full'); w.classList.add('w-[375px]'); bm.classList.add('bg-white','text-gray-800','shadow-sm'); bm.classList.remove('text-gray-500'); bd.classList.remove('bg-white','shadow-sm'); bd.classList.add('text-gray-500'); }
-            else { w.classList.remove('w-[375px]'); w.classList.add('w-full'); bd.classList.add('bg-white','text-gray-800','shadow-sm'); bd.classList.remove('text-gray-500'); bm.classList.remove('bg-white','shadow-sm','text-gray-800'); bm.classList.add('text-gray-500'); }
-        }
-        function reloadPreview() { document.getElementById('preview-frame').contentWindow.location.reload(); }
-        function exportToExcel() { const ws = XLSX.utils.json_to_sheet(allUsers); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, "Data_Peserta.xlsx"); }
-        async function logout() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
-
-        checkAdmin();
     </script>
 </body>
 </html>
