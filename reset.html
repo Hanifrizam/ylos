@@ -17,80 +17,105 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { ylosPink: '#FF85B3', ylosYellow: '#FFD700', ylosGreen: '#9ACD32', ylosDark: '#2D3748' },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                    colors: {
+                        ylosPink: '#FF85B3',
+                        ylosDarkPink: '#DB2777',
+                        ylosYellow: '#FFD700',
+                        ylosGreen: '#9ACD32',
+                        ylosDark: '#111827',
+                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
                 }
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        .blob { position: absolute; filter: blur(40px); z-index: -1; opacity: 0.4; }
-        .fade-in { animation: fadeIn 0.8s ease-out; }
+        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
+        /* SweetAlert Customization */
         div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
             background-color: #FF85B3 !important;
             border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(255, 133, 179, 0.4);
         }
     </style>
 </head>
-<body class="font-sans text-gray-700 bg-gray-50 flex items-center justify-center min-h-screen relative overflow-hidden px-4">
+<body class="font-sans text-gray-800 bg-gray-50 flex items-center justify-center min-h-screen relative overflow-hidden px-4 selection:bg-ylosPink selection:text-white">
 
-    <div class="blob bg-ylosPink/30 w-96 h-96 rounded-full top-0 left-0 -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
-    <div class="blob bg-ylosYellow/30 w-80 h-80 rounded-full bottom-0 right-0 translate-x-1/3 translate-y-1/3 blur-3xl"></div>
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div class="blob bg-ylosPink/20 w-96 h-96 rounded-full top-0 left-0 mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div class="blob bg-ylosYellow/20 w-96 h-96 rounded-full bottom-0 right-0 mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+    </div>
 
-    <div class="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/50 relative z-10 fade-in">
+    <div class="w-full max-w-md bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-2xl border border-white/50 relative z-10 fade-in">
         
         <div class="text-center mb-8">
-            <div class="flex justify-center mb-4">
-                <img src="LOGO YLOS 5x5.png" alt="YLOS Logo" class="h-16 w-auto object-contain drop-shadow-md">
+            <div class="flex justify-center mb-6">
+                <img src="LOGO YLOS 5x5.png" alt="YLOS Logo" class="h-16 w-auto object-contain drop-shadow-md hover:scale-105 transition duration-300">
             </div>
-            <h2 id="judul-halaman" class="text-2xl font-extrabold text-gray-900">Lupa Password? 🔒</h2>
-            <p id="deskripsi-halaman" class="text-gray-500 text-sm mt-2">Jangan khawatir. Masukkan emailmu dan kami akan mengirimkan link untuk meresetnya.</p>
+            <h2 id="judul-halaman" class="text-2xl font-extrabold text-gray-900 tracking-tight">Lupa Password? 🔒</h2>
+            <p id="deskripsi-halaman" class="text-gray-500 text-sm mt-3 leading-relaxed">Jangan khawatir. Masukkan emailmu dan kami akan mengirimkan link untuk meresetnya.</p>
         </div>
 
-        <form id="form-request" onsubmit="handleResetRequest(event)" class="space-y-5 block">
+        <form id="form-request" onsubmit="handleResetRequest(event)" class="space-y-6 block">
             <div>
-                <label class="block text-sm font-bold mb-2 text-gray-700">Email Terdaftar</label>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Email Terdaftar</label>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fa-regular fa-envelope text-gray-400"></i>
                     </div>
-                    <input type="email" id="reset-email" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-ylosPink focus:ring-2 focus:ring-pink-100 outline-none transition bg-white/50" placeholder="contoh@email.com">
+                    <input type="email" id="reset-email" required class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition font-medium text-gray-800 placeholder-gray-400" placeholder="contoh@email.com">
                 </div>
             </div>
-            <button type="submit" id="btn-reset" class="w-full bg-gradient-to-r from-ylosPink to-pink-500 text-white font-bold py-3.5 rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition duration-300">
-                Kirim Link Reset
+            <button type="submit" id="btn-reset" class="w-full bg-gradient-to-r from-ylosPink to-rose-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-pink-200 hover:shadow-xl hover:-translate-y-0.5 transition duration-300 flex justify-center items-center gap-2">
+                Kirim Link Reset <i class="fa-solid fa-paper-plane"></i>
             </button>
         </form>
 
         <form id="form-update" onsubmit="handleUpdatePassword(event)" class="space-y-5 hidden">
             <div>
-                <label class="block text-sm font-bold mb-2 text-gray-700">Password Baru</label>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Password Baru</label>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-lock text-gray-400"></i>
                     </div>
-                    <input type="password" id="new-password" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-ylosPink focus:ring-2 focus:ring-pink-100 outline-none transition bg-white/50" placeholder="Minimal 6 karakter">
+                    <input type="password" id="new-password" required class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition font-medium" placeholder="••••••••">
                 </div>
+                <p class="text-[10px] text-gray-400 mt-2 ml-1 flex items-center gap-1">
+                    <i class="fa-solid fa-circle-info"></i> Min. 8 karakter, 1 Huruf Besar & 1 Angka.
+                </p>
             </div>
 
             <div>
-                <label class="block text-sm font-bold mb-2 text-gray-700">Konfirmasi Password</label>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Konfirmasi Password</label>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-check-double text-gray-400"></i>
                     </div>
-                    <input type="password" id="confirm-password" required class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-ylosPink focus:ring-2 focus:ring-pink-100 outline-none transition bg-white/50" placeholder="Ketik ulang password baru">
+                    <input type="password" id="confirm-password" required class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition font-medium" placeholder="Ketik ulang password">
                 </div>
             </div>
 
-            <button type="submit" id="btn-update" class="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl hover:bg-gray-800 hover:shadow-lg transition duration-300">
+            <button type="submit" id="btn-update" class="w-full bg-gray-900 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-black hover:shadow-xl hover:-translate-y-0.5 transition duration-300">
                 Simpan Password Baru
             </button>
         </form>
@@ -119,7 +144,8 @@
                 // Update Teks Judul
                 document.getElementById('judul-halaman').innerText = "Password Baru ✨";
                 document.getElementById('deskripsi-halaman').innerText = "Silakan buat password baru yang aman untuk akunmu.";
-                document.getElementById('deskripsi-halaman').classList.add('text-green-600', 'font-medium');
+                document.getElementById('deskripsi-halaman').classList.remove('text-gray-500');
+                document.getElementById('deskripsi-halaman').classList.add('text-green-600', 'font-medium', 'bg-green-50', 'py-2', 'px-4', 'rounded-lg', 'inline-block');
             }
         });
 
@@ -128,9 +154,9 @@
             e.preventDefault();
             const email = document.getElementById('reset-email').value;
             const btn = document.getElementById('btn-reset');
-            const originalText = btn.innerText;
+            const originalText = btn.innerHTML;
             
-            btn.innerHTML = '<span class="animate-pulse">Mengirim...</span>'; 
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...'; 
             btn.disabled = true;
 
             const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
@@ -155,11 +181,11 @@
                 document.getElementById('reset-email').value = '';
             }
             
-            btn.innerText = originalText;
+            btn.innerHTML = originalText;
             btn.disabled = false;
         }
 
-        // 4. LOGIC UPDATE PASSWORD (DENGAN KONFIRMASI & LOGOUT)
+        // 4. LOGIC UPDATE PASSWORD (VALIDASI UPGRADED)
         async function handleUpdatePassword(e) {
             e.preventDefault();
             const newPass = document.getElementById('new-password').value;
@@ -167,12 +193,36 @@
             const btn = document.getElementById('btn-update');
             const originalText = btn.innerText;
 
-            // Validasi: Cek kecocokan password
+            // VALIDASI 1: Cek kecocokan
             if (newPass !== confirmPass) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Password Tidak Sama',
                     text: 'Pastikan kolom password baru dan konfirmasi isinya sama.',
+                    confirmButtonColor: '#FFD700'
+                });
+                return;
+            }
+
+            // VALIDASI 2: Minimal 8 Karakter
+            if (newPass.length < 8) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Password Terlalu Pendek',
+                    text: 'Password minimal harus 8 karakter.',
+                    confirmButtonColor: '#FFD700'
+                });
+                return;
+            }
+
+            // VALIDASI 3: Kombinasi Huruf Besar & Angka
+            // Regex: Ada huruf kapital A-Z DAN ada angka 0-9
+            const strongPasswordRegex = /^(?=.*[A-Z])(?=.*\d).+$/;
+            if (!strongPasswordRegex.test(newPass)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Password Kurang Kuat',
+                    html: 'Demi keamanan, password wajib mengandung:<br><b>1 Huruf Besar (Kapital)</b> dan <b>1 Angka</b>.',
                     confirmButtonColor: '#FFD700'
                 });
                 return;
