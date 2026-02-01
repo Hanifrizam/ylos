@@ -65,7 +65,8 @@
 
         /* --- DIGISIGN UI --- */
         #pdf-scroll-container { background-color: #334155; padding: 40px; overflow: auto; flex: 1; display: flex; justify-content: center; position: relative; background-image: radial-gradient(#475569 1px, transparent 1px); background-size: 24px 24px; }
-        #pdf-wrapper { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 4px; transition: transform 0.3s; }
+        /* FIX: Added position relative to wrapper to anchor the signature box correctly */
+        #pdf-wrapper { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 4px; transition: transform 0.3s; position: relative; }
         .signature-box {
             position: absolute; width: 160px; height: 80px;
             border: 2px dashed #DB2777; background-color: rgba(253, 242, 248, 0.6);
@@ -261,7 +262,10 @@
             <div id="section-users" class="content-section space-y-6">
                 <div class="glass-card p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="font-bold text-gray-800 text-xl">Data Peserta</h2>
+                        <div class="flex items-center gap-3">
+                            <h2 class="font-bold text-gray-800 text-xl">Data Peserta</h2>
+                            <span class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded font-bold">Total: <span id="table-total">0</span></span>
+                        </div>
                         <div class="flex gap-3">
                              <div class="relative">
                                 <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
@@ -277,7 +281,7 @@
             <div id="section-verification" class="content-section space-y-6">
                 <div class="glass-card p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <div><h2 class="font-bold text-gray-800 text-xl">Bantuan Verifikasi</h2><p class="text-xs text-gray-500 mt-1">Monitor status login user.</p></div>
+                        <div><h2 class="font-bold text-gray-800 text-xl">Bantuan Verifikasi</h2><p class="text-xs text-gray-500 mt-1">Kirim link verifikasi untuk user ongoing.</p></div>
                         <button onclick="fetchUsers()" class="btn-press text-xs bg-white border border-gray-200 text-gray-600 px-4 py-2 rounded-xl font-bold hover:bg-gray-50 flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> Refresh Data</button>
                     </div>
                     <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama</th><th>Email</th><th>WhatsApp</th><th>Status Login</th><th class="text-center">Aksi</th></tr></thead><tbody id="verification-list"></tbody></table></div>
@@ -419,8 +423,18 @@
         }
         function initDraggable(el) {
             let isDragging = false, startX, startY, initialLeft, initialTop;
-            el.onmousedown = (e) => { if(e.offsetX > el.offsetWidth - 15 && e.offsetY > el.offsetHeight - 15) return; isDragging = true; startX = e.clientX; startY = e.clientY; initialLeft = el.offsetLeft; initialTop = el.offsetTop; el.style.cursor = 'grabbing'; };
-            window.onmousemove = (e) => { if(!isDragging) return; e.preventDefault(); el.style.left = `${initialLeft + e.clientX - startX}px`; el.style.top = `${initialTop + e.clientY - startY}px`; };
+            const container = document.getElementById('pdf-wrapper');
+            el.onmousedown = (e) => { 
+                if(e.offsetX > el.offsetWidth - 15 && e.offsetY > el.offsetHeight - 15) return; 
+                isDragging = true; startX = e.clientX; startY = e.clientY; 
+                initialLeft = el.offsetLeft; initialTop = el.offsetTop; 
+                el.style.cursor = 'grabbing'; 
+            };
+            window.onmousemove = (e) => { 
+                if(!isDragging) return; e.preventDefault(); 
+                el.style.left = `${initialLeft + e.clientX - startX}px`; 
+                el.style.top = `${initialTop + e.clientY - startY}px`; 
+            };
             window.onmouseup = () => { isDragging = false; el.style.cursor = 'grab'; };
         }
         async function saveSignedDocument() {
@@ -430,10 +444,30 @@
                 const pdfDoc = await PDFLib.PDFDocument.load(cloneBuffer(pdfBytes)); const firstPage = pdfDoc.getPages()[0];
                 const imgEl = document.getElementById('drag-sig-img'); const sigImage = await pdfDoc.embedPng(imgEl.src);
                 const canvas = document.getElementById('the-canvas');
-                const scaleX = firstPage.getWidth() / canvas.width; const scaleY = firstPage.getHeight() / canvas.height;
-                const x = dragEl.offsetLeft * scaleX; const y = firstPage.getHeight() - ((dragEl.offsetTop + dragEl.offsetHeight) * scaleY);
-                const width = dragEl.offsetWidth * scaleX; const height = dragEl.offsetHeight * scaleY;
+                
+                // --- FIXED COORDINATE LOGIC ---
+                // Calculate position relative to canvas element (ignores scroll/margin issues)
+                const canvasRect = canvas.getBoundingClientRect();
+                const sigRect = dragEl.getBoundingClientRect();
+                
+                const relativeX = sigRect.left - canvasRect.left;
+                const relativeY = sigRect.top - canvasRect.top;
+
+                const pdfWidth = firstPage.getWidth();
+                const pdfHeight = firstPage.getHeight();
+                
+                const scaleX = pdfWidth / canvas.width;
+                const scaleY = pdfHeight / canvas.height;
+                
+                // PDF coordinates: origin is bottom-left
+                const x = relativeX * scaleX;
+                const y = pdfHeight - ((relativeY + dragEl.offsetHeight) * scaleY);
+                const width = dragEl.offsetWidth * scaleX;
+                const height = dragEl.offsetHeight * scaleY;
+                
                 firstPage.drawImage(sigImage, { x, y, width, height });
+                // -----------------------------
+
                 const pdfBytesSigned = await pdfDoc.save();
                 const signedFile = new File([new Blob([pdfBytesSigned], { type: 'application/pdf' })], `signed_${Date.now()}.pdf`, { type: 'application/pdf' });
                 const { error: upErr } = await supabaseClient.storage.from('digisign-files').upload(`signed/${signedFile.name}`, signedFile); if(upErr) throw upErr;
@@ -449,12 +483,42 @@
 
         // --- DASHBOARD & USER LOGIC ---
         function switchTab(tabId) { document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active')); document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active')); document.getElementById('section-' + tabId).classList.add('active'); document.getElementById('menu-' + tabId).classList.add('active'); if (tabId === 'calendar') setTimeout(() => { !calendarInstance ? initCalendar() : calendarInstance.render(); }, 100); }
-        async function fetchUsers() { const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); allUsers = data||[]; renderTable(allUsers); renderVerificationList(allUsers); document.getElementById('stat-total').innerText = allUsers.length; document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; }
+        async function fetchUsers() { const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); allUsers = data||[]; renderTable(allUsers); renderVerificationList(allUsers); document.getElementById('stat-total').innerText = allUsers.length; document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; document.getElementById('table-total').innerText = allUsers.length; }
         function renderTable(users) { document.getElementById('userTableBody').innerHTML = users.map(u => { const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; const action = u.payment_status === 'Lunas' ? `<button onclick="updateStatus('${u.id}', 'Pending')" class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition font-bold">Batalkan</button>` : `<button onclick="updateStatus('${u.id}', 'Lunas')" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition font-bold">Verifikasi</button>`; return `<tr class="hover:scale-[1.01] transition duration-200"><td class="p-4 font-bold text-gray-800">${u.full_name || '-'}</td><td class="p-4 text-gray-500">${u.school || '-'}</td><td class="p-4 text-xs font-mono text-gray-500">${u.phone || '-'}</td><td class="p-4">${badge}</td><td class="p-4 text-center flex gap-2 justify-center">${action}<button onclick="deleteUser('${u.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button></td></tr>`; }).join(''); }
-        function renderVerificationList(users) { document.getElementById('verification-list').innerHTML = users.slice(0, 10).map(u => { let statusLogin = u.email ? `<span class="text-green-500 text-[10px] font-bold bg-green-50 px-3 py-1 rounded-full">● Aktif</span>` : `<span class="text-gray-400 text-[10px] bg-gray-50 px-3 py-1 rounded-full">○ Belum</span>`; return `<tr><td class="p-4 font-bold text-gray-700">${u.full_name}</td><td class="p-4 text-xs text-blue-600 font-mono">${u.email}</td><td class="p-4 text-xs font-mono">${u.phone}</td><td class="p-4 text-center">${statusLogin}</td><td class="p-4 text-center"><button onclick="resendEmail('${u.email}')" class="text-xs bg-gray-900 text-white px-4 py-1.5 rounded-lg shadow hover:bg-black transition flex items-center gap-2 mx-auto"><i class="fa-regular fa-paper-plane"></i> Resend</button></td></tr>`; }).join(''); }
+        function renderVerificationList(users) { document.getElementById('verification-list').innerHTML = users.slice(0, 10).map(u => { let statusLogin = u.email ? `<span class="text-green-500 text-[10px] font-bold bg-green-50 px-3 py-1 rounded-full">● Aktif</span>` : `<span class="text-gray-400 text-[10px] bg-gray-50 px-3 py-1 rounded-full">○ Belum</span>`; return `<tr><td class="p-4 font-bold text-gray-700">${u.full_name}</td><td class="p-4 text-xs text-blue-600 font-mono">${u.email}</td><td class="p-4 text-xs font-mono">${u.phone}</td><td class="p-4 text-center">${statusLogin}</td><td class="p-4 text-center"><button onclick="resendEmail('${u.email}')" class="text-xs bg-gray-900 text-white px-4 py-1.5 rounded-lg shadow hover:bg-black transition flex items-center gap-2 mx-auto"><i class="fa-regular fa-paper-plane"></i> Kirim Link</button></td></tr>`; }).join(''); }
         async function updateStatus(id, status) { Swal.showLoading(); await supabaseClient.from('profiles').update({ payment_status: status }).eq('id', id); Swal.close(); fetchUsers(); Toast.fire({ icon: 'success', title: 'Status diupdate' }); }
         async function deleteUser(id) { if((await Swal.fire({title:'Hapus Data?', text:'Tindakan ini permanen', icon:'warning', showCancelButton:true})).isConfirmed) { await supabaseClient.from('profiles').delete().eq('id', id); fetchUsers(); Toast.fire({ icon: 'success', title: 'Data dihapus' }); } }
-        async function resendEmail(email) { Swal.showLoading(); await supabaseClient.auth.resend({ type: 'signup', email: email, options: { emailRedirectTo: 'https://ylos.site' }}); Swal.fire({ icon: 'success', title: 'Terkirim!', text: `Email verifikasi dikirim ulang ke ${email}`, showConfirmButton: false, timer: 1500 }); }
+        
+        // --- FIXED VERIFICATION LOGIC FOR ONGOING USERS ---
+        async function resendEmail(email) { 
+            Swal.showLoading(); 
+            // 1. Try sending verification email (for new users who haven't verified)
+            const { error } = await supabaseClient.auth.resend({ 
+                type: 'signup', 
+                email: email, 
+                options: { emailRedirectTo: window.location.origin + '/index.html' } 
+            }); 
+            
+            if (error) {
+                // 2. If already verified, try sending a magic link (login link) for "ongoing" users
+                if(error.message.includes("already")) {
+                    const { error: magicLinkError } = await supabaseClient.auth.signInWithOtp({
+                        email: email,
+                        options: { emailRedirectTo: window.location.origin + '/index.html' }
+                    });
+                    if(magicLinkError) {
+                         Swal.fire('Gagal', magicLinkError.message, 'error');
+                    } else {
+                         Swal.fire({ icon: 'success', title: 'Link Login Terkirim!', text: `User ongoing. Link login dikirim ke ${email}`, showConfirmButton: false, timer: 2000 });
+                    }
+                } else {
+                    Swal.fire('Gagal', error.message, 'error');
+                }
+            } else {
+                Swal.fire({ icon: 'success', title: 'Verifikasi Terkirim!', text: `Link verifikasi dikirim ke ${email}`, showConfirmButton: false, timer: 2000 });
+            }
+        }
+        
         function filterTable() { const term = document.getElementById('searchInput').value.toLowerCase(); renderTable(allUsers.filter(u => u.full_name.toLowerCase().includes(term) || u.school.toLowerCase().includes(term))); }
 
         // --- CALENDAR (GOOGLE STYLE) ---
