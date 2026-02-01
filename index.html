@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YLOS - Youth Leader Organization Summit</title>
-
+    
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-L9GFQ0GM95"></script>
         <script>
@@ -473,7 +473,7 @@
         function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
         function mobileLinkClick(id) { showPage(id); }
 
-        // 4. ACTION FUNCTIONS (UPDATED FOR TRIGGER LOGIC)
+        // 4. ACTION FUNCTIONS (UPDATED FOR TRIGGER LOGIC & CHECK DUPLICATE EMAIL)
         async function handleRegister(e) {
             e.preventDefault();
             
@@ -487,11 +487,39 @@
             btn.innerText='Memproses...'; 
             btn.disabled=true;
             
-            // 2. Ambil Data Input
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
             
-            // Data Metadata (Ini yang akan dikirim ke Trigger Database)
+            // ============================================================
+            // LANGKAH BARU: Cek Email Manual Dulu (BYPASS SUPABASE)
+            // ============================================================
+            try {
+                const { data: isEmailExist, error: checkError } = await supabaseClient
+                    .rpc('check_email_exists', { email_input: email });
+
+                // Jika fungsi berhasil jalan dan hasilnya TRUE (Email Ada)
+                if (isEmailExist === true) {
+                    Swal.fire({ 
+                        icon: 'warning', 
+                        title: 'Email Sudah Terdaftar! ⚠️', 
+                        html: `Email <b>${email}</b> sudah ada di sistem.<br>Silakan langsung login saja.`,
+                        showCancelButton: true,
+                        confirmButtonText: 'Login Sekarang',
+                        cancelButtonText: 'Coba Email Lain',
+                        confirmButtonColor: '#FF85B3'
+                    }).then((result) => {
+                        if (result.isConfirmed) showPage('login');
+                    });
+                    
+                    btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); 
+                    return; // Stop proses disini!
+                }
+            } catch (err) {
+                console.log("Gagal cek email:", err);
+                // Lanjut saja kalau pengecekan error (fallback)
+            }
+            // ============================================================
+
             const metadata = {
                 full_name: document.getElementById('reg-name').value,
                 school: document.getElementById('reg-school').value,
@@ -499,22 +527,23 @@
                 package_type: document.getElementById('reg-package').value
             };
 
-            // 3. Sign Up ke Supabase (Sekaligus kirim Metadata)
+            // 2. Lanjut Sign Up (Jika lolos pengecekan di atas)
             const { data, error } = await supabaseClient.auth.signUp({ 
                 email: email, 
                 password: password,
                 options: {
                     emailRedirectTo: 'https://ylos.site',
-                    data: metadata // <--- PENTING: Data dikirim di sini untuk ditangkap Trigger
+                    data: metadata 
                 }
             });
 
-            // 4. Handle Error / Sukses
+            // 3. Handle Error Lain (Jaga-jaga)
             if(error) { 
                 Swal.fire({ icon: 'error', title: 'Gagal Daftar', text: error.message });
                 btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); return; 
             }
 
+            // 4. Sukses
             if(data.user) {
                 Swal.fire({ 
                     icon: 'success', 
