@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YLOS Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-item { transition: all 0.3s; cursor: pointer; }
+        .sidebar-item:hover, .sidebar-item.active { background-color: #f3f4f6; color: #db2777; border-right: 4px solid #db2777; }
+        .content-section { display: none; }
+        .content-section.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <aside class="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col z-20">
+            <div class="h-16 flex items-center px-6 border-b border-gray-100">
+                <span class="text-2xl font-extrabold text-gray-800 tracking-tight">YLOS <span class="text-pink-600">Admin</span></span>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto py-4 space-y-1">
+                <div onclick="switchTab('dashboard')" id="menu-dashboard" class="sidebar-item active px-6 py-3 flex items-center gap-3 text-gray-600 font-medium">
+                    <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+                </div>
+                <div onclick="switchTab('users')" id="menu-users" class="sidebar-item px-6 py-3 flex items-center gap-3 text-gray-600 font-medium">
+                    <i class="fa-solid fa-users w-5"></i> Data Peserta
+                </div>
+                <div onclick="switchTab('announcements')" id="menu-announcements" class="sidebar-item px-6 py-3 flex items-center gap-3 text-gray-600 font-medium">
+                    <i class="fa-solid fa-bullhorn w-5"></i> Pengumuman
+                </div>
+                <div onclick="switchTab('modules')" id="menu-modules" class="sidebar-item px-6 py-3 flex items-center gap-3 text-gray-600 font-medium">
+                    <i class="fa-solid fa-book w-5"></i> Modul & Materi
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-gray-100">
+                <button onclick="window.location.href='index.html'" class="w-full mb-2 flex items-center justify-center gap-2 text-sm text-gray-500 hover:text-pink-600 py-2">
+                    <i class="fa-solid fa-globe"></i> Lihat Website
+                </button>
+                <button onclick="logout()" class="w-full bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm hover:bg-red-100 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 md:hidden">
+                <span class="font-bold text-lg">Admin Panel</span>
+                <button onclick="logout()" class="text-red-500"><i class="fa-solid fa-power-off"></i></button>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+                
+                <div id="section-dashboard" class="content-section active">
+                    <h2 class="text-2xl font-bold mb-6">Overview Statistik</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <p class="text-gray-400 text-xs font-bold uppercase">Total User</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-2" id="stat-total">0</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <p class="text-gray-400 text-xs font-bold uppercase">Lunas (Verified)</p>
+                            <h3 class="text-3xl font-bold text-green-500 mt-2" id="stat-lunas">0</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <p class="text-gray-400 text-xs font-bold uppercase">Pending</p>
+                            <h3 class="text-3xl font-bold text-yellow-500 mt-2" id="stat-pending">0</h3>
+                        </div>
+                        <div class="bg-gradient-to-br from-pink-500 to-purple-600 p-6 rounded-2xl shadow-lg text-white">
+                            <p class="text-white/80 text-xs font-bold uppercase">Aksi Cepat</p>
+                            <button onclick="switchTab('users')" class="mt-4 w-full bg-white/20 hover:bg-white/30 py-2 rounded-lg text-sm font-bold backdrop-blur-sm transition">
+                                Kelola User &rarr;
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="section-users" class="content-section">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                        <h2 class="text-2xl font-bold">Data Peserta</h2>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama..." class="px-4 py-2 border rounded-lg text-sm w-full md:w-64 outline-none focus:border-pink-500">
+                            <button onclick="exportToExcel()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-700 whitespace-nowrap">
+                                <i class="fa-solid fa-file-excel"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+                                    <tr>
+                                        <th class="px-6 py-4 font-bold">Nama</th>
+                                        <th class="px-6 py-4 font-bold">Sekolah</th>
+                                        <th class="px-6 py-4 font-bold">Kontak</th>
+                                        <th class="px-6 py-4 font-bold">Status</th>
+                                        <th class="px-6 py-4 font-bold text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userTableBody" class="divide-y divide-gray-100 text-sm">
+                                    <tr><td colspan="5" class="p-6 text-center">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="section-announcements" class="content-section">
+                    <h2 class="text-2xl font-bold mb-6">Kelola Pengumuman (Auto-Update)</h2>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+                        <h3 class="font-bold text-gray-700 mb-4">Buat Pengumuman Baru</h3>
+                        <div class="space-y-4">
+                            <input type="text" id="announce-title" placeholder="Judul Pengumuman (Misal: Info Technical Meeting)" class="w-full p-3 border rounded-lg outline-none focus:border-pink-500">
+                            <textarea id="announce-content" rows="3" placeholder="Isi detail pengumuman..." class="w-full p-3 border rounded-lg outline-none focus:border-pink-500"></textarea>
+                            <button onclick="addAnnouncement()" class="bg-pink-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-pink-700 transition">Posting Sekarang</button>
+                        </div>
+                    </div>
+
+                    <div id="announcement-list" class="space-y-4">
+                        </div>
+                </div>
+
+                <div id="section-modules" class="content-section">
+                    <h2 class="text-2xl font-bold mb-6">Kelola Modul & Materi</h2>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+                        <h3 class="font-bold text-gray-700 mb-4">Tambah Materi Baru</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <input type="text" id="mod-title" placeholder="Nama Materi (Misal: Guidebook Recruitment)" class="w-full p-3 border rounded-lg outline-none focus:border-pink-500">
+                            <input type="text" id="mod-link" placeholder="Link (Google Drive / YouTube / PDF)" class="w-full p-3 border rounded-lg outline-none focus:border-pink-500">
+                            <select id="mod-category" class="w-full p-3 border rounded-lg outline-none bg-white">
+                                <option value="Guidebook">Kategori: Guidebook</option>
+                                <option value="Materi">Kategori: Materi Belajar</option>
+                                <option value="Video">Kategori: Video Rekaman</option>
+                            </select>
+                            <select id="mod-premium" class="w-full p-3 border rounded-lg outline-none bg-white">
+                                <option value="false">Akses: Semua Peserta</option>
+                                <option value="true">Akses: Khusus LUNAS (Premium)</option>
+                            </select>
+                        </div>
+                        <button onclick="addModule()" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-purple-700 transition">Upload Materi</button>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+                                <tr>
+                                    <th class="px-6 py-3">Judul</th>
+                                    <th class="px-6 py-3">Kategori</th>
+                                    <th class="px-6 py-3">Akses</th>
+                                    <th class="px-6 py-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="module-list" class="divide-y divide-gray-100 text-sm">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const supabaseClient = supabase.createClient(
+            'https://jrslgkxwjvugvgakxwsd.supabase.co', 
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'
+        );
+
+        let allUsers = [];
+
+        // --- AUTH CHECK ---
+        async function checkAdmin() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = 'index.html'; return; }
+            const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', session.user.id).single();
+            if (!profile || profile.role !== 'admin') {
+                Swal.fire({ icon:'error', title:'Akses Ditolak', text:'Halaman ini khusus Admin.' }).then(() => window.location.href = 'index.html');
+            } else {
+                // Load Initial Data
+                fetchUsers();
+                fetchAnnouncements();
+                fetchModules();
+            }
+        }
+
+        // --- TAB SWITCHER ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('section-' + tabId).classList.add('active');
+            document.getElementById('menu-' + tabId).classList.add('active');
+        }
+
+        // --- 1. USER MANAGEMENT ---
+        async function fetchUsers() {
+            const { data, error } = await supabaseClient.from('profiles').select('*').order('full_name', { ascending: true });
+            if(!error) {
+                allUsers = data;
+                renderTable(allUsers);
+                
+                // Update Stats
+                document.getElementById('stat-total').innerText = data.length;
+                document.getElementById('stat-lunas').innerText = data.filter(u => u.payment_status === 'Lunas').length;
+                document.getElementById('stat-pending').innerText = data.filter(u => u.payment_status !== 'Lunas').length;
+            }
+        }
+
+        function renderTable(users) {
+            const tbody = document.getElementById('userTableBody');
+            tbody.innerHTML = '';
+            users.forEach(user => {
+                let badge = user.payment_status === 'Lunas' 
+                    ? `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">Lunas</span>` 
+                    : `<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-bold">Pending</span>`;
+                
+                let btnAction = user.payment_status === 'Lunas'
+                    ? `<button onclick="updateStatus('${user.id}', 'Pending')" class="text-yellow-600 font-bold hover:underline">Unverify</button>`
+                    : `<button onclick="updateStatus('${user.id}', 'Lunas')" class="text-green-600 font-bold hover:underline">Verifikasi Lunas</button>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 font-bold text-gray-800">${user.full_name || '-'}</td>
+                        <td class="px-6 py-4 text-gray-500">${user.school || '-'}</td>
+                        <td class="px-6 py-4 text-gray-500"><div class="text-xs">${user.email}<br>${user.phone}</div></td>
+                        <td class="px-6 py-4">${badge}</td>
+                        <td class="px-6 py-4 text-center text-xs gap-2 flex justify-center items-center h-full">
+                            ${btnAction}
+                            <button onclick="deleteUser('${user.id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function updateStatus(id, status) {
+            await supabaseClient.from('profiles').update({ payment_status: status }).eq('id', id);
+            fetchUsers();
+        }
+
+        async function deleteUser(id) {
+            const res = await Swal.fire({ title: 'Hapus User?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya Hapus' });
+            if(res.isConfirmed) {
+                await supabaseClient.from('profiles').delete().eq('id', id);
+                fetchUsers();
+            }
+        }
+        
+        function filterTable() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allUsers.filter(u => (u.full_name && u.full_name.toLowerCase().includes(term)));
+            renderTable(filtered);
+        }
+
+        function exportToExcel() {
+            const ws = XLSX.utils.json_to_sheet(allUsers);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Peserta YLOS");
+            XLSX.writeFile(wb, "Data_Peserta_YLOS.xlsx");
+        }
+
+        // --- 2. ANNOUNCEMENTS ---
+        async function fetchAnnouncements() {
+            const { data } = await supabaseClient.from('announcements').select('*').order('created_at', { ascending: false });
+            const container = document.getElementById('announcement-list');
+            container.innerHTML = '';
+            
+            data.forEach(item => {
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-lg text-gray-800">${item.title}</h4>
+                            <p class="text-gray-600 text-sm mt-1">${item.content}</p>
+                            <span class="text-xs text-gray-400 mt-2 block">${new Date(item.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <button onclick="deleteAnnouncement('${item.id}')" class="text-red-500 hover:text-red-700 p-2"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        async function addAnnouncement() {
+            const title = document.getElementById('announce-title').value;
+            const content = document.getElementById('announce-content').value;
+            if(!title) return;
+
+            await supabaseClient.from('announcements').insert({ title, content });
+            document.getElementById('announce-title').value = '';
+            document.getElementById('announce-content').value = '';
+            Swal.fire('Berhasil', 'Pengumuman diposting', 'success');
+            fetchAnnouncements();
+        }
+
+        async function deleteAnnouncement(id) {
+            await supabaseClient.from('announcements').delete().eq('id', id);
+            fetchAnnouncements();
+        }
+
+        // --- 3. MODULES ---
+        async function fetchModules() {
+            const { data } = await supabaseClient.from('modules').select('*').order('created_at', { ascending: false });
+            const tbody = document.getElementById('module-list');
+            tbody.innerHTML = '';
+
+            data.forEach(mod => {
+                let badge = mod.is_premium 
+                    ? `<span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-bold">Premium</span>`
+                    : `<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold">Free</span>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 border-b border-gray-50">
+                        <td class="px-6 py-3 font-medium text-gray-800">${mod.title}</td>
+                        <td class="px-6 py-3 text-gray-500 text-xs">${mod.category}</td>
+                        <td class="px-6 py-3">${badge}</td>
+                        <td class="px-6 py-3 text-center">
+                            <button onclick="deleteModule('${mod.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function addModule() {
+            const title = document.getElementById('mod-title').value;
+            const link = document.getElementById('mod-link').value;
+            const cat = document.getElementById('mod-category').value;
+            const isPrem = document.getElementById('mod-premium').value === 'true';
+
+            if(!title || !link) return;
+
+            await supabaseClient.from('modules').insert({ title, link_url: link, category: cat, is_premium: isPrem });
+            Swal.fire('Berhasil', 'Materi ditambahkan', 'success');
+            fetchModules();
+        }
+
+        async function deleteModule(id) {
+            await supabaseClient.from('modules').delete().eq('id', id);
+            fetchModules();
+        }
+
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // INIT
+        checkAdmin();
+
+    </script>
+</body>
+</html>
