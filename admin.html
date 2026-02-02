@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YLOS Admin - Ultimate Experience</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YLOS Admin - Mobile Ready</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -23,7 +23,6 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         
-        // TAILWIND CONFIG EXTENSION
         tailwind.config = {
             theme: {
                 extend: {
@@ -52,20 +51,21 @@
 
         /* --- CARDS & GLASS --- */
         .glass-card { background: white; border-radius: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.05); border: 1px solid #F1F5F9; transition: all 0.3s; }
-        .glass-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); border-color: #FBCFE8; }
+        /* Disable heavy hover effects on mobile to prevent sticky states */
+        @media (min-width: 768px) {
+            .glass-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); border-color: #FBCFE8; }
+        }
 
         /* --- TABLE MODERN --- */
-        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; min-width: 600px; /* Ensure table scrolls on mobile */ }
         .modern-table th { color: #64748B; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 20px 10px 20px; text-align: left; font-weight: 700; }
         .modern-table tr { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s; border-radius: 12px; }
         .modern-table td { padding: 16px 20px; border-top: 1px solid #F8FAFC; border-bottom: 1px solid #F8FAFC; }
         .modern-table td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-left: 1px solid #F8FAFC; }
         .modern-table td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; border-right: 1px solid #F8FAFC; }
-        .modern-table tr:hover { transform: scale(1.005); box-shadow: 0 10px 20px rgba(0,0,0,0.05); z-index: 10; position: relative; }
 
         /* --- DIGISIGN UI --- */
-        #pdf-scroll-container { background-color: #334155; padding: 40px; overflow: auto; flex: 1; display: flex; justify-content: center; position: relative; background-image: radial-gradient(#475569 1px, transparent 1px); background-size: 24px 24px; }
-        /* FIX: Added position relative to wrapper to anchor the signature box correctly */
+        #pdf-scroll-container { background-color: #334155; padding: 20px; overflow: auto; flex: 1; display: flex; justify-content: center; position: relative; background-image: radial-gradient(#475569 1px, transparent 1px); background-size: 24px 24px; min-height: 300px; }
         #pdf-wrapper { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 4px; transition: transform 0.3s; position: relative; }
         .signature-box {
             position: absolute; width: 160px; height: 80px;
@@ -75,52 +75,56 @@
             border-radius: 8px; backdrop-filter: blur(4px);
             resize: both; overflow: hidden; min-width: 50px; min-height: 30px;
             box-shadow: 0 4px 15px rgba(219, 39, 119, 0.2);
-            transition: border-color 0.2s, transform 0.1s;
+            touch-action: none; /* Critical for mobile drag */
         }
-        .signature-box:active { cursor: grabbing; border-color: #9D174D; transform: scale(1.02); background-color: rgba(253, 242, 248, 0.8); }
         .signature-box::after { content: '⤡'; position: absolute; bottom: 0; right: 0; color: #DB2777; font-size: 12px; padding: 2px; cursor: se-resize; line-height: 10px; }
         .signature-box img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
         /* --- CALENDAR --- */
-        .fc { background: white; padding: 20px; border-radius: 24px; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03); border: none; }
-        .fc-toolbar-title { font-size: 1.4rem !important; font-weight: 800 !important; color: #334155; }
-        .fc-button-primary { background-color: #DB2777 !important; border: none !important; border-radius: 12px !important; font-weight: 600; text-transform: capitalize; padding: 8px 20px !important; box-shadow: 0 4px 10px rgba(219, 39, 119, 0.3) !important; transition: all 0.2s !important; }
-        .fc-button-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(219, 39, 119, 0.4) !important; }
-        .fc-daygrid-event { border-radius: 8px; background: #FCE7F3; border-left: 4px solid #DB2777; color: #9D174D; font-weight: 700; padding: 4px 8px; border: none; transition: transform 0.2s; }
-        .fc-daygrid-event:hover { transform: scale(1.05); z-index: 50; }
+        .fc { background: white; padding: 10px; border-radius: 24px; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03); border: none; }
+        .fc-toolbar-title { font-size: 1.1rem !important; font-weight: 800 !important; color: #334155; }
+        .fc-button { padding: 4px 10px !important; font-size: 0.8rem !important; }
+        .fc-button-primary { background-color: #DB2777 !important; border: none !important; border-radius: 8px !important; }
 
         /* --- UTILS --- */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; border: 2px solid #F8FAFC; }
-        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
         
-        .ds-tab { position: relative; color: #64748B; font-weight: 600; transition: all 0.3s; }
+        .ds-tab { position: relative; color: #64748B; font-weight: 600; transition: all 0.3s; white-space: nowrap; }
         .ds-tab::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 3px; background: #DB2777; transition: all 0.3s; transform: translateX(-50%); border-radius: 10px; }
         .ds-tab.active { color: #DB2777; }
         .ds-tab.active::after { width: 60%; }
+
+        /* --- MOBILE OVERRIDES --- */
+        #mobile-backdrop {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(2px);
+        }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="flex h-screen overflow-hidden text-sm md:text-base">
 
-    <aside class="w-72 bg-white border-r border-gray-100 hidden md:flex flex-col z-30 shadow-soft">
-        <div class="h-24 flex items-center px-8">
+    <div id="mobile-backdrop" onclick="toggleSidebar()" class="fixed inset-0 z-40 hidden md:hidden transition-opacity"></div>
+
+    <aside id="main-sidebar" class="fixed inset-y-0 left-0 w-72 bg-white border-r border-gray-100 flex flex-col z-50 shadow-soft transform -translate-x-full md:translate-x-0 md:relative transition-transform duration-300 ease-in-out">
+        <div class="h-20 flex items-center px-8 justify-between md:justify-start">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-pink-200 transform hover:rotate-6 transition duration-300">Y</div>
-                <div><span class="text-xl font-extrabold text-gray-900 tracking-tight">YLOS</span><span class="text-[10px] block font-bold text-gray-400 -mt-1 tracking-widest">ADMIN PANEL</span></div>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-pink-200">Y</div>
+                <div><span class="text-xl font-extrabold text-gray-900 tracking-tight">YLOS</span><span class="text-[10px] block font-bold text-gray-400 -mt-1 tracking-widest">ADMIN</span></div>
             </div>
+            <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-pink-600"><i class="fa-solid fa-xmark text-xl"></i></button>
         </div>
         
-        <div class="flex-1 overflow-y-auto px-5 py-2 space-y-8">
+        <div class="flex-1 overflow-y-auto px-5 py-2 space-y-8 custom-scrollbar">
             <div>
                 <p class="px-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 opacity-70">Main Menu</p>
-                <div onclick="switchTab('dashboard')" id="menu-dashboard" class="sidebar-item active px-4 py-3.5 flex items-center gap-3 text-sm"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</div>
-                <div onclick="switchTab('calendar')" id="menu-calendar" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm"><i class="fa-regular fa-calendar-check w-5 text-center"></i> Kalender</div>
+                <div onclick="switchTab('dashboard')" id="menu-dashboard" class="sidebar-item active px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</div>
+                <div onclick="switchTab('calendar')" id="menu-calendar" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-regular fa-calendar-check w-5 text-center"></i> Kalender</div>
             </div>
             
             <div>
                 <p class="px-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 opacity-70">Digital Office</p>
-                <div onclick="switchTab('digisign')" id="menu-digisign" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm group">
+                <div onclick="switchTab('digisign')" id="menu-digisign" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm group cursor-pointer">
                     <i class="fa-solid fa-file-signature w-5 text-center group-hover:scale-110 transition"></i> DigiSign 
                     <span class="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[9px] px-2 py-0.5 rounded-full ml-auto font-bold shadow-sm">PRO</span>
                 </div>
@@ -128,21 +132,21 @@
             
             <div>
                 <p class="px-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 opacity-70">Database</p>
-                <div onclick="switchTab('users')" id="menu-users" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm"><i class="fa-solid fa-users w-5 text-center"></i> Peserta</div>
-                <div onclick="switchTab('verification')" id="menu-verification" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm"><i class="fa-solid fa-envelope-open-text w-5 text-center"></i> Verifikasi</div>
+                <div onclick="switchTab('users')" id="menu-users" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-users w-5 text-center"></i> Peserta</div>
+                <div onclick="switchTab('verification')" id="menu-verification" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-envelope-open-text w-5 text-center"></i> Verifikasi</div>
             </div>
 
             <div>
                 <p class="px-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 opacity-70">System</p>
-                <div onclick="switchTab('announcements')" id="menu-announcements" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm"><i class="fa-solid fa-bullhorn w-5 text-center"></i> Pengumuman</div>
-                <div onclick="switchTab('modules')" id="menu-modules" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm"><i class="fa-solid fa-folder-open w-5 text-center"></i> Materi</div>
-                <div onclick="switchTab('preview')" id="menu-preview" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm"><i class="fa-solid fa-mobile-screen w-5 text-center"></i> Live Preview</div>
+                <div onclick="switchTab('announcements')" id="menu-announcements" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-bullhorn w-5 text-center"></i> Pengumuman</div>
+                <div onclick="switchTab('modules')" id="menu-modules" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-folder-open w-5 text-center"></i> Materi</div>
+                <div onclick="switchTab('preview')" id="menu-preview" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-mobile-screen w-5 text-center"></i> Live Preview</div>
             </div>
         </div>
 
         <div class="p-6 border-t border-gray-50 bg-gray-50/50 space-y-3">
             <a href="index.html" class="btn-press w-full flex items-center justify-center gap-2 text-xs font-bold text-gray-600 bg-white py-3 rounded-xl border border-gray-200 shadow-sm hover:text-pink-600">
-                <i class="fa-solid fa-globe"></i> Website Utama
+                <i class="fa-solid fa-globe"></i> <span class="md:inline">Web Utama</span>
             </a>
             <button onclick="logout()" class="btn-press w-full flex items-center justify-center gap-2 text-xs font-bold text-white bg-gray-900 py-3 rounded-xl hover:bg-black shadow-lg">
                 <i class="fa-solid fa-right-from-bracket"></i> Keluar
@@ -150,48 +154,62 @@
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <header class="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8 md:hidden flex-shrink-0 z-40">
-            <span class="font-extrabold text-lg text-gray-900">YLOS <span class="text-pink-600">Admin</span></span>
-            <div class="flex items-center gap-4">
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative w-full">
+        
+        <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 md:px-8 flex-shrink-0 z-30">
+            
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="md:hidden w-10 h-10 flex items-center justify-center bg-gray-50 rounded-xl text-gray-600 active:bg-gray-100">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <span class="md:hidden font-extrabold text-lg text-gray-900">YLOS <span class="text-pink-600">Admin</span></span>
+                <span class="hidden md:block text-sm font-bold text-gray-400">Overview Panel</span>
+            </div>
+
+            <div class="flex items-center gap-3">
                  <div class="text-right hidden md:block">
                      <span id="admin-name-display" class="text-sm font-bold text-gray-800 block">Loading...</span>
                      <span class="text-[10px] text-gray-500 font-medium">Administrator</span>
                  </div>
-                 <div class="w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center font-bold text-lg border-2 border-white shadow-sm">A</div>
+                 <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center font-bold text-sm md:text-lg border-2 border-white shadow-sm">A</div>
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-8 scroll-smooth bg-[#F8FAFC]">
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth bg-[#F8FAFC]">
             
-            <div id="section-dashboard" class="content-section active space-y-8">
-                <div class="flex justify-between items-center">
-                    <div><h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Dashboard</h1><p class="text-gray-500 text-sm mt-1">Ringkasan aktivitas & performa sistem.</p></div>
-                    <span class="bg-white border border-green-100 text-green-700 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-sm"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> System Online</span>
+            <div id="section-dashboard" class="content-section active space-y-6 md:space-y-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">Dashboard</h1>
+                        <p class="text-gray-500 text-xs md:text-sm mt-1">Ringkasan aktivitas & performa sistem.</p>
+                    </div>
+                    <span class="bg-white border border-green-100 text-green-700 px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold flex items-center gap-2 shadow-sm">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> System Online
+                    </span>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-card p-6 flex flex-col justify-between h-40 relative overflow-hidden group">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                    <div class="glass-card p-5 flex flex-col justify-between h-32 md:h-40 relative overflow-hidden group">
                         <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-50 rounded-full transition-transform group-hover:scale-150 duration-500"></div>
-                        <div class="relative z-10 flex items-center gap-3"><div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-users"></i></div><span class="text-sm font-bold text-gray-500 uppercase tracking-wide">Total Peserta</span></div>
-                        <div class="relative z-10 text-4xl font-extrabold text-gray-900" id="stat-total">0</div>
+                        <div class="relative z-10 flex items-center gap-3"><div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg md:text-xl shadow-sm"><i class="fa-solid fa-users"></i></div><span class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wide">Total Peserta</span></div>
+                        <div class="relative z-10 text-3xl md:text-4xl font-extrabold text-gray-900" id="stat-total">0</div>
                     </div>
-                    <div class="glass-card p-6 flex flex-col justify-between h-40 relative overflow-hidden group">
+                    <div class="glass-card p-5 flex flex-col justify-between h-32 md:h-40 relative overflow-hidden group">
                         <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-50 rounded-full transition-transform group-hover:scale-150 duration-500"></div>
-                        <div class="relative z-10 flex items-center gap-3"><div class="w-12 h-12 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-check-circle"></i></div><span class="text-sm font-bold text-gray-500 uppercase tracking-wide">Lunas</span></div>
-                        <div class="relative z-10 text-4xl font-extrabold text-green-600" id="stat-lunas">0</div>
+                        <div class="relative z-10 flex items-center gap-3"><div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center text-lg md:text-xl shadow-sm"><i class="fa-solid fa-check-circle"></i></div><span class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wide">Lunas</span></div>
+                        <div class="relative z-10 text-3xl md:text-4xl font-extrabold text-green-600" id="stat-lunas">0</div>
                     </div>
-                    <div class="glass-card p-6 flex flex-col justify-between h-40 relative overflow-hidden group">
+                    <div class="glass-card p-5 flex flex-col justify-between h-32 md:h-40 relative overflow-hidden group">
                         <div class="absolute -right-6 -top-6 w-24 h-24 bg-yellow-50 rounded-full transition-transform group-hover:scale-150 duration-500"></div>
-                        <div class="relative z-10 flex items-center gap-3"><div class="w-12 h-12 rounded-2xl bg-yellow-100 text-yellow-600 flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-clock"></i></div><span class="text-sm font-bold text-gray-500 uppercase tracking-wide">Pending</span></div>
-                        <div class="relative z-10 text-4xl font-extrabold text-yellow-600" id="stat-pending">0</div>
+                        <div class="relative z-10 flex items-center gap-3"><div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-yellow-100 text-yellow-600 flex items-center justify-center text-lg md:text-xl shadow-sm"><i class="fa-solid fa-clock"></i></div><span class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wide">Pending</span></div>
+                        <div class="relative z-10 text-3xl md:text-4xl font-extrabold text-yellow-600" id="stat-pending">0</div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 glass-card p-8"><h3 class="font-bold text-gray-800 mb-6 text-lg">Analitik Pendaftaran</h3><div class="h-72"><canvas id="userChart"></canvas></div></div>
-                    <div class="glass-card p-8 flex flex-col h-[26rem]">
-                        <div class="flex justify-between mb-6 items-center"><h3 class="font-bold text-gray-800 text-lg">User Online</h3><span id="online-count" class="text-[10px] bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">0 Active</span></div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+                    <div class="lg:col-span-2 glass-card p-5 md:p-8"><h3 class="font-bold text-gray-800 mb-6 text-base md:text-lg">Analitik Pendaftaran</h3><div class="h-60 md:h-72"><canvas id="userChart"></canvas></div></div>
+                    <div class="glass-card p-5 md:p-8 flex flex-col h-80 md:h-[26rem]">
+                        <div class="flex justify-between mb-6 items-center"><h3 class="font-bold text-gray-800 text-base md:text-lg">User Online</h3><span id="online-count" class="text-[10px] bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">0 Active</span></div>
                         <div id="active-user-list" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar"><div class="text-center py-12 text-gray-400 text-sm italic">Menunggu user login...</div></div>
                     </div>
                 </div>
@@ -199,79 +217,77 @@
 
             <div id="section-calendar" class="content-section space-y-6">
                 <div class="flex justify-between items-center">
-                    <div><h2 class="text-2xl font-bold text-gray-900">Jadwal & Agenda</h2><p class="text-gray-500 text-sm mt-1">Klik & Drag tanggal untuk menambah event.</p></div>
+                    <div><h2 class="text-xl md:text-2xl font-bold text-gray-900">Jadwal</h2><p class="text-gray-500 text-xs mt-1">Klik tanggal untuk event.</p></div>
                 </div>
-                <div id="calendar"></div>
+                <div id="calendar" class="text-xs md:text-sm"></div>
             </div>
 
             <div id="section-digisign" class="content-section space-y-6">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4 glass-card p-6">
-                    <div><h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-file-contract text-pink-500"></i> DigiSign Pro</h2><p class="text-gray-600 text-sm mt-1">Platform tanda tangan digital & approval dokumen.</p></div>
-                    <button onclick="openUploadModal()" class="btn-press bg-gray-900 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-up"></i> Request Tanda Tangan</button>
+                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 glass-card p-6">
+                    <div><h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-file-contract text-pink-500"></i> DigiSign Pro</h2><p class="text-gray-600 text-xs mt-1">Platform tanda tangan digital.</p></div>
+                    <button onclick="openUploadModal()" class="btn-press w-full md:w-auto bg-gray-900 text-white px-6 py-3 rounded-xl font-bold text-xs md:text-sm shadow-lg flex items-center justify-center gap-2"><i class="fa-solid fa-cloud-arrow-up"></i> Request TTD</button>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-card p-6 flex items-center justify-between"><div><p class="text-xs text-gray-400 font-bold uppercase">Inbox Saya</p><h3 class="text-3xl font-extrabold text-pink-600 mt-1" id="ds-need-sign">0</h3></div><div class="w-12 h-12 bg-pink-50 rounded-2xl flex items-center justify-center text-pink-500 text-xl"><i class="fa-solid fa-inbox"></i></div></div>
-                    <div class="glass-card p-6 flex items-center justify-between"><div><p class="text-xs text-gray-400 font-bold uppercase">Request Terkirim</p><h3 class="text-3xl font-extrabold text-blue-600 mt-1" id="ds-sent-personal">0</h3></div><div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 text-xl"><i class="fa-regular fa-paper-plane"></i></div></div>
-                    <div class="glass-card p-6 flex items-center justify-between"><div><p class="text-xs text-gray-400 font-bold uppercase">Arsip Selesai</p><h3 class="text-3xl font-extrabold text-green-600 mt-1" id="ds-completed-global">0</h3></div><div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-500 text-xl"><i class="fa-solid fa-check-double"></i></div></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                    <div class="glass-card p-5 flex items-center justify-between"><div><p class="text-[10px] text-gray-400 font-bold uppercase">Inbox Saya</p><h3 class="text-2xl font-extrabold text-pink-600 mt-1" id="ds-need-sign">0</h3></div><div class="w-10 h-10 bg-pink-50 rounded-xl flex items-center justify-center text-pink-500 text-lg"><i class="fa-solid fa-inbox"></i></div></div>
+                    <div class="glass-card p-5 flex items-center justify-between"><div><p class="text-[10px] text-gray-400 font-bold uppercase">Terkirim</p><h3 class="text-2xl font-extrabold text-blue-600 mt-1" id="ds-sent-personal">0</h3></div><div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 text-lg"><i class="fa-regular fa-paper-plane"></i></div></div>
+                    <div class="glass-card p-5 flex items-center justify-between"><div><p class="text-[10px] text-gray-400 font-bold uppercase">Selesai</p><h3 class="text-2xl font-extrabold text-green-600 mt-1" id="ds-completed-global">0</h3></div><div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-500 text-lg"><i class="fa-solid fa-check-double"></i></div></div>
                 </div>
-
                 <div class="glass-card overflow-hidden">
-                    <div class="flex border-b border-gray-100 p-2 gap-2 bg-gray-50/50">
-                        <button onclick="fetchDigiSignDocs('inbox')" id="tab-inbox" class="ds-tab flex-1 py-3 text-sm font-bold active">Inbox <span id="badge-inbox" class="hidden ml-1 bg-pink-500 text-white text-[10px] px-1.5 py-0.5 rounded-full shadow-sm">0</span></button>
-                        <button onclick="fetchDigiSignDocs('sent')" id="tab-sent" class="ds-tab flex-1 py-3 text-sm font-bold">Request Saya</button>
-                        <button onclick="fetchDigiSignDocs('completed')" id="tab-completed" class="ds-tab flex-1 py-3 text-sm font-bold">Arsip</button>
+                    <div class="flex border-b border-gray-100 p-2 gap-2 bg-gray-50/50 overflow-x-auto no-scrollbar">
+                        <button onclick="fetchDigiSignDocs('inbox')" id="tab-inbox" class="ds-tab flex-1 py-3 text-xs md:text-sm font-bold active px-4">Inbox <span id="badge-inbox" class="hidden ml-1 bg-pink-500 text-white text-[9px] px-1.5 py-0.5 rounded-full shadow-sm">0</span></button>
+                        <button onclick="fetchDigiSignDocs('sent')" id="tab-sent" class="ds-tab flex-1 py-3 text-xs md:text-sm font-bold px-4">Request</button>
+                        <button onclick="fetchDigiSignDocs('completed')" id="tab-completed" class="ds-tab flex-1 py-3 text-xs md:text-sm font-bold px-4">Arsip</button>
                     </div>
                     <div class="overflow-x-auto"><table class="modern-table w-full"><thead><tr><th>Dokumen</th><th>Tracking Flow</th><th>Status</th><th class="text-center">Aksi</th></tr></thead><tbody id="digisign-list"></tbody></table></div>
                 </div>
             </div>
 
             <div id="signing-modal" class="fixed inset-0 bg-gray-900/95 z-[100] hidden flex flex-col transition-opacity duration-300">
-                <div class="bg-white h-16 px-6 flex justify-between items-center border-b border-gray-200 shadow-sm z-50">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600"><i class="fa-solid fa-pen-nib"></i></div>
-                        <div><h3 class="font-bold text-gray-900 leading-tight">Signing Room</h3><p class="text-[10px] text-gray-500 truncate max-w-[200px]" id="doc-name-display">Loading...</p></div>
+                <div class="bg-white h-auto py-3 px-4 md:h-16 md:px-6 flex flex-col md:flex-row justify-between items-center border-b border-gray-200 shadow-sm z-50 gap-2 md:gap-0">
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 flex-shrink-0"><i class="fa-solid fa-pen-nib"></i></div>
+                        <div class="flex-1 min-w-0"><h3 class="font-bold text-gray-900 leading-tight text-sm">Signing Room</h3><p class="text-[10px] text-gray-500 truncate" id="doc-name-display">Loading...</p></div>
                     </div>
-                    <div class="flex gap-3">
-                        <button onclick="closeSigningModal()" class="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">Batal</button>
-                        <button onclick="saveSignedDocument()" class="btn-press px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 rounded-lg shadow-md flex items-center gap-2"><i class="fa-solid fa-check"></i> Selesai & Kirim</button>
+                    <div class="flex gap-3 w-full md:w-auto justify-end">
+                        <button onclick="closeSigningModal()" class="flex-1 md:flex-none px-4 py-2 text-xs md:text-sm font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition border border-gray-200 md:border-none">Batal</button>
+                        <button onclick="saveSignedDocument()" class="flex-1 md:flex-none btn-press px-5 py-2 text-xs md:text-sm font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 rounded-lg shadow-md flex items-center justify-center gap-2"><i class="fa-solid fa-check"></i> Kirim</button>
                     </div>
                 </div>
-                <div class="flex-1 flex overflow-hidden">
-                    <div class="w-72 bg-white border-r border-gray-200 flex flex-col z-40 shadow-xl flex-shrink-0">
-                        <div class="p-6 border-b border-gray-100">
-                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Buat Tanda Tangan</h4>
-                            <div class="border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 relative overflow-hidden group hover:border-pink-400 transition h-32 mb-3">
+                <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+                    <div class="w-full md:w-72 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col z-40 shadow-xl flex-shrink-0 order-1 md:order-1 h-auto max-h-[40vh] md:max-h-full overflow-y-auto">
+                        <div class="p-4 md:p-6 border-b border-gray-100">
+                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Area Tanda Tangan</h4>
+                            <div class="border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 relative overflow-hidden group hover:border-pink-400 transition h-24 md:h-32 mb-3 touch-none">
                                 <canvas id="signature-pad" class="w-full h-full cursor-crosshair touch-none"></canvas>
-                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"><button onclick="clearPad()" class="bg-white p-1.5 rounded shadow text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button></div>
+                                <div class="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"><button onclick="clearPad()" class="bg-white p-1.5 rounded shadow text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button></div>
                             </div>
-                            <button onclick="useSignature()" class="btn-press w-full bg-gray-800 text-white py-2.5 rounded-lg text-xs font-bold hover:bg-gray-900 shadow-lg">GUNAKAN</button>
+                            <button onclick="useSignature()" class="btn-press w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 shadow-lg">GUNAKAN</button>
                         </div>
-                        <div class="p-6 flex-1 overflow-y-auto">
+                        <div class="p-4 md:p-6 flex-1 overflow-y-auto hidden md:block">
                             <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Disimpan</h4>
                             <div id="saved-sig-container" class="space-y-3"></div>
                         </div>
-                        <div class="p-4 text-[10px] text-gray-400 border-t border-gray-100 text-center bg-gray-50">💡 Tarik pojok kanan bawah box untuk resize.</div>
+                        <div class="p-2 text-[10px] text-gray-400 border-t border-gray-100 text-center bg-gray-50 md:block hidden">💡 Drag pojok kanan bawah box untuk resize.</div>
                     </div>
-                    <div id="pdf-scroll-container">
+                    <div id="pdf-scroll-container" class="order-2 md:order-2">
                         <div id="pdf-wrapper"><canvas id="the-canvas"></canvas><div id="drag-signature" class="signature-box hidden"><img id="drag-sig-img" src="" alt="TTD"></div></div>
                     </div>
                 </div>
             </div>
 
             <div id="section-users" class="content-section space-y-6">
-                <div class="glass-card p-6">
-                    <div class="flex justify-between items-center mb-6">
+                 <div class="glass-card p-4 md:p-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                         <div class="flex items-center gap-3">
-                            <h2 class="font-bold text-gray-800 text-xl">Data Peserta</h2>
+                            <h2 class="font-bold text-gray-800 text-lg md:text-xl">Data Peserta</h2>
                             <span class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded font-bold">Total: <span id="table-total">0</span></span>
                         </div>
-                        <div class="flex gap-3">
-                             <div class="relative">
+                        <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                             <div class="relative w-full md:w-auto">
                                 <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
-                                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama..." class="pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-pink-500 transition shadow-sm w-64">
+                                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama..." class="pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-pink-500 transition shadow-sm w-full md:w-64">
                              </div>
-                             <button onclick="exportToExcel()" class="btn-press text-xs bg-green-600 text-white px-4 py-2 rounded-xl font-bold shadow-sm hover:bg-green-700 flex items-center gap-2"><i class="fa-solid fa-file-excel"></i> Export</button>
+                             <button onclick="exportToExcel()" class="btn-press text-xs bg-green-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm hover:bg-green-700 flex items-center justify-center gap-2 w-full md:w-auto"><i class="fa-solid fa-file-excel"></i> Export</button>
                         </div>
                     </div>
                     <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama Lengkap</th><th>Sekolah</th><th>Kontak</th><th>Status Pembayaran</th><th class="text-center">Aksi</th></tr></thead><tbody id="userTableBody"></tbody></table></div>
@@ -279,31 +295,31 @@
             </div>
 
             <div id="section-verification" class="content-section space-y-6">
-                <div class="glass-card p-6">
+                 <div class="glass-card p-4 md:p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <div><h2 class="font-bold text-gray-800 text-xl">Bantuan Verifikasi</h2><p class="text-xs text-gray-500 mt-1">Kirim link verifikasi untuk user ongoing.</p></div>
-                        <button onclick="fetchUsers()" class="btn-press text-xs bg-white border border-gray-200 text-gray-600 px-4 py-2 rounded-xl font-bold hover:bg-gray-50 flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> Refresh Data</button>
+                        <div><h2 class="font-bold text-gray-800 text-lg md:text-xl">Bantuan Verifikasi</h2><p class="text-xs text-gray-500 mt-1">Kirim ulang link login.</p></div>
+                        <button onclick="fetchUsers()" class="btn-press text-xs bg-white border border-gray-200 text-gray-600 px-3 py-2 rounded-xl font-bold hover:bg-gray-50 flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> <span class="hidden md:inline">Refresh</span></button>
                     </div>
                     <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama</th><th>Email</th><th>WhatsApp</th><th>Status Login</th><th class="text-center">Aksi</th></tr></thead><tbody id="verification-list"></tbody></table></div>
                 </div>
             </div>
 
             <div id="section-announcements" class="content-section space-y-6">
-                <div class="flex justify-between items-center"><h2 class="text-2xl font-bold text-gray-900">Pengumuman</h2><span class="text-[10px] text-gray-500 bg-white px-3 py-1 rounded-full border shadow-sm">Drag untuk atur prioritas</span></div>
-                <div class="glass-card p-6 mb-6">
+                 <div class="flex justify-between items-center"><h2 class="text-xl md:text-2xl font-bold text-gray-900">Pengumuman</h2><span class="text-[10px] text-gray-500 bg-white px-3 py-1 rounded-full border shadow-sm">Drag untuk atur</span></div>
+                <div class="glass-card p-4 md:p-6 mb-6">
                     <div class="space-y-4">
-                        <input id="announce-title" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white transition outline-none focus:border-pink-500" placeholder="Judul Pengumuman">
-                        <textarea id="announce-content" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white transition outline-none focus:border-pink-500" rows="2" placeholder="Isi detail..."></textarea>
-                        <div class="flex justify-end"><button onclick="addAnnouncement()" class="btn-press bg-pink-600 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg">Posting Pengumuman</button></div>
+                        <input id="announce-title" class="w-full p-3 md:p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white transition outline-none focus:border-pink-500" placeholder="Judul Pengumuman">
+                        <textarea id="announce-content" class="w-full p-3 md:p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white transition outline-none focus:border-pink-500" rows="2" placeholder="Isi detail..."></textarea>
+                        <div class="flex justify-end"><button onclick="addAnnouncement()" class="btn-press w-full md:w-auto bg-pink-600 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg">Posting</button></div>
                     </div>
                 </div>
                 <div id="announcement-list" class="space-y-3"></div>
             </div>
 
             <div id="section-modules" class="content-section space-y-6">
-                <div class="flex justify-between items-center"><h2 class="text-2xl font-bold text-gray-900">Materi & Modul</h2><span class="text-[10px] text-gray-500 bg-white px-3 py-1 rounded-full border shadow-sm">Drag untuk atur prioritas</span></div>
-                <div class="glass-card p-6 mb-6">
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                 <div class="flex justify-between items-center"><h2 class="text-xl md:text-2xl font-bold text-gray-900">Materi & Modul</h2></div>
+                <div class="glass-card p-4 md:p-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <input id="mod-title" class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none" placeholder="Judul Materi">
                         <input id="mod-link" class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none" placeholder="Link File (Drive/Youtube)">
                         <select id="mod-category" class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none"><option value="Guidebook">Guidebook</option><option value="Materi">Materi</option><option value="Video">Video</option></select>
@@ -315,16 +331,16 @@
             </div>
 
             <div id="section-preview" class="content-section h-full flex flex-col space-y-4">
-                <div class="flex justify-between items-center glass-card p-4">
+                 <div class="flex flex-col md:flex-row justify-between items-center glass-card p-4 gap-4">
                     <h2 class="font-bold text-gray-800 ml-2">Live Preview</h2>
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 w-full md:w-auto justify-center">
                         <button onclick="setPreviewMode('desktop')" class="px-4 py-2 bg-gray-100 rounded-xl text-xs font-bold hover:bg-gray-200 transition">Desktop</button>
                         <button onclick="setPreviewMode('mobile')" class="px-4 py-2 bg-gray-100 rounded-xl text-xs font-bold hover:bg-gray-200 transition">Mobile</button>
                         <button onclick="reloadPreview()" class="px-4 py-2 bg-pink-50 text-pink-600 rounded-xl text-xs font-bold hover:bg-pink-100 transition"><i class="fa-solid fa-rotate"></i></button>
                     </div>
                 </div>
-                <div id="preview-container" class="flex-1 bg-gray-200 rounded-3xl flex justify-center items-center p-8 border border-gray-300 overflow-hidden shadow-inner">
-                    <div id="preview-wrapper" class="w-full h-full bg-white shadow-2xl rounded-2xl border-[12px] border-gray-800 overflow-hidden transition-all duration-500 relative">
+                <div id="preview-container" class="flex-1 bg-gray-200 rounded-xl md:rounded-3xl flex justify-center items-center p-2 md:p-8 border border-gray-300 overflow-hidden shadow-inner min-h-[500px]">
+                    <div id="preview-wrapper" class="w-full h-full bg-white shadow-2xl rounded-2xl border-[4px] md:border-[12px] border-gray-800 overflow-hidden transition-all duration-500 relative">
                         <iframe id="preview-frame" src="index.html?preview=true#dashboard" class="w-full h-full" frameborder="0"></iframe>
                     </div>
                 </div>
@@ -337,6 +353,22 @@
         const supabaseClient = supabase.createClient('https://jrslgkxwjvugvgakxwsd.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk');
         const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
         let allUsers=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
+
+        // MOBILE SIDEBAR TOGGLE
+        function toggleSidebar() {
+            const sidebar = document.getElementById('main-sidebar');
+            const backdrop = document.getElementById('mobile-backdrop');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                // Open
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                // Close
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
 
         async function checkAdmin() {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -372,13 +404,13 @@
             const tbody = document.getElementById('digisign-list'); tbody.innerHTML = '';
             if(!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400 italic">Tidak ada dokumen.</td></tr>`; return; }
             data.forEach(doc => {
-                let tracking = `<div class="flex items-center gap-2 text-xs bg-gray-50 w-fit px-3 py-1 rounded-full"><span class="font-bold text-blue-600">${doc.requester?.full_name || 'Admin'}</span> <i class="fa-solid fa-arrow-right text-gray-400 text-[10px]"></i> <span class="font-bold text-pink-600">${doc.signer?.full_name || 'Admin'}</span></div>`;
+                let tracking = `<div class="flex flex-col md:flex-row items-start md:items-center gap-2 text-xs bg-gray-50 w-fit px-3 py-1 rounded-full"><span class="font-bold text-blue-600">${doc.requester?.full_name || 'Admin'}</span> <i class="fa-solid fa-arrow-right text-gray-400 text-[10px] hidden md:inline"></i> <span class="font-bold text-pink-600">${doc.signer?.full_name || 'Admin'}</span></div>`;
                 let btn = '';
-                if(filter === 'inbox') btn = `<button onclick="openSigningRoom('${doc.id}', '${doc.filename}')" class="bg-pink-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-pink-700 shadow-sm transition transform hover:-translate-y-0.5">Tanda Tangani</button>`;
+                if(filter === 'inbox') btn = `<button onclick="openSigningRoom('${doc.id}', '${doc.filename}')" class="bg-pink-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-pink-700 shadow-sm transition transform hover:-translate-y-0.5 whitespace-nowrap">Tanda Tangani</button>`;
                 else if(doc.status === 'signed') btn = `<button onclick="downloadSignedDoc('${doc.signed_file_path.split('/').pop()}')" class="text-green-600 font-bold text-xs hover:underline flex items-center gap-1 mx-auto bg-green-50 px-3 py-1 rounded-lg border border-green-200"><i class="fa-solid fa-download"></i> Unduh</button>`;
                 else btn = `<span class="text-gray-400 text-xs font-mono bg-gray-50 px-2 py-1 rounded">Menunggu...</span>`;
                 let status = doc.status === 'signed' ? '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase border border-green-200">Selesai</span>' : '<span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase border border-yellow-200">Pending</span>';
-                tbody.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 font-medium text-gray-800">${doc.filename}</td><td class="px-6 py-4">${tracking}</td><td class="px-6 py-4">${status}</td><td class="px-6 py-4 text-center">${btn}</td></tr>`;
+                tbody.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 font-medium text-gray-800"><div class="truncate max-w-[150px] md:max-w-none" title="${doc.filename}">${doc.filename}</div></td><td class="px-6 py-4">${tracking}</td><td class="px-6 py-4">${status}</td><td class="px-6 py-4 text-center">${btn}</td></tr>`;
             });
         }
         async function downloadSignedDoc(fileName) {
@@ -410,8 +442,17 @@
                 if(signaturePad) signaturePad.off(); signaturePad = new SignaturePad(sigCanvas); signaturePad.clear();
                 const { data, error } = await supabaseClient.storage.from('digisign-files').download(fileName); if (error) throw error; pdfBytes = await data.arrayBuffer();
                 const loadingTask = pdfjsLib.getDocument({data: cloneBuffer(pdfBytes)}); const pdf = await loadingTask.promise; const page = await pdf.getPage(1);
-                const canvas = document.getElementById('the-canvas'); const viewport = page.getViewport({scale: 1.0});
-                canvas.height = viewport.height; canvas.width = viewport.width; await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
+                const canvas = document.getElementById('the-canvas'); 
+                
+                // Scale logic for mobile
+                const containerWidth = document.getElementById('pdf-wrapper').parentElement.clientWidth - 40; // padding adjusted
+                const viewport = page.getViewport({scale: 1.0});
+                const scale = containerWidth < viewport.width ? containerWidth / viewport.width : 1.0;
+                const scaledViewport = page.getViewport({scale: scale});
+                
+                canvas.height = scaledViewport.height; canvas.width = scaledViewport.width; 
+                await page.render({canvasContext: canvas.getContext('2d'), viewport: scaledViewport}).promise;
+                
                 const dragEl = document.getElementById('drag-signature'); dragEl.classList.add('hidden'); dragEl.style.top = '100px'; dragEl.style.left = '100px'; initDraggable(dragEl); Swal.close();
             } catch (err) { Swal.fire('Gagal', err.message, 'error'); }
         }
@@ -419,23 +460,40 @@
             if (signaturePad && signaturePad.isEmpty()) return Toast.fire({ icon: 'warning', title: 'Tanda tangan dulu dong!' });
             const dataUrl = signaturePad.toDataURL(); document.getElementById('drag-sig-img').src = dataUrl; document.getElementById('drag-signature').classList.remove('hidden');
             Toast.fire({ icon: 'success', title: 'Geser & Resize Tanda Tangan!' });
+            // Close sidebar tool on mobile automatically to show pdf
+            if(window.innerWidth < 768) {
+               // Optional: Scroll to PDF
+            }
             if(!mySavedSignature) { Swal.fire({ title: 'Simpan Tanda Tangan?', text: 'Untuk penggunaan berikutnya.', icon: 'question', showCancelButton: true, confirmButtonText: 'Ya', cancelButtonText: 'Nanti' }).then((res) => { if(res.isConfirmed) saveMySignature(dataUrl); }); }
         }
         function initDraggable(el) {
             let isDragging = false, startX, startY, initialLeft, initialTop;
             const container = document.getElementById('pdf-wrapper');
-            el.onmousedown = (e) => { 
-                if(e.offsetX > el.offsetWidth - 15 && e.offsetY > el.offsetHeight - 15) return; 
-                isDragging = true; startX = e.clientX; startY = e.clientY; 
+            
+            const handleStart = (clientX, clientY) => {
+                if(clientX > el.getBoundingClientRect().right - 15 && clientY > el.getBoundingClientRect().bottom - 15) return; 
+                isDragging = true; startX = clientX; startY = clientY; 
                 initialLeft = el.offsetLeft; initialTop = el.offsetTop; 
                 el.style.cursor = 'grabbing'; 
-            };
-            window.onmousemove = (e) => { 
-                if(!isDragging) return; e.preventDefault(); 
-                el.style.left = `${initialLeft + e.clientX - startX}px`; 
-                el.style.top = `${initialTop + e.clientY - startY}px`; 
-            };
-            window.onmouseup = () => { isDragging = false; el.style.cursor = 'grab'; };
+            }
+
+            const handleMove = (clientX, clientY, e) => {
+                if(!isDragging) return; if(e) e.preventDefault();
+                el.style.left = `${initialLeft + clientX - startX}px`; 
+                el.style.top = `${initialTop + clientY - startY}px`; 
+            }
+
+            const handleEnd = () => { isDragging = false; el.style.cursor = 'grab'; };
+
+            // Mouse events
+            el.onmousedown = (e) => handleStart(e.clientX, e.clientY);
+            window.onmousemove = (e) => handleMove(e.clientX, e.clientY, e);
+            window.onmouseup = handleEnd;
+
+            // Touch events
+            el.ontouchstart = (e) => handleStart(e.touches[0].clientX, e.touches[0].clientY);
+            window.ontouchmove = (e) => handleMove(e.touches[0].clientX, e.touches[0].clientY, e);
+            window.ontouchend = handleEnd;
         }
         async function saveSignedDocument() {
             const dragEl = document.getElementById('drag-signature'); if(dragEl.classList.contains('hidden')) return Toast.fire({ icon: 'warning', title: 'Letakkan tanda tangan di dokumen!' });
@@ -446,20 +504,16 @@
                 const canvas = document.getElementById('the-canvas');
                 
                 // --- FIXED COORDINATE LOGIC ---
-                // Calculate position relative to canvas element (ignores scroll/margin issues)
                 const canvasRect = canvas.getBoundingClientRect();
                 const sigRect = dragEl.getBoundingClientRect();
-                
                 const relativeX = sigRect.left - canvasRect.left;
                 const relativeY = sigRect.top - canvasRect.top;
 
                 const pdfWidth = firstPage.getWidth();
                 const pdfHeight = firstPage.getHeight();
-                
                 const scaleX = pdfWidth / canvas.width;
                 const scaleY = pdfHeight / canvas.height;
                 
-                // PDF coordinates: origin is bottom-left
                 const x = relativeX * scaleX;
                 const y = pdfHeight - ((relativeY + dragEl.offsetHeight) * scaleY);
                 const width = dragEl.offsetWidth * scaleX;
@@ -482,41 +536,39 @@
         function useSavedSignature() { if(!mySavedSignature) return; document.getElementById('drag-sig-img').src = mySavedSignature; document.getElementById('drag-signature').classList.remove('hidden'); Toast.fire({ icon: 'success', title: 'Tanda tangan dimuat' }); }
 
         // --- DASHBOARD & USER LOGIC ---
-        function switchTab(tabId) { document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active')); document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active')); document.getElementById('section-' + tabId).classList.add('active'); document.getElementById('menu-' + tabId).classList.add('active'); if (tabId === 'calendar') setTimeout(() => { !calendarInstance ? initCalendar() : calendarInstance.render(); }, 100); }
+        function switchTab(tabId) { 
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active')); 
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active')); 
+            document.getElementById('section-' + tabId).classList.add('active'); 
+            document.getElementById('menu-' + tabId).classList.add('active'); 
+            if (tabId === 'calendar') setTimeout(() => { !calendarInstance ? initCalendar() : calendarInstance.render(); }, 100); 
+            
+            // Auto close sidebar on mobile after click
+            if(window.innerWidth < 768) {
+                const sidebar = document.getElementById('main-sidebar');
+                const backdrop = document.getElementById('mobile-backdrop');
+                if (!sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                    backdrop.classList.add('hidden');
+                }
+            }
+        }
         async function fetchUsers() { const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); allUsers = data||[]; renderTable(allUsers); renderVerificationList(allUsers); document.getElementById('stat-total').innerText = allUsers.length; document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; document.getElementById('table-total').innerText = allUsers.length; }
         function renderTable(users) { document.getElementById('userTableBody').innerHTML = users.map(u => { const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; const action = u.payment_status === 'Lunas' ? `<button onclick="updateStatus('${u.id}', 'Pending')" class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition font-bold">Batalkan</button>` : `<button onclick="updateStatus('${u.id}', 'Lunas')" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition font-bold">Verifikasi</button>`; return `<tr class="hover:scale-[1.01] transition duration-200"><td class="p-4 font-bold text-gray-800">${u.full_name || '-'}</td><td class="p-4 text-gray-500">${u.school || '-'}</td><td class="p-4 text-xs font-mono text-gray-500">${u.phone || '-'}</td><td class="p-4">${badge}</td><td class="p-4 text-center flex gap-2 justify-center">${action}<button onclick="deleteUser('${u.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button></td></tr>`; }).join(''); }
-        function renderVerificationList(users) { document.getElementById('verification-list').innerHTML = users.slice(0, 10).map(u => { let statusLogin = u.email ? `<span class="text-green-500 text-[10px] font-bold bg-green-50 px-3 py-1 rounded-full">● Aktif</span>` : `<span class="text-gray-400 text-[10px] bg-gray-50 px-3 py-1 rounded-full">○ Belum</span>`; return `<tr><td class="p-4 font-bold text-gray-700">${u.full_name}</td><td class="p-4 text-xs text-blue-600 font-mono">${u.email}</td><td class="p-4 text-xs font-mono">${u.phone}</td><td class="p-4 text-center">${statusLogin}</td><td class="p-4 text-center"><button onclick="resendEmail('${u.email}')" class="text-xs bg-gray-900 text-white px-4 py-1.5 rounded-lg shadow hover:bg-black transition flex items-center gap-2 mx-auto"><i class="fa-regular fa-paper-plane"></i> Kirim Link</button></td></tr>`; }).join(''); }
+        function renderVerificationList(users) { document.getElementById('verification-list').innerHTML = users.slice(0, 10).map(u => { let statusLogin = u.email ? `<span class="text-green-500 text-[10px] font-bold bg-green-50 px-3 py-1 rounded-full">● Aktif</span>` : `<span class="text-gray-400 text-[10px] bg-gray-50 px-3 py-1 rounded-full">○ Belum</span>`; return `<tr><td class="p-4 font-bold text-gray-700">${u.full_name}</td><td class="p-4 text-xs text-blue-600 font-mono">${u.email}</td><td class="p-4 text-xs font-mono">${u.phone}</td><td class="p-4 text-center">${statusLogin}</td><td class="p-4 text-center"><button onclick="resendEmail('${u.email}')" class="text-xs bg-gray-900 text-white px-4 py-1.5 rounded-lg shadow hover:bg-black transition flex items-center gap-2 mx-auto whitespace-nowrap"><i class="fa-regular fa-paper-plane"></i> Kirim Link</button></td></tr>`; }).join(''); }
         async function updateStatus(id, status) { Swal.showLoading(); await supabaseClient.from('profiles').update({ payment_status: status }).eq('id', id); Swal.close(); fetchUsers(); Toast.fire({ icon: 'success', title: 'Status diupdate' }); }
         async function deleteUser(id) { if((await Swal.fire({title:'Hapus Data?', text:'Tindakan ini permanen', icon:'warning', showCancelButton:true})).isConfirmed) { await supabaseClient.from('profiles').delete().eq('id', id); fetchUsers(); Toast.fire({ icon: 'success', title: 'Data dihapus' }); } }
         
         // --- FIXED VERIFICATION LOGIC FOR ONGOING USERS ---
         async function resendEmail(email) { 
             Swal.showLoading(); 
-            // 1. Try sending verification email (for new users who haven't verified)
-            const { error } = await supabaseClient.auth.resend({ 
-                type: 'signup', 
-                email: email, 
-                options: { emailRedirectTo: window.location.origin + '/index.html' } 
-            }); 
-            
+            const { error } = await supabaseClient.auth.resend({ type: 'signup', email: email, options: { emailRedirectTo: window.location.origin + '/index.html' } }); 
             if (error) {
-                // 2. If already verified, try sending a magic link (login link) for "ongoing" users
                 if(error.message.includes("already")) {
-                    const { error: magicLinkError } = await supabaseClient.auth.signInWithOtp({
-                        email: email,
-                        options: { emailRedirectTo: window.location.origin + '/index.html' }
-                    });
-                    if(magicLinkError) {
-                         Swal.fire('Gagal', magicLinkError.message, 'error');
-                    } else {
-                         Swal.fire({ icon: 'success', title: 'Link Login Terkirim!', text: `User ongoing. Link login dikirim ke ${email}`, showConfirmButton: false, timer: 2000 });
-                    }
-                } else {
-                    Swal.fire('Gagal', error.message, 'error');
-                }
-            } else {
-                Swal.fire({ icon: 'success', title: 'Verifikasi Terkirim!', text: `Link verifikasi dikirim ke ${email}`, showConfirmButton: false, timer: 2000 });
-            }
+                    const { error: magicLinkError } = await supabaseClient.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin + '/index.html' } });
+                    if(magicLinkError) { Swal.fire('Gagal', magicLinkError.message, 'error'); } else { Swal.fire({ icon: 'success', title: 'Link Login Terkirim!', text: `User ongoing. Link login dikirim ke ${email}`, showConfirmButton: false, timer: 2000 }); }
+                } else { Swal.fire('Gagal', error.message, 'error'); }
+            } else { Swal.fire({ icon: 'success', title: 'Verifikasi Terkirim!', text: `Link verifikasi dikirim ke ${email}`, showConfirmButton: false, timer: 2000 }); }
         }
         
         function filterTable() { const term = document.getElementById('searchInput').value.toLowerCase(); renderTable(allUsers.filter(u => u.full_name.toLowerCase().includes(term) || u.school.toLowerCase().includes(term))); }
@@ -525,7 +577,7 @@
         function initCalendar() { 
             const calendarEl = document.getElementById('calendar'); 
             calendarInstance = new FullCalendar.Calendar(calendarEl, { 
-                initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' }, locale: 'id', editable: true, selectable: true, selectMirror: true,
+                initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next', center: 'title', right: 'dayGridMonth,listWeek' }, locale: 'id', editable: true, selectable: true, selectMirror: true, height: 'auto',
                 events: async (info, success, failure) => { const { data, error } = await supabaseClient.from('admin_calendar').select('*'); if (error) failure(error); else success(data.map(evt => ({ id: evt.id, title: evt.title, start: evt.start_time, end: evt.end_time, description: evt.description, allDay: !evt.end_time }))); }, 
                 select: async (info) => { 
                     const { value: f } = await Swal.fire({ title: 'Tambah Jadwal', html: `<input id="cal-title" class="swal2-input" placeholder="Judul Kegiatan"><textarea id="cal-desc" class="swal2-textarea" placeholder="Detail"></textarea><div class="flex gap-2 mt-4"><div class="w-1/2"><label class="text-xs font-bold text-gray-500">Mulai</label><input id="cal-start" type="datetime-local" class="swal2-input m-0 mt-1" value="${info.startStr}T09:00"></div><div class="w-1/2"><label class="text-xs font-bold text-gray-500">Selesai</label><input id="cal-end" type="datetime-local" class="swal2-input m-0 mt-1" value="${info.endStr}T10:00"></div></div>`, focusConfirm: false, showCancelButton: true, confirmButtonText: 'Simpan', confirmButtonColor: '#DB2777', preConfirm: () => ({ title: document.getElementById('cal-title').value, description: document.getElementById('cal-desc').value, start: document.getElementById('cal-start').value, end: document.getElementById('cal-end').value || null }) }); 
@@ -542,7 +594,7 @@
             document.getElementById('announcement-list').innerHTML = data.map(item => `
                 <div data-id="${item.id}" class="glass-card p-4 flex items-center gap-4 group draggable-item cursor-move mb-3">
                     <i class="fa-solid fa-grip-vertical text-gray-300 group-hover:text-pink-400 transition"></i>
-                    <div class="flex-1"><h4 class="font-bold text-gray-800 text-sm">${item.title}</h4><p class="text-xs text-gray-500 truncate max-w-lg">${item.content}</p></div>
+                    <div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm truncate">${item.title}</h4><p class="text-xs text-gray-500 truncate">${item.content}</p></div>
                     <button onclick="delAnnounce('${item.id}')" class="text-gray-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
                 </div>`).join(''); 
             new Sortable(document.getElementById('announcement-list'), { animation: 150, handle: '.fa-grip-vertical', onEnd: async (evt) => { await updateOrder(evt.to, 'announcements'); Toast.fire({ icon: 'success', title: 'Prioritas diupdate' }); } });
@@ -556,8 +608,8 @@
             document.getElementById('module-list').innerHTML = data.map(mod => `
                 <div data-id="${mod.id}" class="glass-card p-4 flex items-center gap-4 group draggable-item cursor-move mb-3">
                     <i class="fa-solid fa-grip-vertical text-gray-300 group-hover:text-pink-400 transition"></i>
-                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500"><i class="fa-solid fa-file-alt"></i></div>
-                    <div class="flex-1"><h4 class="font-bold text-gray-800 text-sm">${mod.title}</h4><span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase">${mod.category}</span></div>
+                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 flex-shrink-0"><i class="fa-solid fa-file-alt"></i></div>
+                    <div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm truncate">${mod.title}</h4><span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase">${mod.category}</span></div>
                     <button onclick="delModule('${mod.id}')" class="text-gray-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
                 </div>`).join(''); 
             new Sortable(document.getElementById('module-list'), { animation: 150, handle: '.fa-grip-vertical', onEnd: async (evt) => { await updateOrder(evt.to, 'modules'); Toast.fire({ icon: 'success', title: 'Urutan Materi Diupdate' }); } });
