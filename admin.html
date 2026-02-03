@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YLOS Admin</title>
+    <title>YLOS Admin - Security Check</title>
 
      <link rel="icon" type="image/png" href="LOGO YLOS 5x5.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -37,6 +37,19 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #1E293B; overflow: hidden; }
         
+        /* --- SECURITY LOADER --- */
+        #security-overlay {
+            position: fixed; inset: 0; background: #ffffff; z-index: 9999999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease-out;
+        }
+        .loader-spinner {
+            width: 50px; height: 50px; border: 5px solid #f3f3f3;
+            border-top: 5px solid #DB2777; border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* --- ANIMATIONS & INTERACTIONS --- */
         .btn-press { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .btn-press:active { transform: scale(0.94); }
@@ -52,13 +65,12 @@
 
         /* --- CARDS & GLASS --- */
         .glass-card { background: white; border-radius: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.05); border: 1px solid #F1F5F9; transition: all 0.3s; }
-        /* Disable heavy hover effects on mobile to prevent sticky states */
         @media (min-width: 768px) {
             .glass-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); border-color: #FBCFE8; }
         }
 
         /* --- TABLE MODERN --- */
-        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; min-width: 600px; /* Ensure table scrolls on mobile */ }
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; min-width: 600px; }
         .modern-table th { color: #64748B; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 20px 10px 20px; text-align: left; font-weight: 700; }
         .modern-table tr { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s; border-radius: 12px; }
         .modern-table td { padding: 16px 20px; border-top: 1px solid #F8FAFC; border-bottom: 1px solid #F8FAFC; }
@@ -76,43 +88,18 @@
             border-radius: 8px; backdrop-filter: blur(4px);
             resize: both; overflow: hidden; min-width: 50px; min-height: 30px;
             box-shadow: 0 4px 15px rgba(219, 39, 119, 0.2);
-            touch-action: none; /* Critical for mobile drag */
+            touch-action: none;
         }
         .signature-box::after { content: '⤡'; position: absolute; bottom: 0; right: 0; color: #DB2777; font-size: 12px; padding: 2px; cursor: se-resize; line-height: 10px; }
         .signature-box img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
         /* --- CALENDAR --- */
         .swal2-container { z-index: 999999 !important; }
-        .swal-cal-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    text-align: left;
-}
-.swal-cal-row {
-    display: flex;
-    gap: 10px;
-}
-.swal-cal-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-.swal-cal-label {
-    font-size: 11px;
-    font-weight: 800;
-    color: #64748B;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-    margin-left: 4px;
-}
-.swal-cal-input {
-    width: 100% !important;
-    margin: 0 !important;
-    border-radius: 12px !important;
-    border: 1px solid #E2E8F0 !important;
-    font-size: 14px !important;
-}
+        .swal-cal-container { display: flex; flex-direction: column; gap: 1rem; text-align: left; }
+        .swal-cal-row { display: flex; gap: 10px; }
+        .swal-cal-group { flex: 1; display: flex; flex-direction: column; }
+        .swal-cal-label { font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-bottom: 4px; margin-left: 4px; }
+        .swal-cal-input { width: 100% !important; margin: 0 !important; border-radius: 12px !important; border: 1px solid #E2E8F0 !important; font-size: 14px !important; }
         .fc { background: white; padding: 20px; border-radius: 24px; z-index: 1; }
         .fc-toolbar-title { font-size: 1.1rem !important; font-weight: 800 !important; color: #334155; }
         .fc-button { padding: 4px 10px !important; font-size: 0.8rem !important; }
@@ -127,14 +114,16 @@
         .ds-tab.active { color: #DB2777; }
         .ds-tab.active::after { width: 60%; }
 
-        /* --- MOBILE OVERRIDES --- */
-        #mobile-backdrop {
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(2px);
-        }
+        #mobile-backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-sm md:text-base">
+
+    <div id="security-overlay">
+        <div class="loader-spinner mb-4"></div>
+        <h2 class="text-xl font-extrabold text-gray-800 tracking-tight">YLOS <span class="text-pink-600">Secure</span></h2>
+        <p class="text-xs text-gray-400 font-mono mt-2" id="security-status">Verifying Admin Privileges...</p>
+    </div>
 
     <div id="mobile-backdrop" onclick="toggleSidebar()" class="fixed inset-0 z-40 hidden md:hidden transition-opacity"></div>
 
@@ -336,11 +325,17 @@
 
             <div id="section-verification" class="content-section space-y-6">
                  <div class="glass-card p-4 md:p-6">
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                         <div><h2 class="font-bold text-gray-800 text-lg md:text-xl">Bantuan Verifikasi</h2><p class="text-xs text-gray-500 mt-1">Kirim ulang link login.</p></div>
-                        <button onclick="fetchUsers()" class="btn-press text-xs bg-white border border-gray-200 text-gray-600 px-3 py-2 rounded-xl font-bold hover:bg-gray-50 flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> <span class="hidden md:inline">Refresh</span></button>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <div class="relative w-full md:w-64">
+                                <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
+                                <input type="text" id="searchVerification" onkeyup="filterVerification()" placeholder="Cari email/nama..." class="pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-pink-500 transition shadow-sm w-full">
+                            </div>
+                            <button onclick="fetchUsers()" class="btn-press text-xs bg-white border border-gray-200 text-gray-600 px-3 py-2 rounded-xl font-bold hover:bg-gray-50 flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> <span class="hidden md:inline">Refresh</span></button>
+                        </div>
                     </div>
-                    <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama</th><th>Email</th><th>WhatsApp</th><th>Status Login</th><th class="text-center">Aksi</th></tr></thead><tbody id="verification-list"></tbody></table></div>
+                    <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama</th><th>Email</th><th>WhatsApp</th><th>Status Pendaftaran</th><th>Status Login</th><th class="text-center">Aksi</th></tr></thead><tbody id="verification-list"></tbody></table></div>
                 </div>
             </div>
 
@@ -410,12 +405,72 @@
             }
         }
 
+        // --- SECURITY: HARDENED ADMIN CHECK ---
         async function checkAdmin() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) { window.location.href = 'index.html'; return; }
-            const { data: userProfile } = await supabaseClient.from('profiles').select('full_name').eq('id', session.user.id).single();
-            if(userProfile) document.getElementById('admin-name-display').innerText = `Halo, ${userProfile.full_name}`;
-            fetchUsers(); fetchAnnouncements(); fetchModules(); initChart(); initRealtimeDashboard(); initCalendarRealtime(); initDatabaseRealtime(); initDigiSignRealtime(); fetchDigiSignDocs(); loadMySignature();
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                // 1. Cek Sesi Login
+                if (!session) throw new Error("Unauthorized");
+
+                // 2. Cek Role di Database (Double Protection)
+                const { data: profile, error } = await supabaseClient
+                    .from('profiles')
+                    .select('role, full_name')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (error || !profile) throw new Error("Profile Error");
+
+                // 3. VALIDASI KETAT: Hanya Role Admin yang lolos
+                if (profile.role !== 'admin') {
+                    // Jika user login tapi bukan admin, PAKSA LOGOUT
+                    await supabaseClient.auth.signOut();
+                    throw new Error("Access Denied: Not an Admin");
+                }
+
+                // 4. Lolos Validasi -> Buka UI
+                document.getElementById('security-status').innerText = "Access Granted.";
+                document.getElementById('admin-name-display').innerText = `Halo, ${profile.full_name}`;
+                
+                // Animasi buka overlay
+                const overlay = document.getElementById('security-overlay');
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+
+                // Load Data
+                fetchUsers(); 
+                fetchAnnouncements(); 
+                fetchModules(); 
+                initChart(); 
+                initRealtimeDashboard(); 
+                initCalendarRealtime(); 
+                initDatabaseRealtime(); 
+                initDigiSignRealtime(); 
+                fetchDigiSignDocs(); 
+                loadMySignature();
+
+            } catch (err) {
+                console.error("Security Breach Attempt:", err);
+                
+                // HANCURKAN HALAMAN (Nuke DOM) agar tidak bisa di-inspect
+                document.body.innerHTML = '';
+                
+                // Tampilkan Alert Error lalu tendang
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'AKSES DITOLAK!',
+                    text: 'Akun Anda tidak memiliki kualifikasi Administrator.',
+                    confirmButtonText: 'Kembali',
+                    confirmButtonColor: '#DB2777',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                });
+                
+                window.location.href = 'index.html';
+            }
         }
 
         // --- REALTIME LISTENERS ---
@@ -472,77 +527,71 @@
         }
 
         async function changePdfPage(offset) {
-    const newPage = currentPageNum + offset;
-    if (newPage >= 1 && newPage <= totalPdfPages) {
-        currentPageNum = newPage;
-        
-        // Opsional: Tampilkan loading kecil jika PDF berat
-        const canvas = document.getElementById('the-canvas');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.font = "20px Arial";
-        ctx.fillText("Loading page...", 50, 50);
-
-        await renderCurrentPage();
-    }
-}
+            const newPage = currentPageNum + offset;
+            if (newPage >= 1 && newPage <= totalPdfPages) {
+                currentPageNum = newPage;
+                const canvas = document.getElementById('the-canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = "20px Arial";
+                ctx.fillText("Loading page...", 50, 50);
+                await renderCurrentPage();
+            }
+        }
 
         // --- SIGNING ROOM ---
         function cloneBuffer(buffer) { const dst = new ArrayBuffer(buffer.byteLength); new Uint8Array(dst).set(new Uint8Array(buffer)); return dst; }
         async function openSigningRoom(docId, fileName) {
-    currentDocId = docId;
-    document.getElementById('doc-name-display').innerText = fileName;
-    document.getElementById('signing-modal').classList.remove('hidden');
-    
-    Swal.fire({title: 'Memuat...', didOpen: () => Swal.showLoading(), backdrop: false, showConfirmButton: false});
-    await new Promise(r => setTimeout(r, 500));
+            currentDocId = docId;
+            document.getElementById('doc-name-display').innerText = fileName;
+            document.getElementById('signing-modal').classList.remove('hidden');
+            
+            Swal.fire({title: 'Memuat...', didOpen: () => Swal.showLoading(), backdrop: false, showConfirmButton: false});
+            await new Promise(r => setTimeout(r, 500));
 
-    try {
-        // Init Signature Pad
-        const sigCanvas = document.getElementById('signature-pad'); 
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        sigCanvas.width = sigCanvas.offsetWidth * ratio; 
-        sigCanvas.height = sigCanvas.offsetHeight * ratio; 
-        sigCanvas.getContext("2d").scale(ratio, ratio);
-        
-        if(signaturePad) signaturePad.off(); 
-        signaturePad = new SignaturePad(sigCanvas); 
-        signaturePad.clear();
+            try {
+                // Init Signature Pad
+                const sigCanvas = document.getElementById('signature-pad'); 
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                sigCanvas.width = sigCanvas.offsetWidth * ratio; 
+                sigCanvas.height = sigCanvas.offsetHeight * ratio; 
+                sigCanvas.getContext("2d").scale(ratio, ratio);
+                
+                if(signaturePad) signaturePad.off(); 
+                signaturePad = new SignaturePad(sigCanvas); 
+                signaturePad.clear();
 
-        // Download PDF
-        const { data, error } = await supabaseClient.storage.from('digisign-files').download(fileName); 
-        if (error) throw error; 
-        pdfBytes = await data.arrayBuffer();
+                // Download PDF
+                const { data, error } = await supabaseClient.storage.from('digisign-files').download(fileName); 
+                if (error) throw error; 
+                pdfBytes = await data.arrayBuffer();
 
-        // Load PDF Object
-        const loadingTask = pdfjsLib.getDocument({data: cloneBuffer(pdfBytes)});
-        currentPdfObject = await loadingTask.promise;
-        totalPdfPages = currentPdfObject.numPages;
-        
-        // Reset ke Halaman 1
-        currentPageNum = 1;
-        await renderCurrentPage();
+                // Load PDF Object
+                const loadingTask = pdfjsLib.getDocument({data: cloneBuffer(pdfBytes)});
+                currentPdfObject = await loadingTask.promise;
+                totalPdfPages = currentPdfObject.numPages;
+                
+                // Reset ke Halaman 1
+                currentPageNum = 1;
+                await renderCurrentPage();
 
-        // Reset Signature Drag Element position
-        const dragEl = document.getElementById('drag-signature'); 
-        dragEl.classList.add('hidden'); 
-        dragEl.style.top = '100px'; 
-        dragEl.style.left = '100px'; 
-        initDraggable(dragEl); 
-        
-        Swal.close();
-    } catch (err) { 
-        Swal.fire('Gagal', err.message, 'error'); 
-    }
-}
+                // Reset Signature Drag Element position
+                const dragEl = document.getElementById('drag-signature'); 
+                dragEl.classList.add('hidden'); 
+                dragEl.style.top = '100px'; 
+                dragEl.style.left = '100px'; 
+                initDraggable(dragEl); 
+                
+                Swal.close();
+            } catch (err) { 
+                Swal.fire('Gagal', err.message, 'error'); 
+            }
+        }
         function useSignature() {
             if (signaturePad && signaturePad.isEmpty()) return Toast.fire({ icon: 'warning', title: 'Tanda tangan dulu dong!' });
             const dataUrl = signaturePad.toDataURL(); document.getElementById('drag-sig-img').src = dataUrl; document.getElementById('drag-signature').classList.remove('hidden');
             Toast.fire({ icon: 'success', title: 'Geser & Resize Tanda Tangan!' });
-            // Close sidebar tool on mobile automatically to show pdf
-            if(window.innerWidth < 768) {
-               // Optional: Scroll to PDF
-            }
+            if(window.innerWidth < 768) { }
             if(!mySavedSignature) { Swal.fire({ title: 'Simpan Tanda Tangan?', text: 'Untuk penggunaan berikutnya.', icon: 'question', showCancelButton: true, confirmButtonText: 'Ya', cancelButtonText: 'Nanti' }).then((res) => { if(res.isConfirmed) saveMySignature(dataUrl); }); }
         }
         function initDraggable(el) {
@@ -575,57 +624,53 @@
             window.ontouchend = handleEnd;
         }
         async function saveSignedDocument() {
-    const dragEl = document.getElementById('drag-signature'); 
-    if(dragEl.classList.contains('hidden')) return Toast.fire({ icon: 'warning', title: 'Letakkan tanda tangan di dokumen!' });
-    
-    Swal.fire({title: 'Memproses...', didOpen: () => Swal.showLoading()});
-    
-    try {
-        const pdfDoc = await PDFLib.PDFDocument.load(cloneBuffer(pdfBytes));
-        
-        // PERUBAHAN DISINI: Ambil halaman berdasarkan currentPageNum (index dimulai dari 0)
-        const pages = pdfDoc.getPages();
-        const activePageIdx = currentPageNum - 1; 
-        const activePage = pages[activePageIdx];
+            const dragEl = document.getElementById('drag-signature'); 
+            if(dragEl.classList.contains('hidden')) return Toast.fire({ icon: 'warning', title: 'Letakkan tanda tangan di dokumen!' });
+            
+            Swal.fire({title: 'Memproses...', didOpen: () => Swal.showLoading()});
+            
+            try {
+                const pdfDoc = await PDFLib.PDFDocument.load(cloneBuffer(pdfBytes));
+                
+                const pages = pdfDoc.getPages();
+                const activePageIdx = currentPageNum - 1; 
+                const activePage = pages[activePageIdx];
 
-        const imgEl = document.getElementById('drag-sig-img'); 
-        const sigImage = await pdfDoc.embedPng(imgEl.src);
-        const canvas = document.getElementById('the-canvas');
-        
-        // Coordinate Logic
-        const canvasRect = canvas.getBoundingClientRect();
-        const sigRect = dragEl.getBoundingClientRect();
-        const relativeX = sigRect.left - canvasRect.left;
-        const relativeY = sigRect.top - canvasRect.top;
+                const imgEl = document.getElementById('drag-sig-img'); 
+                const sigImage = await pdfDoc.embedPng(imgEl.src);
+                const canvas = document.getElementById('the-canvas');
+                
+                const canvasRect = canvas.getBoundingClientRect();
+                const sigRect = dragEl.getBoundingClientRect();
+                const relativeX = sigRect.left - canvasRect.left;
+                const relativeY = sigRect.top - canvasRect.top;
 
-        const pdfWidth = activePage.getWidth();
-        const pdfHeight = activePage.getHeight();
-        const scaleX = pdfWidth / canvas.width;
-        const scaleY = pdfHeight / canvas.height;
-        
-        const x = relativeX * scaleX;
-        // PDF Lib koordinat Y dimulai dari bawah, Browser dari atas
-        const y = pdfHeight - ((relativeY + dragEl.offsetHeight) * scaleY);
-        const width = dragEl.offsetWidth * scaleX;
-        const height = dragEl.offsetHeight * scaleY;
-        
-        activePage.drawImage(sigImage, { x, y, width, height });
+                const pdfWidth = activePage.getWidth();
+                const pdfHeight = activePage.getHeight();
+                const scaleX = pdfWidth / canvas.width;
+                const scaleY = pdfHeight / canvas.height;
+                
+                const x = relativeX * scaleX;
+                const y = pdfHeight - ((relativeY + dragEl.offsetHeight) * scaleY);
+                const width = dragEl.offsetWidth * scaleX;
+                const height = dragEl.offsetHeight * scaleY;
+                
+                activePage.drawImage(sigImage, { x, y, width, height });
 
-        // Save & Upload
-        const pdfBytesSigned = await pdfDoc.save();
-        const signedFile = new File([new Blob([pdfBytesSigned], { type: 'application/pdf' })], `signed_${Date.now()}.pdf`, { type: 'application/pdf' });
-        const { error: upErr } = await supabaseClient.storage.from('digisign-files').upload(`signed/${signedFile.name}`, signedFile); 
-        if(upErr) throw upErr;
-        
-        await supabaseClient.from('digisign_documents').update({ status: 'signed', signed_file_path: `signed/${signedFile.name}`, signed_at: new Date() }).eq('id', currentDocId);
-        
-        closeSigningModal(); 
-        fetchDigiSignDocs(); 
-        Swal.fire({ icon: 'success', title: 'Berhasil!', text: `Dokumen ditandatangani di Halaman ${currentPageNum}.`, showConfirmButton: false, timer: 2000 });
-    } catch (err) { 
-        Swal.fire('Gagal', err.message, 'error'); 
-    }
-}
+                const pdfBytesSigned = await pdfDoc.save();
+                const signedFile = new File([new Blob([pdfBytesSigned], { type: 'application/pdf' })], `signed_${Date.now()}.pdf`, { type: 'application/pdf' });
+                const { error: upErr } = await supabaseClient.storage.from('digisign-files').upload(`signed/${signedFile.name}`, signedFile); 
+                if(upErr) throw upErr;
+                
+                await supabaseClient.from('digisign_documents').update({ status: 'signed', signed_file_path: `signed/${signedFile.name}`, signed_at: new Date() }).eq('id', currentDocId);
+                
+                closeSigningModal(); 
+                fetchDigiSignDocs(); 
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: `Dokumen ditandatangani di Halaman ${currentPageNum}.`, showConfirmButton: false, timer: 2000 });
+            } catch (err) { 
+                Swal.fire('Gagal', err.message, 'error'); 
+            }
+        }
         function closeSigningModal() { document.getElementById('signing-modal').classList.add('hidden'); } function clearPad() { if(signaturePad) signaturePad.clear(); }
         async function loadMySignature() { const { data: { user } } = await supabaseClient.auth.getUser(); const { data } = await supabaseClient.from('admin_signatures').select('signature_data').eq('admin_id', user.id).single(); const container = document.getElementById('saved-sig-container'); if (data && data.signature_data) { mySavedSignature = data.signature_data; container.innerHTML = `<div onclick="useSavedSignature()" class="bg-white border-2 border-gray-200 rounded-xl p-2 cursor-pointer hover:border-pink-500 hover:shadow-md transition group relative h-24 flex items-center justify-center"><img src="${data.signature_data}" class="max-h-full max-w-full object-contain"><div class="absolute inset-0 bg-pink-600/10 opacity-0 group-hover:opacity-100 transition rounded-xl flex items-center justify-center backdrop-blur-sm"><span class="bg-white text-pink-600 px-3 py-1 rounded-full text-xs font-bold shadow-sm">Pakai Ini</span></div></div><div class="text-center mt-2"><button onclick="deleteMySignature()" class="text-xs text-red-400 hover:text-red-600 underline">Hapus</button></div>`; } else { container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs italic bg-gray-50 rounded-xl border border-gray-100 border-dashed">Belum ada.</div>`; mySavedSignature = null; } }
         async function saveMySignature(dataUrl) { const { data: { user } } = await supabaseClient.auth.getUser(); await supabaseClient.from('admin_signatures').upsert({ admin_id: user.id, signature_data: dataUrl }); loadMySignature(); Toast.fire({ icon: 'success', title: 'Tanda tangan disimpan' }); }
@@ -640,7 +685,6 @@
             document.getElementById('menu-' + tabId).classList.add('active'); 
             if (tabId === 'calendar') setTimeout(() => { !calendarInstance ? initCalendar() : calendarInstance.render(); }, 100); 
             
-            // Auto close sidebar on mobile after click
             if(window.innerWidth < 768) {
                 const sidebar = document.getElementById('main-sidebar');
                 const backdrop = document.getElementById('mobile-backdrop');
@@ -652,42 +696,57 @@
         }
 
 
-async function renderCurrentPage() {
-    if (!currentPdfObject) return;
-    
-    // Update Indicator Text
-    document.getElementById('page-indicator').innerText = `Page ${currentPageNum}/${totalPdfPages}`;
-    
-    // Update Button States
-    document.getElementById('btn-prev-page').disabled = currentPageNum <= 1;
-    document.getElementById('btn-next-page').disabled = currentPageNum >= totalPdfPages;
-
-    // Fetch Page
-    const page = await currentPdfObject.getPage(currentPageNum);
-    const canvas = document.getElementById('the-canvas');
-    const ctx = canvas.getContext('2d');
-
-    // Scale Logic (Sama seperti sebelumnya)
-    const containerWidth = document.getElementById('pdf-wrapper').parentElement.clientWidth - 40;
-    const viewport = page.getViewport({scale: 1.0});
-    const scale = containerWidth < viewport.width ? containerWidth / viewport.width : 1.0;
-    const scaledViewport = page.getViewport({scale: scale});
-    
-    canvas.height = scaledViewport.height; 
-    canvas.width = scaledViewport.width;
-    
-    // Render
-    await page.render({canvasContext: ctx, viewport: scaledViewport}).promise;
-}
+        async function renderCurrentPage() {
+            if (!currentPdfObject) return;
+            document.getElementById('page-indicator').innerText = `Page ${currentPageNum}/${totalPdfPages}`;
+            document.getElementById('btn-prev-page').disabled = currentPageNum <= 1;
+            document.getElementById('btn-next-page').disabled = currentPageNum >= totalPdfPages;
+            const page = await currentPdfObject.getPage(currentPageNum);
+            const canvas = document.getElementById('the-canvas');
+            const ctx = canvas.getContext('2d');
+            const containerWidth = document.getElementById('pdf-wrapper').parentElement.clientWidth - 40;
+            const viewport = page.getViewport({scale: 1.0});
+            const scale = containerWidth < viewport.width ? containerWidth / viewport.width : 1.0;
+            const scaledViewport = page.getViewport({scale: scale});
+            canvas.height = scaledViewport.height; 
+            canvas.width = scaledViewport.width;
+            await page.render({canvasContext: ctx, viewport: scaledViewport}).promise;
+        }
 
 
         async function fetchUsers() { const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); allUsers = data||[]; renderTable(allUsers); renderVerificationList(allUsers); document.getElementById('stat-total').innerText = allUsers.length; document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; document.getElementById('table-total').innerText = allUsers.length; }
         function renderTable(users) { document.getElementById('userTableBody').innerHTML = users.map(u => { const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; const action = u.payment_status === 'Lunas' ? `<button onclick="updateStatus('${u.id}', 'Pending')" class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition font-bold">Batalkan</button>` : `<button onclick="updateStatus('${u.id}', 'Lunas')" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition font-bold">Verifikasi</button>`; return `<tr class="hover:scale-[1.01] transition duration-200"><td class="p-4 font-bold text-gray-800">${u.full_name || '-'}</td><td class="p-4 text-gray-500">${u.school || '-'}</td><td class="p-4 text-xs font-mono text-gray-500">${u.phone || '-'}</td><td class="p-4">${badge}</td><td class="p-4 text-center flex gap-2 justify-center">${action}<button onclick="deleteUser('${u.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button></td></tr>`; }).join(''); }
-        function renderVerificationList(users) { document.getElementById('verification-list').innerHTML = users.slice(0, 10).map(u => { let statusLogin = u.email ? `<span class="text-green-500 text-[10px] font-bold bg-green-50 px-3 py-1 rounded-full">● Aktif</span>` : `<span class="text-gray-400 text-[10px] bg-gray-50 px-3 py-1 rounded-full">○ Belum</span>`; return `<tr><td class="p-4 font-bold text-gray-700">${u.full_name}</td><td class="p-4 text-xs text-blue-600 font-mono">${u.email}</td><td class="p-4 text-xs font-mono">${u.phone}</td><td class="p-4 text-center">${statusLogin}</td><td class="p-4 text-center"><button onclick="resendEmail('${u.email}')" class="text-xs bg-gray-900 text-white px-4 py-1.5 rounded-lg shadow hover:bg-black transition flex items-center gap-2 mx-auto whitespace-nowrap"><i class="fa-regular fa-paper-plane"></i> Kirim Link</button></td></tr>`; }).join(''); }
+        
+        function filterVerification() {
+            const term = document.getElementById('searchVerification').value.toLowerCase();
+            const filtered = allUsers.filter(u => 
+                (u.full_name && u.full_name.toLowerCase().includes(term)) || 
+                (u.email && u.email.toLowerCase().includes(term))
+            );
+            renderVerificationList(filtered);
+        }
+
+        function renderVerificationList(users) { 
+            document.getElementById('verification-list').innerHTML = users.map(u => { 
+                let statusLogin = u.email ? `<span class="text-green-500 text-[10px] font-bold bg-green-50 px-3 py-1 rounded-full">● Aktif</span>` : `<span class="text-gray-400 text-[10px] bg-gray-50 px-3 py-1 rounded-full">○ Belum</span>`; 
+                let regStatus = u.email 
+                    ? `<span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-bold border border-blue-200">Berhasil Mendaftar</span>` 
+                    : `<span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-[10px] font-bold border border-orange-200">Menunggu Konfirmasi</span>`;
+
+                return `<tr>
+                    <td class="p-4 font-bold text-gray-700">${u.full_name}</td>
+                    <td class="p-4 text-xs text-blue-600 font-mono">${u.email}</td>
+                    <td class="p-4 text-xs font-mono">${u.phone}</td>
+                    <td class="p-4 text-center">${regStatus}</td>
+                    <td class="p-4 text-center">${statusLogin}</td>
+                    <td class="p-4 text-center"><button onclick="resendEmail('${u.email}')" class="text-xs bg-gray-900 text-white px-4 py-1.5 rounded-lg shadow hover:bg-black transition flex items-center gap-2 mx-auto whitespace-nowrap"><i class="fa-regular fa-paper-plane"></i> Kirim Link</button></td>
+                </tr>`; 
+            }).join(''); 
+        }
+        
         async function updateStatus(id, status) { Swal.showLoading(); await supabaseClient.from('profiles').update({ payment_status: status }).eq('id', id); Swal.close(); fetchUsers(); Toast.fire({ icon: 'success', title: 'Status diupdate' }); }
         async function deleteUser(id) { if((await Swal.fire({title:'Hapus Data?', text:'Tindakan ini permanen', icon:'warning', showCancelButton:true})).isConfirmed) { await supabaseClient.from('profiles').delete().eq('id', id); fetchUsers(); Toast.fire({ icon: 'success', title: 'Data dihapus' }); } }
         
-        // --- FIXED VERIFICATION LOGIC FOR ONGOING USERS ---
         async function resendEmail(email) { 
             Swal.showLoading(); 
             const { error } = await supabaseClient.auth.resend({ type: 'signup', email: email, options: { emailRedirectTo: window.location.origin + '/index.html' } }); 
@@ -703,123 +762,51 @@ async function renderCurrentPage() {
 
         // --- CALENDAR (GOOGLE STYLE) ---
         function initCalendar() { 
-    const calendarEl = document.getElementById('calendar'); 
-    calendarInstance = new FullCalendar.Calendar(calendarEl, { 
-        initialView: 'dayGridMonth', 
-        headerToolbar: { 
-            left: 'prev,next today', 
-            center: 'title', 
-            right: 'dayGridMonth,listWeek' 
-        }, 
-        locale: 'id', 
-        editable: true, 
-        selectable: true, 
-        selectMirror: true, 
-        dayMaxEvents: true,
-        height: 'auto',
-        events: async (info, success, failure) => { 
-            const { data, error } = await supabaseClient.from('admin_calendar').select('*'); 
-            if (error) failure(error); 
-            else success(data.map(evt => ({ 
-                id: evt.id, 
-                title: evt.title, 
-                start: evt.start_time, 
-                end: evt.end_time, 
-                description: evt.description 
-            }))); 
-        }, 
-        select: async (info) => { 
-            // FIX LOGIC: FullCalendar end date bersifat eksklusif (n+1). 
-            // Kita sesuaikan agar user tidak bingung saat slide select.
-            let adjustedEndDate = new Date(info.end);
-            if (!info.allDay) {
-                // Jika ada jamnya, biarkan apa adanya
-            } else {
-                // Jika select harian (grid), kurangi 1 hari untuk tampilan input yang akurat
-                adjustedEndDate.setDate(adjustedEndDate.getDate() - 0);
-            }
-            
-            const displayEndDate = adjustedEndDate.toISOString().split('T')[0];
+            const calendarEl = document.getElementById('calendar'); 
+            calendarInstance = new FullCalendar.Calendar(calendarEl, { 
+                initialView: 'dayGridMonth', 
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listWeek' }, 
+                locale: 'id', editable: true, selectable: true, selectMirror: true, dayMaxEvents: true, height: 'auto',
+                events: async (info, success, failure) => { 
+                    const { data, error } = await supabaseClient.from('admin_calendar').select('*'); 
+                    if (error) failure(error); 
+                    else success(data.map(evt => ({ id: evt.id, title: evt.title, start: evt.start_time, end: evt.end_time, description: evt.description }))); 
+                }, 
+                select: async (info) => { 
+                    let adjustedEndDate = new Date(info.end);
+                    if (info.allDay) adjustedEndDate.setDate(adjustedEndDate.getDate() - 0);
+                    const displayEndDate = adjustedEndDate.toISOString().split('T')[0];
 
-            const { value: f } = await Swal.fire({ 
-                title: 'Tambah Jadwal',
-                html: `
-                <div class="swal-cal-container">
-                    <div class="swal-cal-group">
-                        <label class="swal-cal-label">Judul Kegiatan</label>
-                        <input id="cal-title" class="swal2-input swal-cal-input" placeholder="Contoh: Meeting Koordinasi">
-                    </div>
-                    <div class="swal-cal-group">
-                        <label class="swal-cal-label">Detail</label>
-                        <textarea id="cal-desc" class="swal2-textarea swal-cal-input" style="height: 80px" placeholder="Tambahkan deskripsi..."></textarea>
-                    </div>
-                    <div class="swal-cal-row">
-                        <div class="swal-cal-group">
-                            <label class="swal-cal-label">Mulai</label>
-                            <input id="cal-start" type="datetime-local" class="swal2-input swal-cal-input" value="${info.startStr}T09:00">
-                        </div>
-                        <div class="swal-cal-group">
-                            <label class="swal-cal-label">Selesai</label>
-                            <input id="cal-end" type="datetime-local" class="swal2-input swal-cal-input" value="${displayEndDate}T17:00">
-                        </div>
-                    </div>
-                </div>`, 
-                focusConfirm: false, 
-                showCancelButton: true, 
-                confirmButtonText: 'Simpan Jadwal', 
-                confirmButtonColor: '#DB2777',
-                cancelButtonText: 'Batal',
-                customClass: {
-                    confirmButton: 'btn-press rounded-xl px-6',
-                    cancelButton: 'rounded-xl'
-                },
-                preConfirm: () => {
-                    const title = document.getElementById('cal-title').value;
-                    if (!title) {
-                        Swal.showValidationMessage('Judul tidak boleh kosong!');
-                        return false;
+                    const { value: f } = await Swal.fire({ 
+                        title: 'Tambah Jadwal',
+                        html: `<div class="swal-cal-container"><div class="swal-cal-group"><label class="swal-cal-label">Judul Kegiatan</label><input id="cal-title" class="swal2-input swal-cal-input" placeholder="Contoh: Meeting Koordinasi"></div><div class="swal-cal-group"><label class="swal-cal-label">Detail</label><textarea id="cal-desc" class="swal2-textarea swal-cal-input" style="height: 80px" placeholder="Tambahkan deskripsi..."></textarea></div><div class="swal-cal-row"><div class="swal-cal-group"><label class="swal-cal-label">Mulai</label><input id="cal-start" type="datetime-local" class="swal2-input swal-cal-input" value="${info.startStr}T09:00"></div><div class="swal-cal-group"><label class="swal-cal-label">Selesai</label><input id="cal-end" type="datetime-local" class="swal2-input swal-cal-input" value="${displayEndDate}T17:00"></div></div></div>`, 
+                        focusConfirm: false, showCancelButton: true, confirmButtonText: 'Simpan Jadwal', confirmButtonColor: '#DB2777', cancelButtonText: 'Batal',
+                        customClass: { confirmButton: 'btn-press rounded-xl px-6', cancelButton: 'rounded-xl' },
+                        preConfirm: () => {
+                            const title = document.getElementById('cal-title').value;
+                            if (!title) { Swal.showValidationMessage('Judul tidak boleh kosong!'); return false; }
+                            return { title: title, description: document.getElementById('cal-desc').value, start: document.getElementById('cal-start').value, end: document.getElementById('cal-end').value }
+                        } 
+                    }); 
+                    if (f) { 
+                        await supabaseClient.from('admin_calendar').insert({ title: f.title, description: f.description, start_time: f.start, end_time: f.end }); 
+                        calendarInstance.refetchEvents(); Toast.fire({ icon: 'success', title: 'Jadwal Berhasil Ditambahkan' }); 
                     }
-                    return { 
-                        title: title, 
-                        description: document.getElementById('cal-desc').value, 
-                        start: document.getElementById('cal-start').value, 
-                        end: document.getElementById('cal-end').value 
-                    }
-                } 
+                    calendarInstance.unselect();
+                }, 
+                eventClick: async (info) => {
+                    const evt = info.event; 
+                    if ((await Swal.fire({ 
+                        title: evt.title, 
+                        html: `<div class="text-left text-sm text-gray-600"><p class="mb-2">${evt.extendedProps.description || 'Tidak ada deskripsi'}</p><hr class="my-2"><p class="text-[10px] font-bold text-gray-400 uppercase">Waktu:</p><p>${evt.start.toLocaleString('id-ID')}</p></div>`, 
+                        showDenyButton: true, confirmButtonText: 'Tutup', denyButtonText: 'Hapus Jadwal', confirmButtonColor: '#334155', denyButtonColor: '#DC2626' 
+                    })).isDenied) { 
+                        await supabaseClient.from('admin_calendar').delete().eq('id', evt.id); evt.remove(); Toast.fire({ icon: 'success', title: 'Jadwal Dihapus' }); 
+                    } 
+                }
             }); 
-
-            if (f) { 
-                await supabaseClient.from('admin_calendar').insert({ 
-                    title: f.title, 
-                    description: f.description, 
-                    start_time: f.start, 
-                    end_time: f.end 
-                }); 
-                calendarInstance.refetchEvents(); 
-                Toast.fire({ icon: 'success', title: 'Jadwal Berhasil Ditambahkan' }); 
-            }
-            calendarInstance.unselect();
-        }, 
-        eventClick: async (info) => {
-            // ... (Kode eventClick kamu yang sudah ada tetap di sini)
-            const evt = info.event; 
-            if ((await Swal.fire({ 
-                title: evt.title, 
-                html: `<div class="text-left text-sm text-gray-600"><p class="mb-2">${evt.extendedProps.description || 'Tidak ada deskripsi'}</p><hr class="my-2"><p class="text-[10px] font-bold text-gray-400 uppercase">Waktu:</p><p>${evt.start.toLocaleString('id-ID')}</p></div>`, 
-                showDenyButton: true, 
-                confirmButtonText: 'Tutup', 
-                denyButtonText: 'Hapus Jadwal', 
-                confirmButtonColor: '#334155', 
-                denyButtonColor: '#DC2626' 
-            })).isDenied) { 
-                await supabaseClient.from('admin_calendar').delete().eq('id', evt.id); 
-                evt.remove(); 
-                Toast.fire({ icon: 'success', title: 'Jadwal Dihapus' }); 
-            } 
+            calendarInstance.render(); 
         }
-    }); 
-    calendarInstance.render(); 
-}
         function initCalendarRealtime() { supabaseClient.channel('calendar-sync').on('postgres_changes', { event: '*', schema: 'public', table: 'admin_calendar' }, () => { if(calendarInstance) calendarInstance.refetchEvents(); }).subscribe(); }
         
         async function fetchAnnouncements() { 
@@ -857,8 +844,8 @@ async function renderCurrentPage() {
         function exportToExcel() { const ws = XLSX.utils.json_to_sheet(allUsers); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, "Data_Peserta.xlsx"); Toast.fire({ icon: 'success', title: 'Download Excel dimulai' }); }
         async function logout() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
 
+        // Start Security Check Immediately
         checkAdmin();
     </script>
 </body>
 </html>
-
