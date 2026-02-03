@@ -244,37 +244,45 @@
             </div>
 
             <div id="signing-modal" class="fixed inset-0 bg-gray-900/95 z-[100] hidden flex flex-col transition-opacity duration-300">
-                <div class="bg-white h-auto py-3 px-4 md:h-16 md:px-6 flex flex-col md:flex-row justify-between items-center border-b border-gray-200 shadow-sm z-50 gap-2 md:gap-0">
-                    <div class="flex items-center gap-3 w-full md:w-auto">
-                        <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 flex-shrink-0"><i class="fa-solid fa-pen-nib"></i></div>
-                        <div class="flex-1 min-w-0"><h3 class="font-bold text-gray-900 leading-tight text-sm">Signing Room</h3><p class="text-[10px] text-gray-500 truncate" id="doc-name-display">Loading...</p></div>
-                    </div>
-                    <div class="flex gap-3 w-full md:w-auto justify-end">
-                        <button onclick="closeSigningModal()" class="flex-1 md:flex-none px-4 py-2 text-xs md:text-sm font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition border border-gray-200 md:border-none">Batal</button>
-                        <button onclick="saveSignedDocument()" class="flex-1 md:flex-none btn-press px-5 py-2 text-xs md:text-sm font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 rounded-lg shadow-md flex items-center justify-center gap-2"><i class="fa-solid fa-check"></i> Kirim</button>
-                    </div>
+    <div class="bg-white h-auto py-3 px-4 md:h-16 md:px-6 flex flex-col md:flex-row justify-between items-center border-b border-gray-200 shadow-sm z-50 gap-2 md:gap-0">
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 flex-shrink-0"><i class="fa-solid fa-pen-nib"></i></div>
+            <div class="flex-1 min-w-0"><h3 class="font-bold text-gray-900 leading-tight text-sm">Signing Room</h3><p class="text-[10px] text-gray-500 truncate" id="doc-name-display">Loading...</p></div>
+        </div>
+
+        <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1 order-3 md:order-2 w-full md:w-auto justify-center md:justify-start mt-2 md:mt-0">
+            <button onclick="changePdfPage(-1)" id="btn-prev-page" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-gray-600 shadow-sm hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition"><i class="fa-solid fa-chevron-left"></i></button>
+            <span id="page-indicator" class="text-xs font-bold text-gray-700 min-w-[60px] text-center">Page 1/1</span>
+            <button onclick="changePdfPage(1)" id="btn-next-page" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-gray-600 shadow-sm hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+
+        <div class="flex gap-3 w-full md:w-auto justify-end order-2 md:order-3">
+            <button onclick="closeSigningModal()" class="flex-1 md:flex-none px-4 py-2 text-xs md:text-sm font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition border border-gray-200 md:border-none">Batal</button>
+            <button onclick="saveSignedDocument()" class="flex-1 md:flex-none btn-press px-5 py-2 text-xs md:text-sm font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 rounded-lg shadow-md flex items-center justify-center gap-2"><i class="fa-solid fa-check"></i> Kirim</button>
+        </div>
+    </div>
+    
+    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        <div class="w-full md:w-72 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col z-40 shadow-xl flex-shrink-0 order-1 md:order-1 h-auto max-h-[40vh] md:max-h-full overflow-y-auto">
+            <div class="p-4 md:p-6 border-b border-gray-100">
+                <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Area Tanda Tangan</h4>
+                <div class="border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 relative overflow-hidden group hover:border-pink-400 transition h-24 md:h-32 mb-3 touch-none">
+                    <canvas id="signature-pad" class="w-full h-full cursor-crosshair touch-none"></canvas>
+                    <div class="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"><button onclick="clearPad()" class="bg-white p-1.5 rounded shadow text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button></div>
                 </div>
-                <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
-                    <div class="w-full md:w-72 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col z-40 shadow-xl flex-shrink-0 order-1 md:order-1 h-auto max-h-[40vh] md:max-h-full overflow-y-auto">
-                        <div class="p-4 md:p-6 border-b border-gray-100">
-                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Area Tanda Tangan</h4>
-                            <div class="border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 relative overflow-hidden group hover:border-pink-400 transition h-24 md:h-32 mb-3 touch-none">
-                                <canvas id="signature-pad" class="w-full h-full cursor-crosshair touch-none"></canvas>
-                                <div class="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"><button onclick="clearPad()" class="bg-white p-1.5 rounded shadow text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button></div>
-                            </div>
-                            <button onclick="useSignature()" class="btn-press w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 shadow-lg">GUNAKAN</button>
-                        </div>
-                        <div class="p-4 md:p-6 flex-1 overflow-y-auto hidden md:block">
-                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Disimpan</h4>
-                            <div id="saved-sig-container" class="space-y-3"></div>
-                        </div>
-                        <div class="p-2 text-[10px] text-gray-400 border-t border-gray-100 text-center bg-gray-50 md:block hidden">💡 Drag pojok kanan bawah box untuk resize.</div>
-                    </div>
-                    <div id="pdf-scroll-container" class="order-2 md:order-2">
-                        <div id="pdf-wrapper"><canvas id="the-canvas"></canvas><div id="drag-signature" class="signature-box hidden"><img id="drag-sig-img" src="" alt="TTD"></div></div>
-                    </div>
-                </div>
+                <button onclick="useSignature()" class="btn-press w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 shadow-lg">GUNAKAN</button>
             </div>
+            <div class="p-4 md:p-6 flex-1 overflow-y-auto hidden md:block">
+                <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Disimpan</h4>
+                <div id="saved-sig-container" class="space-y-3"></div>
+            </div>
+            <div class="p-2 text-[10px] text-gray-400 border-t border-gray-100 text-center bg-gray-50 md:block hidden">💡 Drag pojok kanan bawah box untuk resize.</div>
+        </div>
+        <div id="pdf-scroll-container" class="order-2 md:order-2">
+            <div id="pdf-wrapper"><canvas id="the-canvas"></canvas><div id="drag-signature" class="signature-box hidden"><img id="drag-sig-img" src="" alt="TTD"></div></div>
+        </div>
+    </div>
+</div>
 
             <div id="section-users" class="content-section space-y-6">
                  <div class="glass-card p-4 md:p-6">
@@ -432,31 +440,70 @@
             }
         }
 
+        async function changePdfPage(offset) {
+    const newPage = currentPageNum + offset;
+    if (newPage >= 1 && newPage <= totalPdfPages) {
+        currentPageNum = newPage;
+        
+        // Opsional: Tampilkan loading kecil jika PDF berat
+        const canvas = document.getElementById('the-canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "20px Arial";
+        ctx.fillText("Loading page...", 50, 50);
+
+        await renderCurrentPage();
+    }
+}
+
         // --- SIGNING ROOM ---
         function cloneBuffer(buffer) { const dst = new ArrayBuffer(buffer.byteLength); new Uint8Array(dst).set(new Uint8Array(buffer)); return dst; }
         async function openSigningRoom(docId, fileName) {
-            currentDocId = docId; document.getElementById('doc-name-display').innerText = fileName; document.getElementById('signing-modal').classList.remove('hidden');
-            Swal.fire({title: 'Memuat...', didOpen: () => Swal.showLoading(), backdrop: false, showConfirmButton: false}); await new Promise(r => setTimeout(r, 500));
-            try {
-                const sigCanvas = document.getElementById('signature-pad'); const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                sigCanvas.width = sigCanvas.offsetWidth * ratio; sigCanvas.height = sigCanvas.offsetHeight * ratio; sigCanvas.getContext("2d").scale(ratio, ratio);
-                if(signaturePad) signaturePad.off(); signaturePad = new SignaturePad(sigCanvas); signaturePad.clear();
-                const { data, error } = await supabaseClient.storage.from('digisign-files').download(fileName); if (error) throw error; pdfBytes = await data.arrayBuffer();
-                const loadingTask = pdfjsLib.getDocument({data: cloneBuffer(pdfBytes)}); const pdf = await loadingTask.promise; const page = await pdf.getPage(1);
-                const canvas = document.getElementById('the-canvas'); 
-                
-                // Scale logic for mobile
-                const containerWidth = document.getElementById('pdf-wrapper').parentElement.clientWidth - 40; // padding adjusted
-                const viewport = page.getViewport({scale: 1.0});
-                const scale = containerWidth < viewport.width ? containerWidth / viewport.width : 1.0;
-                const scaledViewport = page.getViewport({scale: scale});
-                
-                canvas.height = scaledViewport.height; canvas.width = scaledViewport.width; 
-                await page.render({canvasContext: canvas.getContext('2d'), viewport: scaledViewport}).promise;
-                
-                const dragEl = document.getElementById('drag-signature'); dragEl.classList.add('hidden'); dragEl.style.top = '100px'; dragEl.style.left = '100px'; initDraggable(dragEl); Swal.close();
-            } catch (err) { Swal.fire('Gagal', err.message, 'error'); }
-        }
+    currentDocId = docId;
+    document.getElementById('doc-name-display').innerText = fileName;
+    document.getElementById('signing-modal').classList.remove('hidden');
+    
+    Swal.fire({title: 'Memuat...', didOpen: () => Swal.showLoading(), backdrop: false, showConfirmButton: false});
+    await new Promise(r => setTimeout(r, 500));
+
+    try {
+        // Init Signature Pad
+        const sigCanvas = document.getElementById('signature-pad'); 
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        sigCanvas.width = sigCanvas.offsetWidth * ratio; 
+        sigCanvas.height = sigCanvas.offsetHeight * ratio; 
+        sigCanvas.getContext("2d").scale(ratio, ratio);
+        
+        if(signaturePad) signaturePad.off(); 
+        signaturePad = new SignaturePad(sigCanvas); 
+        signaturePad.clear();
+
+        // Download PDF
+        const { data, error } = await supabaseClient.storage.from('digisign-files').download(fileName); 
+        if (error) throw error; 
+        pdfBytes = await data.arrayBuffer();
+
+        // Load PDF Object
+        const loadingTask = pdfjsLib.getDocument({data: cloneBuffer(pdfBytes)});
+        currentPdfObject = await loadingTask.promise;
+        totalPdfPages = currentPdfObject.numPages;
+        
+        // Reset ke Halaman 1
+        currentPageNum = 1;
+        await renderCurrentPage();
+
+        // Reset Signature Drag Element position
+        const dragEl = document.getElementById('drag-signature'); 
+        dragEl.classList.add('hidden'); 
+        dragEl.style.top = '100px'; 
+        dragEl.style.left = '100px'; 
+        initDraggable(dragEl); 
+        
+        Swal.close();
+    } catch (err) { 
+        Swal.fire('Gagal', err.message, 'error'); 
+    }
+}
         function useSignature() {
             if (signaturePad && signaturePad.isEmpty()) return Toast.fire({ icon: 'warning', title: 'Tanda tangan dulu dong!' });
             const dataUrl = signaturePad.toDataURL(); document.getElementById('drag-sig-img').src = dataUrl; document.getElementById('drag-signature').classList.remove('hidden');
@@ -497,39 +544,57 @@
             window.ontouchend = handleEnd;
         }
         async function saveSignedDocument() {
-            const dragEl = document.getElementById('drag-signature'); if(dragEl.classList.contains('hidden')) return Toast.fire({ icon: 'warning', title: 'Letakkan tanda tangan di dokumen!' });
-            Swal.fire({title: 'Memproses...', didOpen: () => Swal.showLoading()});
-            try {
-                const pdfDoc = await PDFLib.PDFDocument.load(cloneBuffer(pdfBytes)); const firstPage = pdfDoc.getPages()[0];
-                const imgEl = document.getElementById('drag-sig-img'); const sigImage = await pdfDoc.embedPng(imgEl.src);
-                const canvas = document.getElementById('the-canvas');
-                
-                // --- FIXED COORDINATE LOGIC ---
-                const canvasRect = canvas.getBoundingClientRect();
-                const sigRect = dragEl.getBoundingClientRect();
-                const relativeX = sigRect.left - canvasRect.left;
-                const relativeY = sigRect.top - canvasRect.top;
+    const dragEl = document.getElementById('drag-signature'); 
+    if(dragEl.classList.contains('hidden')) return Toast.fire({ icon: 'warning', title: 'Letakkan tanda tangan di dokumen!' });
+    
+    Swal.fire({title: 'Memproses...', didOpen: () => Swal.showLoading()});
+    
+    try {
+        const pdfDoc = await PDFLib.PDFDocument.load(cloneBuffer(pdfBytes));
+        
+        // PERUBAHAN DISINI: Ambil halaman berdasarkan currentPageNum (index dimulai dari 0)
+        const pages = pdfDoc.getPages();
+        const activePageIdx = currentPageNum - 1; 
+        const activePage = pages[activePageIdx];
 
-                const pdfWidth = firstPage.getWidth();
-                const pdfHeight = firstPage.getHeight();
-                const scaleX = pdfWidth / canvas.width;
-                const scaleY = pdfHeight / canvas.height;
-                
-                const x = relativeX * scaleX;
-                const y = pdfHeight - ((relativeY + dragEl.offsetHeight) * scaleY);
-                const width = dragEl.offsetWidth * scaleX;
-                const height = dragEl.offsetHeight * scaleY;
-                
-                firstPage.drawImage(sigImage, { x, y, width, height });
-                // -----------------------------
+        const imgEl = document.getElementById('drag-sig-img'); 
+        const sigImage = await pdfDoc.embedPng(imgEl.src);
+        const canvas = document.getElementById('the-canvas');
+        
+        // Coordinate Logic
+        const canvasRect = canvas.getBoundingClientRect();
+        const sigRect = dragEl.getBoundingClientRect();
+        const relativeX = sigRect.left - canvasRect.left;
+        const relativeY = sigRect.top - canvasRect.top;
 
-                const pdfBytesSigned = await pdfDoc.save();
-                const signedFile = new File([new Blob([pdfBytesSigned], { type: 'application/pdf' })], `signed_${Date.now()}.pdf`, { type: 'application/pdf' });
-                const { error: upErr } = await supabaseClient.storage.from('digisign-files').upload(`signed/${signedFile.name}`, signedFile); if(upErr) throw upErr;
-                await supabaseClient.from('digisign_documents').update({ status: 'signed', signed_file_path: `signed/${signedFile.name}`, signed_at: new Date() }).eq('id', currentDocId);
-                closeSigningModal(); fetchDigiSignDocs(); Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Dokumen telah ditandatangani.', showConfirmButton: false, timer: 2000 });
-            } catch (err) { Swal.fire('Gagal', err.message, 'error'); }
-        }
+        const pdfWidth = activePage.getWidth();
+        const pdfHeight = activePage.getHeight();
+        const scaleX = pdfWidth / canvas.width;
+        const scaleY = pdfHeight / canvas.height;
+        
+        const x = relativeX * scaleX;
+        // PDF Lib koordinat Y dimulai dari bawah, Browser dari atas
+        const y = pdfHeight - ((relativeY + dragEl.offsetHeight) * scaleY);
+        const width = dragEl.offsetWidth * scaleX;
+        const height = dragEl.offsetHeight * scaleY;
+        
+        activePage.drawImage(sigImage, { x, y, width, height });
+
+        // Save & Upload
+        const pdfBytesSigned = await pdfDoc.save();
+        const signedFile = new File([new Blob([pdfBytesSigned], { type: 'application/pdf' })], `signed_${Date.now()}.pdf`, { type: 'application/pdf' });
+        const { error: upErr } = await supabaseClient.storage.from('digisign-files').upload(`signed/${signedFile.name}`, signedFile); 
+        if(upErr) throw upErr;
+        
+        await supabaseClient.from('digisign_documents').update({ status: 'signed', signed_file_path: `signed/${signedFile.name}`, signed_at: new Date() }).eq('id', currentDocId);
+        
+        closeSigningModal(); 
+        fetchDigiSignDocs(); 
+        Swal.fire({ icon: 'success', title: 'Berhasil!', text: `Dokumen ditandatangani di Halaman ${currentPageNum}.`, showConfirmButton: false, timer: 2000 });
+    } catch (err) { 
+        Swal.fire('Gagal', err.message, 'error'); 
+    }
+}
         function closeSigningModal() { document.getElementById('signing-modal').classList.add('hidden'); } function clearPad() { if(signaturePad) signaturePad.clear(); }
         async function loadMySignature() { const { data: { user } } = await supabaseClient.auth.getUser(); const { data } = await supabaseClient.from('admin_signatures').select('signature_data').eq('admin_id', user.id).single(); const container = document.getElementById('saved-sig-container'); if (data && data.signature_data) { mySavedSignature = data.signature_data; container.innerHTML = `<div onclick="useSavedSignature()" class="bg-white border-2 border-gray-200 rounded-xl p-2 cursor-pointer hover:border-pink-500 hover:shadow-md transition group relative h-24 flex items-center justify-center"><img src="${data.signature_data}" class="max-h-full max-w-full object-contain"><div class="absolute inset-0 bg-pink-600/10 opacity-0 group-hover:opacity-100 transition rounded-xl flex items-center justify-center backdrop-blur-sm"><span class="bg-white text-pink-600 px-3 py-1 rounded-full text-xs font-bold shadow-sm">Pakai Ini</span></div></div><div class="text-center mt-2"><button onclick="deleteMySignature()" class="text-xs text-red-400 hover:text-red-600 underline">Hapus</button></div>`; } else { container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs italic bg-gray-50 rounded-xl border border-gray-100 border-dashed">Belum ada.</div>`; mySavedSignature = null; } }
         async function saveMySignature(dataUrl) { const { data: { user } } = await supabaseClient.auth.getUser(); await supabaseClient.from('admin_signatures').upsert({ admin_id: user.id, signature_data: dataUrl }); loadMySignature(); Toast.fire({ icon: 'success', title: 'Tanda tangan disimpan' }); }
@@ -554,6 +619,37 @@
                 }
             }
         }
+
+
+async function renderCurrentPage() {
+    if (!currentPdfObject) return;
+    
+    // Update Indicator Text
+    document.getElementById('page-indicator').innerText = `Page ${currentPageNum}/${totalPdfPages}`;
+    
+    // Update Button States
+    document.getElementById('btn-prev-page').disabled = currentPageNum <= 1;
+    document.getElementById('btn-next-page').disabled = currentPageNum >= totalPdfPages;
+
+    // Fetch Page
+    const page = await currentPdfObject.getPage(currentPageNum);
+    const canvas = document.getElementById('the-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Scale Logic (Sama seperti sebelumnya)
+    const containerWidth = document.getElementById('pdf-wrapper').parentElement.clientWidth - 40;
+    const viewport = page.getViewport({scale: 1.0});
+    const scale = containerWidth < viewport.width ? containerWidth / viewport.width : 1.0;
+    const scaledViewport = page.getViewport({scale: scale});
+    
+    canvas.height = scaledViewport.height; 
+    canvas.width = scaledViewport.width;
+    
+    // Render
+    await page.render({canvasContext: ctx, viewport: scaledViewport}).promise;
+}
+
+
         async function fetchUsers() { const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); allUsers = data||[]; renderTable(allUsers); renderVerificationList(allUsers); document.getElementById('stat-total').innerText = allUsers.length; document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; document.getElementById('table-total').innerText = allUsers.length; }
         function renderTable(users) { document.getElementById('userTableBody').innerHTML = users.map(u => { const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; const action = u.payment_status === 'Lunas' ? `<button onclick="updateStatus('${u.id}', 'Pending')" class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition font-bold">Batalkan</button>` : `<button onclick="updateStatus('${u.id}', 'Lunas')" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition font-bold">Verifikasi</button>`; return `<tr class="hover:scale-[1.01] transition duration-200"><td class="p-4 font-bold text-gray-800">${u.full_name || '-'}</td><td class="p-4 text-gray-500">${u.school || '-'}</td><td class="p-4 text-xs font-mono text-gray-500">${u.phone || '-'}</td><td class="p-4">${badge}</td><td class="p-4 text-center flex gap-2 justify-center">${action}<button onclick="deleteUser('${u.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button></td></tr>`; }).join(''); }
         function renderVerificationList(users) { document.getElementById('verification-list').innerHTML = users.slice(0, 10).map(u => { let statusLogin = u.email ? `<span class="text-green-500 text-[10px] font-bold bg-green-50 px-3 py-1 rounded-full">● Aktif</span>` : `<span class="text-gray-400 text-[10px] bg-gray-50 px-3 py-1 rounded-full">○ Belum</span>`; return `<tr><td class="p-4 font-bold text-gray-700">${u.full_name}</td><td class="p-4 text-xs text-blue-600 font-mono">${u.email}</td><td class="p-4 text-xs font-mono">${u.phone}</td><td class="p-4 text-center">${statusLogin}</td><td class="p-4 text-center"><button onclick="resendEmail('${u.email}')" class="text-xs bg-gray-900 text-white px-4 py-1.5 rounded-lg shadow hover:bg-black transition flex items-center gap-2 mx-auto whitespace-nowrap"><i class="fa-regular fa-paper-plane"></i> Kirim Link</button></td></tr>`; }).join(''); }
@@ -629,7 +725,6 @@
     </script>
 </body>
 </html>
-
 
 
 
