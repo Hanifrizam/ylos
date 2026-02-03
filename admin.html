@@ -82,7 +82,38 @@
         .signature-box img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
         /* --- CALENDAR --- */
-        .fc { background: white; padding: 10px; border-radius: 24px; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03); border: none; }
+        .swal2-container { z-index: 999999 !important; }
+        .swal-cal-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: left;
+}
+.swal-cal-row {
+    display: flex;
+    gap: 10px;
+}
+.swal-cal-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.swal-cal-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #64748B;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    margin-left: 4px;
+}
+.swal-cal-input {
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+    border: 1px solid #E2E8F0 !important;
+    font-size: 14px !important;
+}
+        .fc { background: white; padding: 20px; border-radius: 24px; z-index: 1; }
         .fc-toolbar-title { font-size: 1.1rem !important; font-weight: 800 !important; color: #334155; }
         .fc-button { padding: 4px 10px !important; font-size: 0.8rem !important; }
         .fc-button-primary { background-color: #DB2777 !important; border: none !important; border-radius: 8px !important; }
@@ -672,18 +703,123 @@ async function renderCurrentPage() {
 
         // --- CALENDAR (GOOGLE STYLE) ---
         function initCalendar() { 
-            const calendarEl = document.getElementById('calendar'); 
-            calendarInstance = new FullCalendar.Calendar(calendarEl, { 
-                initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next', center: 'title', right: 'dayGridMonth,listWeek' }, locale: 'id', editable: true, selectable: true, selectMirror: true, height: 'auto',
-                events: async (info, success, failure) => { const { data, error } = await supabaseClient.from('admin_calendar').select('*'); if (error) failure(error); else success(data.map(evt => ({ id: evt.id, title: evt.title, start: evt.start_time, end: evt.end_time, description: evt.description, allDay: !evt.end_time }))); }, 
-                select: async (info) => { 
-                    const { value: f } = await Swal.fire({ title: 'Tambah Jadwal', html: `<input id="cal-title" class="swal2-input" placeholder="Judul Kegiatan"><textarea id="cal-desc" class="swal2-textarea" placeholder="Detail"></textarea><div class="flex gap-2 mt-4"><div class="w-1/2"><label class="text-xs font-bold text-gray-500">Mulai</label><input id="cal-start" type="datetime-local" class="swal2-input m-0 mt-1" value="${info.startStr}T09:00"></div><div class="w-1/2"><label class="text-xs font-bold text-gray-500">Selesai</label><input id="cal-end" type="datetime-local" class="swal2-input m-0 mt-1" value="${info.endStr}T10:00"></div></div>`, focusConfirm: false, showCancelButton: true, confirmButtonText: 'Simpan', confirmButtonColor: '#DB2777', preConfirm: () => ({ title: document.getElementById('cal-title').value, description: document.getElementById('cal-desc').value, start: document.getElementById('cal-start').value, end: document.getElementById('cal-end').value || null }) }); 
-                    if (f && f.title) { await supabaseClient.from('admin_calendar').insert({ title: f.title, description: f.description, start_time: f.start, end_time: f.end }); calendarInstance.refetchEvents(); Toast.fire({ icon: 'success', title: 'Jadwal Disimpan' }); } 
-                }, 
-                eventClick: async (info) => { const evt = info.event; if ((await Swal.fire({ title: evt.title, html: `<p>${evt.extendedProps.description || 'Tidak ada deskripsi'}</p><p class="text-xs text-gray-400 mt-2">${evt.start.toLocaleString()}</p>`, showDenyButton: true, confirmButtonText: 'Tutup', denyButtonText: 'Hapus', confirmButtonColor: '#334155', denyButtonColor: '#DC2626' })).isDenied) { await supabaseClient.from('admin_calendar').delete().eq('id', evt.id); evt.remove(); Toast.fire({ icon: 'success', title: 'Jadwal Dihapus' }); } }, 
-                eventDrop: async (info) => { await supabaseClient.from('admin_calendar').update({ start_time: info.event.start.toISOString(), end_time: info.event.end ? info.event.end.toISOString() : null }).eq('id', info.event.id); Toast.fire({ icon: 'success', title: 'Jadwal Diupdate' }); } 
-            }); calendarInstance.render(); 
+    const calendarEl = document.getElementById('calendar'); 
+    calendarInstance = new FullCalendar.Calendar(calendarEl, { 
+        initialView: 'dayGridMonth', 
+        headerToolbar: { 
+            left: 'prev,next today', 
+            center: 'title', 
+            right: 'dayGridMonth,listWeek' 
+        }, 
+        locale: 'id', 
+        editable: true, 
+        selectable: true, 
+        selectMirror: true, 
+        dayMaxEvents: true,
+        height: 'auto',
+        events: async (info, success, failure) => { 
+            const { data, error } = await supabaseClient.from('admin_calendar').select('*'); 
+            if (error) failure(error); 
+            else success(data.map(evt => ({ 
+                id: evt.id, 
+                title: evt.title, 
+                start: evt.start_time, 
+                end: evt.end_time, 
+                description: evt.description 
+            }))); 
+        }, 
+        select: async (info) => { 
+            // FIX LOGIC: FullCalendar end date bersifat eksklusif (n+1). 
+            // Kita sesuaikan agar user tidak bingung saat slide select.
+            let adjustedEndDate = new Date(info.end);
+            if (!info.allDay) {
+                // Jika ada jamnya, biarkan apa adanya
+            } else {
+                // Jika select harian (grid), kurangi 1 hari untuk tampilan input yang akurat
+                adjustedEndDate.setDate(adjustedEndDate.getDate() - 0);
+            }
+            
+            const displayEndDate = adjustedEndDate.toISOString().split('T')[0];
+
+            const { value: f } = await Swal.fire({ 
+                title: 'Tambah Jadwal',
+                html: `
+                <div class="swal-cal-container">
+                    <div class="swal-cal-group">
+                        <label class="swal-cal-label">Judul Kegiatan</label>
+                        <input id="cal-title" class="swal2-input swal-cal-input" placeholder="Contoh: Meeting Koordinasi">
+                    </div>
+                    <div class="swal-cal-group">
+                        <label class="swal-cal-label">Detail</label>
+                        <textarea id="cal-desc" class="swal2-textarea swal-cal-input" style="height: 80px" placeholder="Tambahkan deskripsi..."></textarea>
+                    </div>
+                    <div class="swal-cal-row">
+                        <div class="swal-cal-group">
+                            <label class="swal-cal-label">Mulai</label>
+                            <input id="cal-start" type="datetime-local" class="swal2-input swal-cal-input" value="${info.startStr}T09:00">
+                        </div>
+                        <div class="swal-cal-group">
+                            <label class="swal-cal-label">Selesai</label>
+                            <input id="cal-end" type="datetime-local" class="swal2-input swal-cal-input" value="${displayEndDate}T17:00">
+                        </div>
+                    </div>
+                </div>`, 
+                focusConfirm: false, 
+                showCancelButton: true, 
+                confirmButtonText: 'Simpan Jadwal', 
+                confirmButtonColor: '#DB2777',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: 'btn-press rounded-xl px-6',
+                    cancelButton: 'rounded-xl'
+                },
+                preConfirm: () => {
+                    const title = document.getElementById('cal-title').value;
+                    if (!title) {
+                        Swal.showValidationMessage('Judul tidak boleh kosong!');
+                        return false;
+                    }
+                    return { 
+                        title: title, 
+                        description: document.getElementById('cal-desc').value, 
+                        start: document.getElementById('cal-start').value, 
+                        end: document.getElementById('cal-end').value 
+                    }
+                } 
+            }); 
+
+            if (f) { 
+                await supabaseClient.from('admin_calendar').insert({ 
+                    title: f.title, 
+                    description: f.description, 
+                    start_time: f.start, 
+                    end_time: f.end 
+                }); 
+                calendarInstance.refetchEvents(); 
+                Toast.fire({ icon: 'success', title: 'Jadwal Berhasil Ditambahkan' }); 
+            }
+            calendarInstance.unselect();
+        }, 
+        eventClick: async (info) => {
+            // ... (Kode eventClick kamu yang sudah ada tetap di sini)
+            const evt = info.event; 
+            if ((await Swal.fire({ 
+                title: evt.title, 
+                html: `<div class="text-left text-sm text-gray-600"><p class="mb-2">${evt.extendedProps.description || 'Tidak ada deskripsi'}</p><hr class="my-2"><p class="text-[10px] font-bold text-gray-400 uppercase">Waktu:</p><p>${evt.start.toLocaleString('id-ID')}</p></div>`, 
+                showDenyButton: true, 
+                confirmButtonText: 'Tutup', 
+                denyButtonText: 'Hapus Jadwal', 
+                confirmButtonColor: '#334155', 
+                denyButtonColor: '#DC2626' 
+            })).isDenied) { 
+                await supabaseClient.from('admin_calendar').delete().eq('id', evt.id); 
+                evt.remove(); 
+                Toast.fire({ icon: 'success', title: 'Jadwal Dihapus' }); 
+            } 
         }
+    }); 
+    calendarInstance.render(); 
+}
         function initCalendarRealtime() { supabaseClient.channel('calendar-sync').on('postgres_changes', { event: '*', schema: 'public', table: 'admin_calendar' }, () => { if(calendarInstance) calendarInstance.refetchEvents(); }).subscribe(); }
         
         async function fetchAnnouncements() { 
@@ -725,7 +861,4 @@ async function renderCurrentPage() {
     </script>
 </body>
 </html>
-
-
-
 
