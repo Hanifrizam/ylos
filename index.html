@@ -136,7 +136,7 @@
                         <a href="#home" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Beranda</a>
                         <a href="#about" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Tentang</a>
                         <a href="#speakers" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Pembicara</a>
-                        <a href="#trip" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Trip</a>
+                        <a href="#trip" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Program</a> 
                         <a href="#pricing" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Daftar</a>
                         <a href="admin.html" id="nav-desktop-admin" class="hidden ml-4 text-pink-600 font-bold text-xs border border-pink-200 px-4 py-2 rounded-full bg-pink-50 hover:bg-pink-100 transition shadow-sm">ADMIN PANEL</a>
                     </div>
@@ -166,7 +166,7 @@
             <div class="space-y-2">
                 <a href="#home" onclick="mobileLinkClick('home')" class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-700 hover:bg-pink-50 hover:text-ylosPink transition"><i class="fa-solid fa-house w-6 text-center"></i> Beranda</a>
                 <a href="#about" onclick="mobileLinkClick('home')" class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-700 hover:bg-pink-50 hover:text-ylosPink transition"><i class="fa-solid fa-circle-info w-6 text-center"></i> Tentang</a>
-                <a href="#trip" onclick="mobileLinkClick('home')" class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-700 hover:bg-pink-50 hover:text-ylosPink transition"><i class="fa-solid fa-plane w-6 text-center"></i> Trip & IPB</a>
+                <a href="#trip" onclick="mobileLinkClick('home')" class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-700 hover:bg-pink-50 hover:text-ylosPink transition"><i class="fa-solid fa-plane w-6 text-center"></i> Program Highlights</a>
                 <a href="#pricing" onclick="mobileLinkClick('home')" class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-700 hover:bg-pink-50 hover:text-ylosPink transition"><i class="fa-solid fa-ticket w-6 text-center"></i> Pendaftaran</a>
                 
                 <div class="h-px bg-gray-100 my-4"></div>
@@ -232,87 +232,131 @@
         </section>
 
         <section id="about" class="py-20 md:py-32 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">The Game Changer</h2>
-                    <p class="text-gray-500">Transformasi Organisasi Sekolah Masa Kini</p>
-                    <div class="h-1.5 w-24 bg-gradient-to-r from-ylosPink to-ylosYellow mx-auto rounded-full mt-4"></div>
-                </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">The Game Changer</h2>
+            <p class="text-gray-500">5 Pilar Transformasi Pemimpin Muda Masa Depan</p>
+            <div class="h-1.5 w-24 bg-gradient-to-r from-ylosPink to-ylosYellow mx-auto rounded-full mt-4"></div>
+        </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-pink-100 transition duration-300 group">
-                        <div class="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <span class="text-3xl">🩺</span>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-3 text-gray-900">1-on-1 Clinic</h3>
-                        <p class="text-gray-600 leading-relaxed">Bedah masalah organisasimu langsung dengan mentor ahli dan narasumber bergengsi.</p>
-                    </div>
-                    <div class="bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-yellow-100 transition duration-300 group">
-                        <div class="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <span class="text-3xl">🎓</span>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-3 text-gray-900">Campus Immersion</h3>
-                        <p class="text-gray-600 leading-relaxed">Rasakan pengalaman menjadi mahasiswa di IPB University. Kunjungi Techno Park dan kesempatan berdiskusi dengan BEM/Himpunan Mahasiswa IPB.</p>
-                    </div>
-                    <div class="bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-green-100 transition duration-300 group">
-                        <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <span class="text-3xl">✈️</span>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-3 text-gray-900">Global Opportunity</h3>
-                        <p class="text-gray-600 leading-relaxed">Best Delegates berkesempatan mendapatkan beasiswa Student Exchange ke Malaysia.</p>
-                    </div>
+        <div class="flex flex-wrap justify-center gap-8">
+            
+            <div class="w-full md:w-[30%] bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-pink-100 transition duration-300 group">
+                <div class="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <span class="text-3xl">🩺</span>
                 </div>
+                <h3 class="text-xl font-bold mb-3 text-gray-900">Bedah Total ‘1-on-1’</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Konsultasi privat membedah masalah organisasimu secara mendalam langsung dengan mentor ahli.</p>
             </div>
-        </section>
+
+            <div class="w-full md:w-[30%] bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-yellow-100 transition duration-300 group">
+                <div class="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <span class="text-3xl">🎓</span>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-gray-900">Case Sim & Immersion</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Simulasi kasus organisasi nyata dan pengalaman langsung atmosfer akademik di IPB University.</p>
+            </div>
+
+            <div class="w-full md:w-[30%] bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-blue-100 transition duration-300 group">
+                <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <span class="text-3xl">🤝</span>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-gray-900">The YLOS Community</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Jejaring eksklusif dengan ketua OSIS/BEM dan pemimpin muda dari seluruh Indonesia.</p>
+            </div>
+
+            <div class="w-full md:w-[30%] bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-green-100 transition duration-300 group">
+                <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <span class="text-3xl">✈️</span>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-gray-900">Global Pathways</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Membuka wawasan global dengan kesempatan Student Exchange ke Malaysia bagi delegasi terbaik.</p>
+            </div>
+
+            <div class="w-full md:w-[30%] bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-purple-100 transition duration-300 group">
+                <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <span class="text-3xl">🛡️</span>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-gray-900">Character & Leadership</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Pondasi karakter kuat dan kepemimpinan adaptif untuk menghadapi tantangan masa depan.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
 
         <section id="speakers" class="py-20 bg-gray-900 text-white overflow-hidden">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-12">
-                    <span class="text-ylosYellow font-bold tracking-widest uppercase text-xs">Expert & Leaders</span>
-                    <h2 class="text-3xl md:text-5xl font-bold mt-2">Meet Our Speakers</h2>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <span class="text-ylosYellow font-bold tracking-widest uppercase text-xs">Expert & Leaders</span>
+            <h2 class="text-3xl md:text-5xl font-bold mt-2">Meet Our Speakers</h2>
+        </div>
+        
+        <div class="flex flex-wrap justify-center gap-8 md:gap-10">
+            <div class="w-40 md:w-56 text-center group">
+                <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
+                    <img src="Gambar anies baswedan.jpg" alt="Anies Baswedan" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
                 </div>
-                
-                <div class="flex flex-wrap justify-center gap-6">
-                    <div class="w-40 md:w-56 text-center group">
-                        <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
-                            <img src="Gambar anies baswedan.jpg" alt="Anies Baswedan" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
-                        </div>
-                        <h3 class="font-bold text-lg">Anies Baswedan</h3>
-                        <p class="text-xs text-gray-400">Ex-Mendikbud RI</p>
-                    </div>
-
-                    <div class="w-40 md:w-56 text-center group">
-                        <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
-                            <img src="Gambar salman subakat.jpg" alt="Salman Subakat" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
-                        </div>
-                        <h3 class="font-bold text-lg">Salman Subakat</h3>
-                        <p class="text-xs text-gray-400">Co-Founder ParagonCorp</p>
-                    </div>
-
-                    <div class="w-40 md:w-56 text-center group">
-                        <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
-                            <div class="w-full h-full bg-gray-800 flex items-center justify-center text-4xl">
-                                <img src="Gambar deris nagara.jpg" alt="Deris Nagara" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
-                            </div>
-                        </div>
-                        <h3 class="font-bold text-lg">Deris Nagara</h3>
-                        <p class="text-xs text-gray-400">Ex-Presiden BEM Columbia Univ.</p>
-                    </div>
-
-                    <div class="w-40 md:w-56 text-center group">
-                        <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
-                            <div class="w-full h-full bg-gray-800 flex items-center justify-center text-4xl">
-                                <img src="Foto manik.png" alt="Manik Margahamahendra" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
-                            </div>
-                        </div>
-                        <h3 class="font-bold text-lg">Manik Margahamahendra</h3>
-                        <p class="text-xs text-gray-400">Executive Director ICTYC</p>
-                    </div>
-                </div>
-                
-                <p class="text-center text-gray-500 text-sm mt-10">*Dan masih banyak lagi pemimpin inspiratif lainnya.</p>
+                <h3 class="font-bold text-lg">Anies Baswedan</h3>
+                <p class="text-xs text-gray-400">Ex-Mendikbud RI</p>
             </div>
-        </section>
+
+            <div class="w-40 md:w-56 text-center group">
+                <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
+                    <img src="ganjar.jpg" onerror="this.src='https://via.placeholder.com/300?text=Ganjar'" alt="Ganjar Pranowo" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                </div>
+                <h3 class="font-bold text-lg">Ganjar Pranowo</h3>
+                <p class="text-xs text-gray-400">Tokoh Nasional</p>
+            </div>
+
+            <div class="w-40 md:w-56 text-center group">
+                <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
+                    <img src="Gambar salman subakat.jpg" alt="Salman Subakat" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                </div>
+                <h3 class="font-bold text-lg">Salman Subakat</h3>
+                <p class="text-xs text-gray-400">CEO ParagonCorp</p>
+            </div>
+
+            <div class="w-40 md:w-56 text-center group">
+                <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
+                    <img src="vina.jpg" onerror="this.src='https://via.placeholder.com/300?text=Vina'" alt="Vina Muliana" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                </div>
+                <h3 class="font-bold text-lg">Vina Muliana</h3>
+                <p class="text-xs text-gray-400">HR Professional & Content Creator</p>
+            </div>
+
+            <div class="w-40 md:w-56 text-center group">
+                <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
+                    <div class="w-full h-full bg-gray-800 flex items-center justify-center text-4xl">
+                        <img src="Gambar deris nagara.jpg" alt="Deris Nagara" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                    </div>
+                </div>
+                <h3 class="font-bold text-lg">Deris Nagara</h3>
+                <p class="text-xs text-gray-400">Ex-Presiden BEM Columbia Univ.</p>
+            </div>
+
+            <div class="w-40 md:w-56 text-center group">
+                <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
+                    <div class="w-full h-full bg-gray-800 flex items-center justify-center text-4xl">
+                        <img src="Foto manik.png" alt="Manik Margahamahendra" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                    </div>
+                </div>
+                <h3 class="font-bold text-lg">Manik Margahamahendra</h3>
+                <p class="text-xs text-gray-400">Executive Director ICTYC</p>
+            </div>
+
+            <div class="w-40 md:w-56 text-center group">
+                <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
+                    <img src="zensa.jpg" onerror="this.src='https://via.placeholder.com/300?text=Zensa'" alt="Zensa Rahman" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                </div>
+                <h3 class="font-bold text-lg">Zensa Rahman</h3>
+                <p class="text-xs text-gray-400">Managing Director</p>
+            </div>
+        </div>
+        
+        <p class="text-center text-gray-500 text-sm mt-12">*Dan masih banyak lagi pemimpin inspiratif lainnya.</p>
+    </div>
+</section>
 
         <section id="trip" class="py-20 md:py-32 relative overflow-hidden bg-white">
             <div class="absolute top-0 right-0 -mr-40 -mt-40 w-[30rem] h-[30rem] bg-ylosPink/5 rounded-full blur-[100px]"></div>
