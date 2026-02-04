@@ -119,49 +119,9 @@
 </head>
 <body class="flex h-screen overflow-hidden text-sm md:text-base">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // 1. Konfigurasi Supabase (Gunakan Key Public/Anon kamu)
-  const supabaseUrl = 'https://jrslgkxwjvugvgakxwsd.supabase.co';
-  const supabaseKey = 'sb_publishable_HKoHtijOWUijU_DlVeYYtw_1AiA2AKB';
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-  async function checkAdminAccess() {
-    // Cek apakah ada user login
-    const { data: { session } } = await supabase.auth.getSession();
 
-    if (!session) {
-      // Jika tidak login, lempar ke login
-      alert("Anda harus login!");
-      window.location.href = 'index.html'; 
-      return;
-    }
-
-    // Cek Role di Database
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', session.user.id)
-      .single();
-
-    // Logika Keamanan
-    if (error || !profile || profile.role !== 'admin') {
-      // Hapus sesi (opsional, biar logout sekalian)
-      await supabase.auth.signOut();
-      
-      // Lempar keluar
-      alert("AKSES DITOLAK: Halaman ini khusus Admin.");
-      window.location.href = 'index.html'; // Kembali ke home
-    } else {
-      // Jika Admin, biarkan halaman dimuat
-      console.log("Welcome Admin");
-      document.body.style.display = 'block'; // Tampilkan body jika sebelumnya di-hide
-    }
-  }
-
-  // Jalankan pengecekan saat halaman dimuat
-  checkAdminAccess();
-</script>
+<style> body { display: none; } </style>
 
 <style>
   body { display: none; } /* Default sembunyi agar tidak kedip */
@@ -433,7 +393,15 @@
 
     <script>
         // CONFIG
-        const supabaseClient = supabase.createClient('https://jrslgkxwjvugvgakxwsd.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk');
+        // CONFIG YANG BENAR (Gunakan Key yang berawalan sb_publishable)
+        // --- KONFIGURASI YANG BENAR ---
+const supabaseUrl = 'https://jrslgkxwjvugvgakxwsd.supabase.co';
+
+// PASTE KODE YANG DIAWALI 'eyJ...' DI BAWAH INI (JANGAN PAKAI sb_publishable)
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'; 
+
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
         const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
         let allUsers=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
 
