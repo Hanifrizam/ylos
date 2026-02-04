@@ -119,6 +119,54 @@
 </head>
 <body class="flex h-screen overflow-hidden text-sm md:text-base">
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // 1. Konfigurasi Supabase (Gunakan Key Public/Anon kamu)
+  const supabaseUrl = 'https://jrslgkxwjvugvgakxwsd.supabase.co';
+  const supabaseKey = 'sb_publishable_HKoHtijOWUijU_DlVeYYtw_1AiA2AKB';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  async function checkAdminAccess() {
+    // Cek apakah ada user login
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      // Jika tidak login, lempar ke login
+      alert("Anda harus login!");
+      window.location.href = 'index.html'; 
+      return;
+    }
+
+    // Cek Role di Database
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .single();
+
+    // Logika Keamanan
+    if (error || !profile || profile.role !== 'admin') {
+      // Hapus sesi (opsional, biar logout sekalian)
+      await supabase.auth.signOut();
+      
+      // Lempar keluar
+      alert("AKSES DITOLAK: Halaman ini khusus Admin.");
+      window.location.href = 'index.html'; // Kembali ke home
+    } else {
+      // Jika Admin, biarkan halaman dimuat
+      console.log("Welcome Admin");
+      document.body.style.display = 'block'; // Tampilkan body jika sebelumnya di-hide
+    }
+  }
+
+  // Jalankan pengecekan saat halaman dimuat
+  checkAdminAccess();
+</script>
+
+<style>
+  body { display: none; } /* Default sembunyi agar tidak kedip */
+</style>
+    
     <div id="security-overlay">
         <div class="loader-spinner mb-4"></div>
         <h2 class="text-xl font-extrabold text-gray-800 tracking-tight">YLOS <span class="text-pink-600">Secure</span></h2>
