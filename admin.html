@@ -365,7 +365,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <input id="mod-title" class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none" placeholder="Judul Materi">
                         <input id="mod-link" class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none" placeholder="Link File (Drive/Youtube)">
-                        <select id="mod-category" class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none"><option value="Guidebook">Guidebook</option><option value="Materi">Materi</option><option value="Video">Video</option></select>
+                        <select id="mod-category" class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none"><option value="Document">Document</option><option value="Materi">Materi</option><option value="Video">Video</option></select>
                         <select id="mod-premium" class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none"><option value="false">Free Access</option><option value="true">Premium Only</option></select>
                     </div>
                     <button onclick="addModule()" class="btn-press w-full bg-purple-600 text-white py-3 rounded-xl font-bold text-sm shadow-md">Upload Materi</button>
@@ -865,3 +865,4 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
     </script>
 </body>
 </html>
+
