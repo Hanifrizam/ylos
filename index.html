@@ -587,44 +587,85 @@
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Mulai Langkahmu Sekarang</h2>
                 <p class="text-gray-500 mb-12 max-w-2xl mx-auto">Pilih jalur pendaftaranmu. Tersedia jalur Beasiswa Penuh (Fully Funded), Partial, dan Mandiri.</p>
                 
-                <div class="bg-white p-8 rounded-3xl shadow-lg max-w-3xl mx-auto border border-gray-100">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Commitment Fee (Biaya Seleksi)</h3>
-                    <p class="text-gray-500 text-sm mb-8">Biaya ini digunakan untuk mengakses Selection Bootcamp, Webinar, dan Sertifikat Seleksi Nasional.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch max-w-6xl mx-auto">
+                    
+                    <div class="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 flex flex-col h-full">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Commitment Fee (Biaya Seleksi)</h3>
+                        <p class="text-gray-500 text-sm mb-8">Biaya ini digunakan untuk mengakses Selection Bootcamp, Webinar, dan Sertifikat Seleksi Nasional.</p>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="border-2 border-green-500 bg-green-50 p-6 rounded-2xl relative overflow-hidden">
-                            <div class="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl">BEST DEAL</div>
-                            <h4 class="font-bold text-gray-900">Early Bird</h4>
-                            <p class="text-xs text-gray-500 mb-2">s.d 28 Feb 2026</p>
-                            <p class="text-3xl font-extrabold text-green-600">79k</p>
-                        </div>
-                        
-                        <div class="border border-gray-200 p-6 rounded-2xl hover:border-ylosPink transition">
-                            <h4 class="font-bold text-gray-900">Regular</h4>
-                            <p class="text-xs text-gray-500 mb-2">01 - 31 Mar 2026</p>
-                            <p class="text-3xl font-extrabold text-gray-800">99k</p>
+                        <div class="grid grid-cols-1 gap-4 mb-8">
+                            <div class="border-2 border-green-500 bg-green-50 p-4 rounded-2xl relative overflow-hidden flex justify-between items-center">
+                                <div class="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl">BEST DEAL</div>
+                                <div class="text-left">
+                                    <h4 class="font-bold text-gray-900">Early Bird</h4>
+                                    <p class="text-xs text-gray-500">s.d 28 Feb 2026</p>
+                                </div>
+                                <p class="text-3xl font-extrabold text-green-600">79k</p>
+                            </div>
+                            
+                            <div class="border border-gray-200 p-4 rounded-2xl flex justify-between items-center">
+                                <div class="text-left">
+                                    <h4 class="font-bold text-gray-900">Regular</h4>
+                                    <p class="text-xs text-gray-500">01 - 31 Mar 2026</p>
+                                </div>
+                                <p class="text-3xl font-extrabold text-gray-800">99k</p>
+                            </div>
+
+                            <div class="border border-gray-200 p-4 rounded-2xl flex justify-between items-center">
+                                <div class="text-left">
+                                    <h4 class="font-bold text-gray-900">Last Call</h4>
+                                    <p class="text-xs text-gray-500">01 - 25 Apr 2026</p>
+                                </div>
+                                <p class="text-3xl font-extrabold text-gray-800">129k</p>
+                            </div>
                         </div>
 
-                        <div class="border border-gray-200 p-6 rounded-2xl hover:border-ylosPink transition">
-                            <h4 class="font-bold text-gray-900">Last Call</h4>
-                            <p class="text-xs text-gray-500 mb-2">01 - 25 Apr 2026</p>
-                            <p class="text-3xl font-extrabold text-gray-800">129k</p>
+                        <div class="mt-auto text-left bg-gray-50 p-6 rounded-xl text-sm text-gray-600 space-y-2">
+                            <p class="font-bold text-gray-900">Apa yang kamu dapatkan di tahap seleksi?</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Tiket Seleksi Nasional YLOS 2026</li>
+                                <li>Webinar Exclusive: "How to Ace Scholarship Essay"</li>
+                                <li>E-Sertifikat Tingkat Nasional (untuk portofolio SNBP)</li>
+                                <li>Peluang lolos sebagai <strong>Fully Funded Delegate</strong> (Gratis Biaya Program)</li>
+                            </ul>
                         </div>
+
+                        <button onclick="showPage('register')" class="w-full mt-8 py-4 rounded-2xl bg-gradient-to-r from-ylosPink to-rose-500 text-white font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition duration-300">
+                            Daftar Seleksi Sekarang
+                        </button>
                     </div>
 
-                    <div class="mt-8 text-left bg-gray-50 p-6 rounded-xl text-sm text-gray-600 space-y-2">
-                        <p class="font-bold text-gray-900">Apa yang kamu dapatkan di tahap seleksi?</p>
-                        <ul class="list-disc pl-5 space-y-1">
-                            <li>Tiket Seleksi Nasional YLOS 2026</li>
-                            <li>Webinar Exclusive: "How to Ace Scholarship Essay"</li>
-                            <li>E-Sertifikat Tingkat Nasional (untuk portofolio SNBP)</li>
-                            <li>Peluang lolos sebagai <strong>Fully Funded Delegate</strong> (Gratis Biaya Program)</li>
-                        </ul>
+                    <div class="bg-white p-8 rounded-3xl shadow-lg border border-purple-100 relative overflow-hidden flex flex-col h-full transform lg:scale-105 z-10">
+                        <div class="absolute top-0 right-0 bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl z-10">FAST TRACK</div>
+
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Self Funded (Jalur Mandiri)</h3>
+                        <p class="text-gray-500 text-sm mb-6">Jalur khusus tanpa seleksi. Langsung amankan kuota delegasi Anda tanpa harus bersaing di tahap seleksi.</p>
+
+                        <div class="bg-purple-50 p-8 rounded-2xl border border-purple-100 text-center mb-8">
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Special Promo</p>
+                            <div class="flex justify-center items-end gap-3">
+                                <span class="text-xl text-gray-400 line-through font-bold">500k</span>
+                                <span class="text-5xl font-extrabold text-purple-600">350k</span>
+                            </div>
+                            <p class="text-xs text-purple-600 mt-2 font-medium">*Harga Core Program</p>
+                        </div>
+
+                        <div class="text-left text-sm text-gray-600 space-y-2 mb-8 flex-grow bg-gray-50 p-6 rounded-xl">
+                            <p class="font-bold text-gray-900">Keuntungan Jalur Mandiri:</p>
+                            <ul class="list-disc pl-5 space-y-2">
+                                <li><strong>Tanpa Seleksi Berkas & Wawancara</strong></li>
+                                <li>Langsung Lolos sebagai Official Delegate (Garansi)</li>
+                                <li>Prioritas Pemilihan Kamar & Kelompok</li>
+                                <li>Mendapatkan semua fasilitas Program Utama</li>
+                                <li>Kesempatan Student Exchange tetap terbuka</li>
+                            </ul>
+                        </div>
+
+                        <button onclick="showPage('register')" class="w-full py-4 rounded-2xl bg-gray-900 text-white font-bold text-lg shadow-lg hover:bg-black hover:-translate-y-1 transition duration-300">
+                            Daftar Self Funded
+                        </button>
                     </div>
 
-                    <button onclick="showPage('register')" class="w-full mt-8 py-4 rounded-2xl bg-gradient-to-r from-ylosPink to-rose-500 text-white font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition duration-300">
-                        Daftar Seleksi Sekarang
-                    </button>
                 </div>
             </div>
         </section>
