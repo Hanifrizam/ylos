@@ -119,10 +119,6 @@
 </head>
 <body class="flex h-screen overflow-hidden text-sm md:text-base">
 
-
-
-<style> body { display: none; } </style>
-
 <style>
   body { display: none; } /* Default sembunyi agar tidak kedip */
 </style>
@@ -327,7 +323,7 @@
                              <button onclick="exportToExcel()" class="btn-press text-xs bg-green-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm hover:bg-green-700 flex items-center justify-center gap-2 w-full md:w-auto"><i class="fa-solid fa-file-excel"></i> Export</button>
                         </div>
                     </div>
-                    <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama Lengkap</th><th>Sekolah</th><th>Kontak</th><th>Status Pembayaran</th><th class="text-center">Aksi</th></tr></thead><tbody id="userTableBody"></tbody></table></div>
+                    <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama Lengkap</th><th>Sekolah</th><th>Kontak</th><th>Terakhir Aktif</th><th>Status Pembayaran</th><th class="text-center">Aksi</th></tr></thead><tbody id="userTableBody"></tbody></table></div>
                 </div>
             </div>
 
@@ -729,9 +725,43 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             await page.render({canvasContext: ctx, viewport: scaledViewport}).promise;
         }
 
+        // --- HELPER UNTUK WAKTU TERAKHIR AKTIF ---
+        function formatLastSeen(dateString) {
+            if (!dateString) return '<span class="text-gray-300 italic text-[10px]">Belum ada data</span>';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = (now - date) / 1000; // seconds
+
+            if (diff < 60) return '<span class="text-green-600 font-bold text-[10px]">Baru saja</span>';
+            if (diff < 3600) return `<span class="text-gray-600">${Math.floor(diff / 60)} menit lalu</span>`;
+            if (diff < 86400) return `<span class="text-gray-600">${Math.floor(diff / 3600)} jam lalu</span>`;
+            if (diff < 604800) return `<span class="text-gray-500">${Math.floor(diff / 86400)} hari lalu</span>`;
+            
+            return `<span class="text-gray-400">${date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>`;
+        }
 
         async function fetchUsers() { const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); allUsers = data||[]; renderTable(allUsers); renderVerificationList(allUsers); document.getElementById('stat-total').innerText = allUsers.length; document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; document.getElementById('table-total').innerText = allUsers.length; }
-        function renderTable(users) { document.getElementById('userTableBody').innerHTML = users.map(u => { const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; const action = u.payment_status === 'Lunas' ? `<button onclick="updateStatus('${u.id}', 'Pending')" class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition font-bold">Batalkan</button>` : `<button onclick="updateStatus('${u.id}', 'Lunas')" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition font-bold">Verifikasi</button>`; return `<tr class="hover:scale-[1.01] transition duration-200"><td class="p-4 font-bold text-gray-800">${u.full_name || '-'}</td><td class="p-4 text-gray-500">${u.school || '-'}</td><td class="p-4 text-xs font-mono text-gray-500">${u.phone || '-'}</td><td class="p-4">${badge}</td><td class="p-4 text-center flex gap-2 justify-center">${action}<button onclick="deleteUser('${u.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button></td></tr>`; }).join(''); }
+        
+        function renderTable(users) { 
+            document.getElementById('userTableBody').innerHTML = users.map(u => { 
+                const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; 
+                const action = u.payment_status === 'Lunas' ? `<button onclick="updateStatus('${u.id}', 'Pending')" class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition font-bold">Batalkan</button>` : `<button onclick="updateStatus('${u.id}', 'Lunas')" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition font-bold">Verifikasi</button>`; 
+                
+                // DATA LOGIC FOR LAST SEEN
+                // Mencoba ambil dari beberapa kemungkinan kolom umum di database
+                const lastSeenDate = u.last_seen || u.updated_at || u.last_sign_in_at;
+                const lastSeenUI = formatLastSeen(lastSeenDate);
+
+                return `<tr class="hover:scale-[1.01] transition duration-200">
+                    <td class="p-4 font-bold text-gray-800">${u.full_name || '-'}</td>
+                    <td class="p-4 text-gray-500">${u.school || '-'}</td>
+                    <td class="p-4 text-xs font-mono text-gray-500">${u.phone || '-'}</td>
+                    <td class="p-4 text-xs font-medium">${lastSeenUI}</td>
+                    <td class="p-4">${badge}</td>
+                    <td class="p-4 text-center flex gap-2 justify-center">${action}<button onclick="deleteUser('${u.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>`; 
+            }).join(''); 
+        }
         
         function filterVerification() {
             const term = document.getElementById('searchVerification').value.toLowerCase();
@@ -865,4 +895,3 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
     </script>
 </body>
 </html>
-
