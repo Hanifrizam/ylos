@@ -123,6 +123,25 @@
         .ql-toolbar { border-top-left-radius: 12px; border-top-right-radius: 12px; border-color: #E2E8F0 !important; background-color: #F8FAFC; }
         .ql-container { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border-color: #E2E8F0 !important; background-color: white; font-family: 'Plus Jakarta Sans', sans-serif !important; font-size: 14px !important; }
         .ql-editor { min-height: 250px; }
+
+        /* --- DRAG & DROP ENHANCEMENTS --- */
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: #FFF1F2; /* Pink Muda */
+            border: 2px dashed #DB2777;
+            transform: scale(0.98);
+        }
+        .sortable-drag {
+            cursor: grabbing;
+            opacity: 1;
+            background: white;
+            transform: scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            z-index: 9999;
+        }
+        .draggable-item {
+            touch-action: none; /* Penting untuk mobile agar tidak scroll saat drag */
+        }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-sm md:text-base">
@@ -431,14 +450,26 @@
             </div>
 
             <div id="section-announcements" class="content-section space-y-6">
-                 <div class="flex justify-between items-center"><h2 class="text-xl md:text-2xl font-bold text-gray-900">Pengumuman</h2><span class="text-[10px] text-gray-500 bg-white px-3 py-1 rounded-full border shadow-sm">Drag untuk atur</span></div>
+                 <div class="flex justify-between items-center">
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-900">Pengumuman (Rich Text)</h2>
+                    <span class="text-[10px] text-gray-500 bg-white px-3 py-1 rounded-full border shadow-sm flex items-center gap-1"><i class="fa-solid fa-up-down-left-right"></i> Drag untuk urutkan</span>
+                </div>
+                
                 <div class="glass-card p-4 md:p-6 mb-6">
                     <div class="space-y-4">
                         <input id="announce-title" class="w-full p-3 md:p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white transition outline-none focus:border-pink-500" placeholder="Judul Pengumuman">
-                        <textarea id="announce-content" class="w-full p-3 md:p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white transition outline-none focus:border-pink-500" rows="2" placeholder="Isi detail..."></textarea>
-                        <div class="flex justify-end"><button onclick="addAnnouncement()" class="btn-press w-full md:w-auto bg-pink-600 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg">Posting</button></div>
+                        
+                        <div class="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden focus-within:border-pink-500 transition flex-1 flex flex-col">
+                            <div id="announce-editor-container" style="height: 200px; font-family: 'Plus Jakarta Sans', sans-serif;"></div>
+                        </div>
+
+                        <div class="flex justify-end gap-2" id="announce-buttons">
+                            <button onclick="cancelEditAnnounce()" id="btn-cancel-announce" class="hidden btn-press px-6 py-3 rounded-xl font-bold text-sm bg-gray-200 text-gray-600">Batal</button>
+                            <button onclick="saveAnnounce()" id="btn-save-announce" class="btn-press w-full md:w-auto bg-pink-600 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg">Posting</button>
+                        </div>
                     </div>
                 </div>
+                
                 <div id="announcement-list" class="space-y-3"></div>
             </div>
 
@@ -451,7 +482,10 @@
                         <select id="mod-category" class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none"><option value="Document">Document</option><option value="Materi">Materi</option><option value="Video">Video</option></select>
                         <select id="mod-premium" class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none"><option value="false">Free Access</option><option value="true">Premium Only</option></select>
                     </div>
-                    <button onclick="addModule()" class="btn-press w-full bg-purple-600 text-white py-3 rounded-xl font-bold text-sm shadow-md">Upload Materi</button>
+                    <div class="flex justify-end gap-2">
+                        <button onclick="cancelEditModule()" id="btn-cancel-module" class="hidden btn-press px-6 py-3 rounded-xl font-bold text-sm bg-gray-200 text-gray-600">Batal</button>
+                        <button onclick="saveModule()" id="btn-save-module" class="btn-press w-full bg-purple-600 text-white py-3 rounded-xl font-bold text-sm shadow-md">Upload Materi</button>
+                    </div>
                 </div>
                 <div id="module-list" class="space-y-3"></div>
             </div>
@@ -486,8 +520,13 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
         let allUsers=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
+        
         // Global var untuk Quill Editor
-        var quill;
+        var quillBlast, quillAnnounce;
+        
+        // Global var untuk Edit Mode
+        var editingAnnounceId = null;
+        var editingModuleId = null;
 
         // MOBILE SIDEBAR TOGGLE
         function toggleSidebar() {
@@ -552,8 +591,8 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 fetchDigiSignDocs(); 
                 loadMySignature();
                 
-                // INIT QUILL EDITOR (Disini kita pasang editornya)
-                initQuillEditor();
+                // INIT QUILL EDITORs
+                initQuillEditors();
 
                 // REQUEST UPDATE: Start tracking presence (Last Online)
                 setInterval(updatePresence, 60000); // Update every minute
@@ -580,25 +619,34 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             }
         }
 
-        // --- INIT QUILL JS (MS WORD STYLE) ---
-        function initQuillEditor() {
-            quill = new Quill('#editor-container', {
+        // --- INIT QUILL JS (2 Instances) ---
+        function initQuillEditors() {
+            // Config Toolbar
+            const toolbarOptions = [
+                [{ 'font': [] }],
+                [{ 'size': ['small', false, 'large', 'huge'] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'script': 'sub'}, { 'script': 'super' }],
+                [{ 'header': 1 }, { 'header': 2 }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'align': [] }],
+                ['link', 'image', 'video'],
+                ['clean']
+            ];
+
+            // 1. Editor untuk Email Blast
+            quillBlast = new Quill('#editor-container', {
                 theme: 'snow',
-                modules: {
-                    toolbar: [
-                        [{ 'font': [] }], // Font family
-                        [{ 'size': ['small', false, 'large', 'huge'] }], // Font size
-                        ['bold', 'italic', 'underline', 'strike'], // Styling dasar
-                        [{ 'color': [] }, { 'background': [] }], // Warna
-                        [{ 'script': 'sub'}, { 'script': 'super' }], // Subscript/Superscript
-                        [{ 'header': 1 }, { 'header': 2 }], // Header
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }], // List
-                        [{ 'align': [] }], // Alignment
-                        ['link', 'image', 'video'], // Media
-                        ['clean'] // Hapus format
-                    ]
-                },
-                placeholder: 'Tulis pesan Anda di sini (bisa insert gambar & link)...'
+                modules: { toolbar: toolbarOptions },
+                placeholder: 'Tulis pesan email Anda di sini...'
+            });
+
+            // 2. Editor untuk Pengumuman (NEW)
+            quillAnnounce = new Quill('#announce-editor-container', {
+                theme: 'snow',
+                modules: { toolbar: toolbarOptions },
+                placeholder: 'Tulis isi pengumuman lengkap di sini (bisa gambar & link)...'
             });
         }
 
@@ -618,7 +666,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
         // --- EMAIL BLAST LOGIC ---
         function updateRecipientCount() {
             const val = document.getElementById('blast-recipients').value;
-            // Split by newline or comma, filter empty strings
             const emails = val.split(/[\n,]+/).map(e => e.trim()).filter(e => e !== "");
             document.getElementById('recipient-count').innerText = `${emails.length} Email`;
             return emails;
@@ -635,11 +682,9 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
                 
-                // Convert to array of arrays
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
                 
                 let extractedEmails = [];
-                // Regex simple untuk email
                 const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
 
                 jsonData.forEach(row => {
@@ -653,7 +698,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                     });
                 });
 
-                // Hapus duplikat
                 extractedEmails = [...new Set(extractedEmails)];
 
                 const textArea = document.getElementById('blast-recipients');
@@ -668,28 +712,20 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 updateRecipientCount();
                 Toast.fire({ icon: 'success', title: `${extractedEmails.length} Email ditambahkan dari Excel` });
                 
-                // Reset input
                 input.value = '';
             };
             reader.readAsArrayBuffer(file);
         }
 
-        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
-
-        // --- FUNGSI BLAST EMAIL MENGGUNAKAN RESEND (PRO & CLEAN) ---
         async function startBlast() {
             const subject = document.getElementById('blast-subject').value;
-            // UPDATE: Ambil HTML dari Quill Editor, bukan text biasa
-            const body = quill.root.innerHTML; 
+            const body = quillBlast.root.innerHTML; 
             const emails = updateRecipientCount();
 
-            // --- CONFIG PENGIRIM ---
-            const SENDER_EMAIL = "admin@ylos.site"; // Wajib domain verified
+            const SENDER_EMAIL = "admin@ylos.site"; 
             const SENDER_NAME = "YLOS Official";   
-            // -----------------------
-
-            // Cek kalau editor kosong (hanya berisi <p><br></p>)
-            const isBodyEmpty = quill.getText().trim().length === 0 && body.indexOf('<img') === -1;
+            
+            const isBodyEmpty = quillBlast.getText().trim().length === 0 && body.indexOf('<img') === -1;
 
             if (!subject || isBodyEmpty) return Swal.fire('Error', 'Subject dan Isi pesan harus diisi', 'error');
             if (emails.length === 0) return Swal.fire('Error', 'Daftar penerima kosong', 'error');
@@ -705,7 +741,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
             if (!result.isConfirmed) return;
 
-            // UI Setup
             const btn = document.getElementById('btn-blast');
             const progressContainer = document.getElementById('blast-progress-container');
             const progressBar = document.getElementById('blast-bar');
@@ -722,29 +757,23 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
             for (let i = 0; i < total; i++) {
                 const email = emails[i];
-
-                // Update Progress UI
                 const percent = Math.round(((i + 1) / total) * 100);
                 progressBar.style.width = `${percent}%`;
                 statusText.innerText = `${percent}%`;
                 detailText.innerText = `Mengirim ke: ${email}...`;
 
                 try {
-                    // --- MEMANGGIL SERVER YANG BARU ANDA DEPLOY ---
-                    // Note: body sudah dalam bentuk HTML dari Quill, tidak perlu replace \n lagi
                     const { data, error } = await supabaseClient.functions.invoke('resend', {
                         body: {
                             email: email,
                             subject: subject,
-                            body: body, // Kirim raw HTML dari editor
+                            body: body,
                             sender_name: SENDER_NAME,
                             sender_email: SENDER_EMAIL
                         }
                     });
 
                     if (error) throw error;
-                    
-                    console.log(`[OK] Terkirim ke ${email}`, data);
                     successCount++;
 
                 } catch (e) {
@@ -752,11 +781,9 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                     failCount++;
                 }
                 
-                // Jeda 1 detik agar aman dari limit
                 await new Promise(r => setTimeout(r, 1000));
             }
 
-            // Selesai
             progressBar.style.width = '100%';
             statusText.innerText = '100%';
             let msg = `Selesai! ${successCount} Terkirim.`;
@@ -1014,7 +1041,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         async function fetchUsers() { const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); allUsers = data||[]; renderTable(allUsers); renderVerificationList(allUsers); document.getElementById('stat-total').innerText = allUsers.length; document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; document.getElementById('table-total').innerText = allUsers.length; }
         
-        // REQUEST UPDATE: HELPER FORMAT TIME
         function timeAgo(dateString) {
             if(!dateString) return '<span class="text-gray-400 text-xs italic">-</span>';
             const date = new Date(dateString);
@@ -1032,7 +1058,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             return `<span class="text-gray-400 text-xs">${date.toLocaleDateString('id-ID')}</span>`;
         }
 
-        // REQUEST UPDATE: MODIFY RENDER TABLE TO SHOW LAST SEEN
         function renderTable(users) { 
             document.getElementById('userTableBody').innerHTML = users.map(u => { 
                 const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; 
@@ -1091,9 +1116,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             } else { Swal.fire({ icon: 'success', title: 'Verifikasi Terkirim!', text: `Link verifikasi dikirim ke ${email}`, showConfirmButton: false, timer: 2000 }); }
         }
         
-        // REQUEST UPDATE: FIX SEARCH BUG
-        // Masalah sebelumnya: Jika salah satu field (misal school) kosong/null, .toLowerCase() akan error dan search berhenti total.
-        // Solusi: Tambahkan (u.field || '') untuk handle null values.
         function filterTable() { 
             const term = document.getElementById('searchInput').value.toLowerCase(); 
             const filteredUsers = allUsers.filter(u => {
@@ -1153,33 +1175,186 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
         }
         function initCalendarRealtime() { supabaseClient.channel('calendar-sync').on('postgres_changes', { event: '*', schema: 'public', table: 'admin_calendar' }, () => { if(calendarInstance) calendarInstance.refetchEvents(); }).subscribe(); }
         
+        // --- ANNOUNCEMENTS LOGIC (ENHANCED with EDIT & RICH TEXT) ---
         async function fetchAnnouncements() { 
             const { data } = await supabaseClient.from('announcements').select('*').order('order_index', {ascending: true}); 
+            
+            // Render list dengan tombol Edit
             document.getElementById('announcement-list').innerHTML = data.map(item => `
                 <div data-id="${item.id}" class="glass-card p-4 flex items-center gap-4 group draggable-item cursor-move mb-3">
                     <i class="fa-solid fa-grip-vertical text-gray-300 group-hover:text-pink-400 transition"></i>
-                    <div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm truncate">${item.title}</h4><p class="text-xs text-gray-500 truncate">${item.content}</p></div>
-                    <button onclick="delAnnounce('${item.id}')" class="text-gray-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-gray-800 text-sm truncate">${item.title}</h4>
+                        <div class="text-xs text-gray-500 truncate opacity-70">Klik edit untuk lihat isi...</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="editAnnounce('${item.id}')" class="text-blue-400 hover:text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="delAnnounce('${item.id}')" class="text-gray-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                 </div>`).join(''); 
-            new Sortable(document.getElementById('announcement-list'), { animation: 150, handle: '.fa-grip-vertical', onEnd: async (evt) => { await updateOrder(evt.to, 'announcements'); Toast.fire({ icon: 'success', title: 'Prioritas diupdate' }); } });
+            
+            // Enhanced Drag & Drop for Mobile
+            new Sortable(document.getElementById('announcement-list'), { 
+                animation: 200, 
+                handle: '.fa-grip-vertical', 
+                delay: 100, // Delay agar tidak swipe scroll di mobile
+                delayOnTouchOnly: true,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                onEnd: async (evt) => { await updateOrder(evt.to, 'announcements'); Toast.fire({ icon: 'success', title: 'Urutan Diperbarui' }); } 
+            });
         }
-        async function updateOrder(container, table) { const items = Array.from(container.children); for (let i = 0; i < items.length; i++) { await supabaseClient.from(table).update({ order_index: i }).eq('id', items[i].dataset.id); } }
-        async function addAnnouncement() { await supabaseClient.from('announcements').insert({ title: document.getElementById('announce-title').value, content: document.getElementById('announce-content').value }); document.getElementById('announce-title').value = ''; document.getElementById('announce-content').value = ''; fetchAnnouncements(); Toast.fire({ icon: 'success', title: 'Pengumuman Diposting' }); }
-        async function delAnnounce(id) { await supabaseClient.from('announcements').delete().eq('id', id); fetchAnnouncements(); Toast.fire({ icon: 'success', title: 'Dihapus' }); }
+        
+        async function saveAnnounce() {
+            const title = document.getElementById('announce-title').value;
+            const content = quillAnnounce.root.innerHTML;
+            
+            if(!title || quillAnnounce.getText().trim().length === 0 && content.indexOf('<img') === -1) {
+                return Toast.fire({ icon: 'warning', title: 'Judul dan Konten wajib diisi' });
+            }
 
+            if(editingAnnounceId) {
+                // Update
+                await supabaseClient.from('announcements').update({ title, content }).eq('id', editingAnnounceId);
+                Toast.fire({ icon: 'success', title: 'Pengumuman Diperbarui' });
+            } else {
+                // Insert New
+                await supabaseClient.from('announcements').insert({ title, content });
+                Toast.fire({ icon: 'success', title: 'Pengumuman Diposting' });
+            }
+
+            cancelEditAnnounce();
+            fetchAnnouncements();
+        }
+
+        async function editAnnounce(id) {
+            Swal.showLoading();
+            const { data } = await supabaseClient.from('announcements').select('*').eq('id', id).single();
+            Swal.close();
+            
+            if(data) {
+                editingAnnounceId = id;
+                document.getElementById('announce-title').value = data.title;
+                quillAnnounce.root.innerHTML = data.content; // Load HTML ke Editor
+                
+                // Ubah Tampilan Tombol
+                document.getElementById('btn-save-announce').innerText = "Simpan Perubahan";
+                document.getElementById('btn-cancel-announce').classList.remove('hidden');
+                
+                // Scroll ke atas
+                document.getElementById('section-announcements').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function cancelEditAnnounce() {
+            editingAnnounceId = null;
+            document.getElementById('announce-title').value = '';
+            quillAnnounce.setText('');
+            document.getElementById('btn-save-announce').innerText = "Posting";
+            document.getElementById('btn-cancel-announce').classList.add('hidden');
+        }
+
+        async function delAnnounce(id) { 
+            if((await Swal.fire({title:'Hapus Pengumuman?', icon:'warning', showCancelButton:true})).isConfirmed) {
+                await supabaseClient.from('announcements').delete().eq('id', id); 
+                fetchAnnouncements(); 
+                Toast.fire({ icon: 'success', title: 'Dihapus' }); 
+            }
+        }
+
+
+        // --- MODULES LOGIC (ENHANCED with EDIT) ---
         async function fetchModules() { 
             const { data } = await supabaseClient.from('modules').select('*').order('order_index', {ascending: true}); 
+            
             document.getElementById('module-list').innerHTML = data.map(mod => `
                 <div data-id="${mod.id}" class="glass-card p-4 flex items-center gap-4 group draggable-item cursor-move mb-3">
                     <i class="fa-solid fa-grip-vertical text-gray-300 group-hover:text-pink-400 transition"></i>
                     <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 flex-shrink-0"><i class="fa-solid fa-file-alt"></i></div>
-                    <div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm truncate">${mod.title}</h4><span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase">${mod.category}</span></div>
-                    <button onclick="delModule('${mod.id}')" class="text-gray-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-gray-800 text-sm truncate">${mod.title}</h4>
+                        <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase">${mod.category}</span>
+                    </div>
+                    <div class="flex gap-2">
+                         <button onclick="editModule('${mod.id}')" class="text-blue-400 hover:text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="delModule('${mod.id}')" class="text-gray-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                 </div>`).join(''); 
-            new Sortable(document.getElementById('module-list'), { animation: 150, handle: '.fa-grip-vertical', onEnd: async (evt) => { await updateOrder(evt.to, 'modules'); Toast.fire({ icon: 'success', title: 'Urutan Materi Diupdate' }); } });
+            
+            new Sortable(document.getElementById('module-list'), { 
+                animation: 200, 
+                handle: '.fa-grip-vertical',
+                delay: 100, 
+                delayOnTouchOnly: true,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                onEnd: async (evt) => { await updateOrder(evt.to, 'modules'); Toast.fire({ icon: 'success', title: 'Urutan Materi Diupdate' }); } 
+            });
         }
-        async function addModule() { await supabaseClient.from('modules').insert({ title: document.getElementById('mod-title').value, link_url: document.getElementById('mod-link').value, category: document.getElementById('mod-category').value, is_premium: document.getElementById('mod-premium').value === 'true' }); fetchModules(); Toast.fire({ icon: 'success', title: 'Materi Diupload' }); }
-        async function delModule(id) { await supabaseClient.from('modules').delete().eq('id', id); fetchModules(); Toast.fire({ icon: 'success', title: 'Materi Dihapus' }); }
+        
+        async function saveModule() {
+            const title = document.getElementById('mod-title').value;
+            const link_url = document.getElementById('mod-link').value;
+            const category = document.getElementById('mod-category').value;
+            const is_premium = document.getElementById('mod-premium').value === 'true';
+
+            if(!title || !link_url) return Toast.fire({icon: 'warning', title: 'Lengkapi Data Materi'});
+
+            if(editingModuleId) {
+                // Update
+                await supabaseClient.from('modules').update({ title, link_url, category, is_premium }).eq('id', editingModuleId);
+                Toast.fire({ icon: 'success', title: 'Materi Diperbarui' });
+            } else {
+                // Insert
+                await supabaseClient.from('modules').insert({ title, link_url, category, is_premium });
+                Toast.fire({ icon: 'success', title: 'Materi Diupload' });
+            }
+            
+            cancelEditModule();
+            fetchModules();
+        }
+
+        async function editModule(id) {
+             Swal.showLoading();
+            const { data } = await supabaseClient.from('modules').select('*').eq('id', id).single();
+            Swal.close();
+            
+            if(data) {
+                editingModuleId = id;
+                document.getElementById('mod-title').value = data.title;
+                document.getElementById('mod-link').value = data.link_url;
+                document.getElementById('mod-category').value = data.category;
+                document.getElementById('mod-premium').value = data.is_premium.toString();
+                
+                // Ubah Tampilan Tombol
+                document.getElementById('btn-save-module').innerText = "Simpan Perubahan";
+                document.getElementById('btn-save-module').classList.remove('bg-purple-600');
+                document.getElementById('btn-save-module').classList.add('bg-pink-600');
+                document.getElementById('btn-cancel-module').classList.remove('hidden');
+
+                document.getElementById('section-modules').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function cancelEditModule() {
+            editingModuleId = null;
+            document.getElementById('mod-title').value = '';
+            document.getElementById('mod-link').value = '';
+            document.getElementById('btn-save-module').innerText = "Upload Materi";
+            document.getElementById('btn-save-module').classList.add('bg-purple-600');
+            document.getElementById('btn-save-module').classList.remove('bg-pink-600');
+            document.getElementById('btn-cancel-module').classList.add('hidden');
+        }
+
+        async function delModule(id) { 
+            if((await Swal.fire({title:'Hapus Materi?', icon:'warning', showCancelButton:true})).isConfirmed) {
+                await supabaseClient.from('modules').delete().eq('id', id); 
+                fetchModules(); 
+                Toast.fire({ icon: 'success', title: 'Materi Dihapus' }); 
+            }
+        }
+
+        async function updateOrder(container, table) { const items = Array.from(container.children); for (let i = 0; i < items.length; i++) { await supabaseClient.from(table).update({ order_index: i }).eq('id', items[i].dataset.id); } }
 
         function initChart() { const ctx = document.getElementById('userChart'); if(ctx) { activityChart = new Chart(ctx.getContext('2d'), { type: 'bar', data: { labels: ['Home', 'Dashboard', 'Trip', 'Tiket'], datasets: [{ label: 'User Aktif', data: [0,0,0,0], backgroundColor: '#DB2777', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } } } }); } }
         function initRealtimeDashboard() { const channel = supabaseClient.channel('online-users'); channel.on('presence', { event: 'sync' }, () => { const state = channel.presenceState(); let total = 0; let counts = {'Home':0, 'Dashboard':0, 'Trip':0, 'Tiket':0}; let html = ''; for (const id in state) { if(state[id][0].email) { total++; let p = state[id][0].page.replace('#',''); p = p.charAt(0).toUpperCase() + p.slice(1); if(counts[p] !== undefined) counts[p]++; html += `<div class="flex items-center justify-between p-2 bg-gray-50 rounded-xl mb-1 border border-gray-100"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div><span class="text-xs font-bold text-gray-700">${state[id][0].email}</span></div><span class="text-[10px] text-gray-500 font-mono bg-white px-2 py-0.5 rounded border shadow-sm">${p}</span></div>`; } } document.getElementById('online-count').innerText = total + " Online"; document.getElementById('active-user-list').innerHTML = html || '<div class="text-center text-xs text-gray-400 py-4">Sepi...</div>'; if(activityChart) { activityChart.data.datasets[0].data = Object.values(counts); activityChart.update(); } }).subscribe(); }
