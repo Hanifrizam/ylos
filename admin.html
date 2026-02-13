@@ -11,6 +11,13 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      // GANTI DENGAN PUBLIC KEY DARI AKUN EMAILJS ANDA
+      emailjs.init("03LKNG4cBpviHmdDM"); 
+   })();
+</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
@@ -644,14 +651,17 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             const body = document.getElementById('blast-body').value;
             const emails = updateRecipientCount();
 
+            // GANTI DENGAN ID DARI EMAILJS ANDA DISINI
+            const SERVICE_ID = "service_ikn17se";  // Ganti dengan Service ID Anda
+            const TEMPLATE_ID = "template_o7e8hw7"; // Ganti dengan Template ID Anda
+
             if (!subject || !body) return Swal.fire('Error', 'Subject dan Isi pesan harus diisi', 'error');
             if (emails.length === 0) return Swal.fire('Error', 'Daftar penerima kosong', 'error');
 
-            // Konfirmasi
             const result = await Swal.fire({
-                title: 'Kirim Blast?',
-                text: `Akan mengirim ke ${emails.length} penerima.`,
-                icon: 'question',
+                title: 'Kirim Blast Real?',
+                text: `Akan mengirim email sungguhan ke ${emails.length} alamat via EmailJS.`,
+                icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Kirim!',
                 confirmButtonColor: '#DB2777'
@@ -659,7 +669,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
             if (!result.isConfirmed) return;
 
-            // UI Update
             const btn = document.getElementById('btn-blast');
             const progressContainer = document.getElementById('blast-progress-container');
             const progressBar = document.getElementById('blast-bar');
@@ -676,46 +685,53 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             for (let i = 0; i < total; i++) {
                 const email = emails[i];
                 
-                // Update Progress UI
+                // Update UI Progress
                 const percent = Math.round(((i + 1) / total) * 100);
                 progressBar.style.width = `${percent}%`;
                 statusText.innerText = `${percent}%`;
-                detailText.innerText = `Sedang mengirim ${i+1}/${total} email...`;
+                detailText.innerText = `Mengirim ke: ${email}...`;
 
-                // SIMULASI PENGIRIMAN (Realtime delay)
-                // Note: Client-side Supabase tidak bisa kirim bulk marketing email langsung tanpa Edge Function/SMTP.
-                // Ini adalah simulasi proses agar UI terlihat bekerja sesuai request.
-                // Di production, ganti ini dengan call ke API endpoint Anda.
                 try {
-                    // Simulate network latency (200ms - 500ms)
-                    await sleep(Math.random() * 300 + 200); 
+                    // --- LOGIKA PENGIRIMAN REAL ---
+                    // --- KODE BARU (YANG LEBIH LENGKAP) ---
+const params = {
+    to_email: email,       // Sesuai dengan {{to_email}} di gambar
+    subject: subject,      // Sesuai dengan {{subject}} di gambar
+    message: body,         // Pastikan di template EmailJS diubah jadi {{message}} (huruf kecil)
+    name: "Admin YLOS",    // Ini untuk mengisi {{name}} (From Name)
+    email: "admin@ylos.site" // Ini untuk mengisi {{email}} (Reply-To / Balasan akan ke sini)
+};
+
+                    // Kirim via EmailJS
+                    await emailjs.send(SERVICE_ID, TEMPLATE_ID, params);
                     
-                    // Jika ada backend nyata, kodenya mirip:
-                    // await supabase.functions.invoke('send-email', { body: { to: email, subject, text: body } })
-                    
+                    console.log(`Sukses kirim ke ${email}`);
                     successCount++;
+                    
+                    // Jeda sedikit agar tidak dianggap spam oleh server (Rate Limiting)
+                    await sleep(1000); 
+
                 } catch (e) {
-                    console.error("Failed to send to", email);
+                    console.error("Gagal kirim ke", email, e);
+                    // Lanjut ke email berikutnya meskipun gagal (tidak stop loop)
                 }
             }
 
             // Finish
             progressBar.style.width = '100%';
             statusText.innerText = '100%';
-            detailText.innerText = `Selesai! ${successCount} berhasil dikirim.`;
+            detailText.innerText = `Selesai! ${successCount} dari ${total} email berhasil terkirim.`;
             
             await sleep(500);
             
             Swal.fire({
-                icon: 'success',
+                icon: successCount === total ? 'success' : 'warning',
                 title: 'Blast Selesai!',
-                text: `Berhasil memproses ${successCount} email.`,
+                text: `Berhasil mengirim ${successCount} email. Cek Console untuk log error jika ada yang gagal.`,
             });
 
-            // Reset UI State
             btn.disabled = false;
             btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            // progressContainer.classList.add('hidden'); // Biarkan terlihat agar user tau status terakhir
         }
 
         // --- DIGISIGN LOGIC ---
