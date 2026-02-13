@@ -11,14 +11,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script type="text/javascript">
-   (function(){
-      // GANTI DENGAN PUBLIC KEY DARI AKUN EMAILJS ANDA
-      emailjs.init("03LKNG4cBpviHmdDM"); 
-   })();
-</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -122,6 +118,11 @@
         .ds-tab.active::after { width: 60%; }
 
         #mobile-backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
+
+        /* QUILL EDITOR CUSTOM STYLES */
+        .ql-toolbar { border-top-left-radius: 12px; border-top-right-radius: 12px; border-color: #E2E8F0 !important; background-color: #F8FAFC; }
+        .ql-container { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border-color: #E2E8F0 !important; background-color: white; font-family: 'Plus Jakarta Sans', sans-serif !important; font-size: 14px !important; }
+        .ql-editor { min-height: 250px; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-sm md:text-base">
@@ -300,10 +301,12 @@
                             <label class="text-xs font-bold text-gray-500 uppercase block mb-1">Subject Email</label>
                             <input type="text" id="blast-subject" placeholder="Contoh: Pengumuman Penting YLOS" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white transition outline-none focus:border-pink-500">
                         </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-bold text-gray-500 uppercase block mb-1">Isi Pesan</label>
-                            <textarea id="blast-body" class="w-full h-64 p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white transition outline-none focus:border-pink-500" placeholder="Tulis pesan Anda di sini..."></textarea>
-                            <p class="text-[10px] text-gray-400 mt-1 italic">*Mendukung plain text.</p>
+                        <div class="flex-1 flex flex-col">
+                            <label class="text-xs font-bold text-gray-500 uppercase block mb-1">Isi Pesan (Rich Text)</label>
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden focus-within:border-pink-500 transition flex-1 flex flex-col">
+                                <div id="editor-container" style="height: 300px; font-family: 'Plus Jakarta Sans', sans-serif;"></div>
+                            </div>
+                            <p class="text-[10px] text-gray-400 mt-1 italic">*Support Font, Warna, Gambar, dan Link (Ala MS Word).</p>
                         </div>
                     </div>
 
@@ -483,6 +486,8 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
         let allUsers=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
+        // Global var untuk Quill Editor
+        var quill;
 
         // MOBILE SIDEBAR TOGGLE
         function toggleSidebar() {
@@ -547,6 +552,9 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 fetchDigiSignDocs(); 
                 loadMySignature();
                 
+                // INIT QUILL EDITOR (Disini kita pasang editornya)
+                initQuillEditor();
+
                 // REQUEST UPDATE: Start tracking presence (Last Online)
                 setInterval(updatePresence, 60000); // Update every minute
                 updatePresence();
@@ -570,6 +578,28 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 
                 window.location.href = 'index.html';
             }
+        }
+
+        // --- INIT QUILL JS (MS WORD STYLE) ---
+        function initQuillEditor() {
+            quill = new Quill('#editor-container', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'font': [] }], // Font family
+                        [{ 'size': ['small', false, 'large', 'huge'] }], // Font size
+                        ['bold', 'italic', 'underline', 'strike'], // Styling dasar
+                        [{ 'color': [] }, { 'background': [] }], // Warna
+                        [{ 'script': 'sub'}, { 'script': 'super' }], // Subscript/Superscript
+                        [{ 'header': 1 }, { 'header': 2 }], // Header
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }], // List
+                        [{ 'align': [] }], // Alignment
+                        ['link', 'image', 'video'], // Media
+                        ['clean'] // Hapus format
+                    ]
+                },
+                placeholder: 'Tulis pesan Anda di sini (bisa insert gambar & link)...'
+            });
         }
 
         // --- REQUEST UPDATE: FUNCTION TO TRACK PRESENCE ---
@@ -646,29 +676,36 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
+        // --- FUNGSI BLAST EMAIL MENGGUNAKAN RESEND (PRO & CLEAN) ---
         async function startBlast() {
             const subject = document.getElementById('blast-subject').value;
-            const body = document.getElementById('blast-body').value;
+            // UPDATE: Ambil HTML dari Quill Editor, bukan text biasa
+            const body = quill.root.innerHTML; 
             const emails = updateRecipientCount();
 
-            // GANTI DENGAN ID DARI EMAILJS ANDA DISINI
-            const SERVICE_ID = "service_ikn17se";  // Ganti dengan Service ID Anda
-            const TEMPLATE_ID = "template_o7e8hw7"; // Ganti dengan Template ID Anda
+            // --- CONFIG PENGIRIM ---
+            const SENDER_EMAIL = "admin@ylos.site"; // Wajib domain verified
+            const SENDER_NAME = "YLOS Official";   
+            // -----------------------
 
-            if (!subject || !body) return Swal.fire('Error', 'Subject dan Isi pesan harus diisi', 'error');
+            // Cek kalau editor kosong (hanya berisi <p><br></p>)
+            const isBodyEmpty = quill.getText().trim().length === 0 && body.indexOf('<img') === -1;
+
+            if (!subject || isBodyEmpty) return Swal.fire('Error', 'Subject dan Isi pesan harus diisi', 'error');
             if (emails.length === 0) return Swal.fire('Error', 'Daftar penerima kosong', 'error');
 
             const result = await Swal.fire({
-                title: 'Kirim Blast Real?',
-                text: `Akan mengirim email sungguhan ke ${emails.length} alamat via EmailJS.`,
-                icon: 'warning',
+                title: 'Kirim Blast Pro?',
+                text: `Mengirim ${emails.length} email via Supabase Edge Function (Resend).`,
+                icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Kirim!',
+                confirmButtonText: 'Gas, Kirim!',
                 confirmButtonColor: '#DB2777'
             });
 
             if (!result.isConfirmed) return;
 
+            // UI Setup
             const btn = document.getElementById('btn-blast');
             const progressContainer = document.getElementById('blast-progress-container');
             const progressBar = document.getElementById('blast-bar');
@@ -680,54 +717,58 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             progressContainer.classList.remove('hidden');
 
             let successCount = 0;
+            let failCount = 0;
             const total = emails.length;
 
             for (let i = 0; i < total; i++) {
                 const email = emails[i];
-                
-                // Update UI Progress
+
+                // Update Progress UI
                 const percent = Math.round(((i + 1) / total) * 100);
                 progressBar.style.width = `${percent}%`;
                 statusText.innerText = `${percent}%`;
                 detailText.innerText = `Mengirim ke: ${email}...`;
 
                 try {
-                    // --- LOGIKA PENGIRIMAN REAL ---
-                    // --- KODE BARU (YANG LEBIH LENGKAP) ---
-const params = {
-    to_email: email,       // Sesuai dengan {{to_email}} di gambar
-    subject: subject,      // Sesuai dengan {{subject}} di gambar
-    message: body,         // Pastikan di template EmailJS diubah jadi {{message}} (huruf kecil)
-    name: "Admin YLOS",    // Ini untuk mengisi {{name}} (From Name)
-    email: "admin@ylos.site" // Ini untuk mengisi {{email}} (Reply-To / Balasan akan ke sini)
-};
+                    // --- MEMANGGIL SERVER YANG BARU ANDA DEPLOY ---
+                    // Note: body sudah dalam bentuk HTML dari Quill, tidak perlu replace \n lagi
+                    const { data, error } = await supabaseClient.functions.invoke('resend', {
+                        body: {
+                            email: email,
+                            subject: subject,
+                            body: body, // Kirim raw HTML dari editor
+                            sender_name: SENDER_NAME,
+                            sender_email: SENDER_EMAIL
+                        }
+                    });
 
-                    // Kirim via EmailJS
-                    await emailjs.send(SERVICE_ID, TEMPLATE_ID, params);
+                    if (error) throw error;
                     
-                    console.log(`Sukses kirim ke ${email}`);
+                    console.log(`[OK] Terkirim ke ${email}`, data);
                     successCount++;
-                    
-                    // Jeda sedikit agar tidak dianggap spam oleh server (Rate Limiting)
-                    await sleep(1000); 
 
                 } catch (e) {
-                    console.error("Gagal kirim ke", email, e);
-                    // Lanjut ke email berikutnya meskipun gagal (tidak stop loop)
+                    console.error(`[GAGAL] ${email}:`, e);
+                    failCount++;
                 }
+                
+                // Jeda 1 detik agar aman dari limit
+                await new Promise(r => setTimeout(r, 1000));
             }
 
-            // Finish
+            // Selesai
             progressBar.style.width = '100%';
             statusText.innerText = '100%';
-            detailText.innerText = `Selesai! ${successCount} dari ${total} email berhasil terkirim.`;
-            
-            await sleep(500);
+            let msg = `Selesai! ${successCount} Terkirim.`;
+            if (failCount > 0) msg += ` (${failCount} Gagal)`;
+            detailText.innerText = msg;
+
+            await new Promise(r => setTimeout(r, 500));
             
             Swal.fire({
-                icon: successCount === total ? 'success' : 'warning',
-                title: 'Blast Selesai!',
-                text: `Berhasil mengirim ${successCount} email. Cek Console untuk log error jika ada yang gagal.`,
+                icon: failCount === 0 ? 'success' : 'warning',
+                title: 'Blast Selesai',
+                text: msg
             });
 
             btn.disabled = false;
