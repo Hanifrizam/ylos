@@ -115,10 +115,41 @@
             box-shadow: 0 4px 15px rgba(255, 133, 179, 0.4);
         }
 
-        /* Announcement Typography */
-        .prose p { margin-bottom: 0.75em; line-height: 1.6; }
+        /* --- UPDATED: Rich Text Typography for Announcements --- */
+        .prose { color: #374151; font-size: 0.95rem; line-height: 1.7; word-wrap: break-word; }
+        .prose p { margin-bottom: 0.75em; }
         .prose p:last-child { margin-bottom: 0; }
+        
+        /* Responsive Images in Content */
+        .prose img { 
+            max-width: 100%; 
+            height: auto; 
+            border-radius: 0.75rem; 
+            margin: 1rem 0; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+            cursor: zoom-in; 
+            transition: transform 0.2s;
+        }
+        .prose img:hover { transform: scale(1.01); }
 
+        /* Text Formatting */
+        .prose strong, .prose b { font-weight: 700; color: #111827; }
+        .prose em, .prose i { font-style: italic; }
+        .prose u { text-decoration: underline; text-decoration-color: #FF85B3; }
+        
+        /* Links */
+        .prose a { color: #DB2777; text-decoration: underline; font-weight: 600; transition: color 0.2s; }
+        .prose a:hover { color: #BE185D; }
+
+        /* Lists */
+        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose li { margin-bottom: 0.25rem; }
+
+        /* Headings inside content */
+        .prose h1 { font-size: 1.5rem; font-weight: 800; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #111827; }
+        .prose h2 { font-size: 1.25rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #1F2937; }
+        
         /* Timeline Specific Styles */
         .timeline-item { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
         .timeline-item.visible { opacity: 1; transform: translateY(0); }
@@ -1020,13 +1051,9 @@
         const LINK_COMMITMENT_FEE = "https://youthleaderorganizationsummit.id/ylos.id/1xd4663dpvrn/checkout?token=cGFyYW1zPSU1QiU1RCZiaWRfcHJpY2U9MCZxdHlfcHJvZD0x";
         const LINK_SELF_FUNDED = "https://youthleaderorganizationsummit.id/ylos.id/er400x4wrlp1/checkout?token=cGFyYW1zPSU1QiU1RCZiaWRfcHJpY2U9MCZxdHlfcHJvZD0x";
         
-        // --- KONFIGURASI LINK GRUP WA ---
-        // Catatan: Anda memberikan URL yang sama di prompt, tapi kodenya sudah disiapkan jika linknya berbeda.
-        // Silakan ganti URL di dalam tanda kutip jika nanti linknya berubah.
         const WA_LINK_COMMITMENT = "https://chat.whatsapp.com/EeSgj62k95V2Xwp4eXLqOp?mode=gi_c"; 
         const WA_LINK_SELF_FUNDED = "https://chat.whatsapp.com/BvCU3Pv0zMvFrVFQ49Om5g?mode=gi_c"; 
         
-        // Variable global untuk menyimpan link yang aktif
         let CURRENT_PAYMENT_URL = "";
         let CURRENT_WA_LINK = "";
         
@@ -1180,14 +1207,7 @@
         
         function contactAdmin() { window.open(`https://wa.me/6281234567890?text=Halo Admin, saya butuh bantuan.`, '_blank'); }
 
-        // --- Helper Function: Format Paragraf ---
-        function formatContent(text) {
-            if (!text) return '';
-            // Memecah teks berdasarkan baris baru dan membungkusnya dalam tag <p>
-            return text.split('\n').map(line => line.trim() ? `<p>${line}</p>` : '').join('');
-        }
-
-        // DASHBOARD LOGIC (Updated UI Rendering)
+        // --- DASHBOARD LOGIC (Updated to Handle Rich Text from Admin) ---
         async function loadDashboard(userId) {
             const urlParams = new URLSearchParams(window.location.search);
             const isPreviewMode = urlParams.get('preview') === 'true';
@@ -1205,13 +1225,11 @@
                 document.getElementById('mobile-user-name').innerText = profile.full_name;
                 document.getElementById('dash-package').innerText = profile.package_type;
                 
-                // --- LOGIC PENENTUAN LINK BAYAR & WA ---
-                // Jika paket mengandung kata "Mandiri" atau "Self Funded", pakai link Self Funded
+                // Logic Penentuan Link
                 if (profile.package_type && (profile.package_type.includes('Mandiri') || profile.package_type.includes('Self Funded'))) {
                     CURRENT_PAYMENT_URL = LINK_SELF_FUNDED;
                     CURRENT_WA_LINK = WA_LINK_SELF_FUNDED;
                 } else {
-                    // Default ke Commitment Fee (Jalur Seleksi)
                     CURRENT_PAYMENT_URL = LINK_COMMITMENT_FEE;
                     CURRENT_WA_LINK = WA_LINK_COMMITMENT;
                 }
@@ -1263,13 +1281,11 @@
                 document.getElementById('announcement-container').classList.remove('hidden');
                 const container = document.getElementById('announcement-content');
                 container.innerHTML = '';
+                
                 announcements.forEach(ann => {
-                    // SISTEM LOCK PENGUMUMAN
-                    // Jika ada field 'is_premium' di database announcement (opsional), cek status lunas
                     let isLocked = (ann.is_premium === true) && !isLunas;
 
                     if (isLocked) {
-                        // Tampilan Terkunci untuk Pengumuman
                         container.innerHTML += `
                             <div class="bg-gray-50 border-l-4 border-gray-300 p-5 rounded-r-2xl">
                                 <div class="flex items-center gap-2 mb-2">
@@ -1280,20 +1296,36 @@
                             </div>
                         `;
                     } else {
-                        // Tampilan Normal dengan Format Paragraf
+                        // RENDER HTML CONTENT (Rich Text)
                         container.innerHTML += `
                             <div class="bg-blue-50/50 border-l-4 border-blue-500 p-5 rounded-r-2xl hover:bg-blue-50 transition">
-                                <h4 class="font-bold text-gray-900 text-base">${ann.title}</h4>
-                                <div class="text-sm text-gray-600 mt-2 prose">
-                                    ${formatContent(ann.content)}
+                                <h4 class="font-bold text-gray-900 text-base mb-3">${ann.title}</h4>
+                                <div class="prose text-sm text-gray-600">
+                                    ${ann.content} 
                                 </div>
-                                <div class="flex items-center gap-2 mt-3 text-xs text-gray-400 font-medium">
+                                <div class="flex items-center gap-2 mt-4 text-xs text-gray-400 font-medium pt-3 border-t border-blue-100">
                                     <i class="fa-regular fa-clock"></i>
                                     <span>${new Date(ann.created_at).toLocaleDateString()}</span>
                                 </div>
                             </div>
                         `;
                     }
+                });
+
+                // Attach Click Event for Image Zoom (Lightbox Effect)
+                document.querySelectorAll('.prose img').forEach(img => {
+                    img.onclick = function() {
+                        Swal.fire({
+                            imageUrl: this.src,
+                            width: 'auto',
+                            padding: 0,
+                            showConfirmButton: false,
+                            showCloseButton: true,
+                            background: 'transparent',
+                            backdrop: 'rgba(0,0,0,0.85)',
+                            customClass: { popup: 'rounded-xl overflow-hidden' }
+                        });
+                    };
                 });
             }
 
@@ -1303,12 +1335,9 @@
             if(modules && modules.length > 0) {
                 modContainer.innerHTML = '';
                 modules.forEach(mod => {
-                    // SISTEM LOCK MATERI
                     let isLocked = mod.is_premium && !isLunas;
-                    
                     let icon = mod.category === 'Video' ? 'fa-circle-play' : 'fa-file-lines';
                     let iconColor = mod.category === 'Video' ? 'text-red-500 bg-red-50' : 'text-blue-500 bg-blue-50';
-                    
                     let action = isLocked 
                         ? `<button disabled class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-200"><i class="fa-solid fa-lock"></i> Terkunci</button>`
                         : `<a href="${mod.link_url}" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow-md shadow-purple-100 transform hover:-translate-y-0.5">Buka <i class="fa-solid fa-arrow-up-right-from-square"></i></a>`;
