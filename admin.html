@@ -327,7 +327,7 @@
                              <button onclick="exportToExcel()" class="btn-press text-xs bg-green-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm hover:bg-green-700 flex items-center justify-center gap-2 w-full md:w-auto"><i class="fa-solid fa-file-excel"></i> Export</button>
                         </div>
                     </div>
-                    <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama Lengkap</th><th>Sekolah</th><th>Kontak</th><th>Status Pembayaran</th><th class="text-center">Aksi</th></tr></thead><tbody id="userTableBody"></tbody></table></div>
+                    <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama Lengkap</th><th>Sekolah</th><th>Kontak</th><th>Status Pembayaran</th><th>Last Seen</th><th class="text-center">Aksi</th></tr></thead><tbody id="userTableBody"></tbody></table></div>
                 </div>
             </div>
 
@@ -467,6 +467,10 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 initDigiSignRealtime(); 
                 fetchDigiSignDocs(); 
                 loadMySignature();
+                
+                // REQUEST UPDATE: Start tracking presence (Last Online)
+                setInterval(updatePresence, 60000); // Update every minute
+                updatePresence();
 
             } catch (err) {
                 console.error("Security Breach Attempt:", err);
@@ -486,6 +490,15 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 });
                 
                 window.location.href = 'index.html';
+            }
+        }
+
+        // --- REQUEST UPDATE: FUNCTION TO TRACK PRESENCE ---
+        async function updatePresence() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if(user) {
+                // Mengupdate kolom last_seen di database
+                await supabaseClient.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', user.id);
             }
         }
 
@@ -731,7 +744,42 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 
         async function fetchUsers() { const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); allUsers = data||[]; renderTable(allUsers); renderVerificationList(allUsers); document.getElementById('stat-total').innerText = allUsers.length; document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; document.getElementById('table-total').innerText = allUsers.length; }
-        function renderTable(users) { document.getElementById('userTableBody').innerHTML = users.map(u => { const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; const action = u.payment_status === 'Lunas' ? `<button onclick="updateStatus('${u.id}', 'Pending')" class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition font-bold">Batalkan</button>` : `<button onclick="updateStatus('${u.id}', 'Lunas')" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition font-bold">Verifikasi</button>`; return `<tr class="hover:scale-[1.01] transition duration-200"><td class="p-4 font-bold text-gray-800">${u.full_name || '-'}</td><td class="p-4 text-gray-500">${u.school || '-'}</td><td class="p-4 text-xs font-mono text-gray-500">${u.phone || '-'}</td><td class="p-4">${badge}</td><td class="p-4 text-center flex gap-2 justify-center">${action}<button onclick="deleteUser('${u.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button></td></tr>`; }).join(''); }
+        
+        // REQUEST UPDATE: HELPER FORMAT TIME
+        function timeAgo(dateString) {
+            if(!dateString) return '<span class="text-gray-400 text-xs italic">-</span>';
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            if (seconds < 60) return '<span class="text-green-600 text-xs font-bold flex items-center justify-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Online</span>';
+            
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `<span class="text-gray-500 text-xs">${minutes} mnt lalu</span>`;
+            
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `<span class="text-gray-500 text-xs">${hours} jam lalu</span>`;
+            
+            return `<span class="text-gray-400 text-xs">${date.toLocaleDateString('id-ID')}</span>`;
+        }
+
+        // REQUEST UPDATE: MODIFY RENDER TABLE TO SHOW LAST SEEN
+        function renderTable(users) { 
+            document.getElementById('userTableBody').innerHTML = users.map(u => { 
+                const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; 
+                const action = u.payment_status === 'Lunas' ? `<button onclick="updateStatus('${u.id}', 'Pending')" class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition font-bold">Batalkan</button>` : `<button onclick="updateStatus('${u.id}', 'Lunas')" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition font-bold">Verifikasi</button>`; 
+                const lastSeen = timeAgo(u.last_seen);
+                
+                return `<tr class="hover:scale-[1.01] transition duration-200">
+                    <td class="p-4 font-bold text-gray-800">${u.full_name || '-'}</td>
+                    <td class="p-4 text-gray-500">${u.school || '-'}</td>
+                    <td class="p-4 text-xs font-mono text-gray-500">${u.phone || '-'}</td>
+                    <td class="p-4">${badge}</td>
+                    <td class="p-4 text-center">${lastSeen}</td>
+                    <td class="p-4 text-center flex gap-2 justify-center">${action}<button onclick="deleteUser('${u.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>`; 
+            }).join(''); 
+        }
         
         function filterVerification() {
             const term = document.getElementById('searchVerification').value.toLowerCase();
@@ -774,7 +822,18 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             } else { Swal.fire({ icon: 'success', title: 'Verifikasi Terkirim!', text: `Link verifikasi dikirim ke ${email}`, showConfirmButton: false, timer: 2000 }); }
         }
         
-        function filterTable() { const term = document.getElementById('searchInput').value.toLowerCase(); renderTable(allUsers.filter(u => u.full_name.toLowerCase().includes(term) || u.school.toLowerCase().includes(term))); }
+        // REQUEST UPDATE: FIX SEARCH BUG
+        // Masalah sebelumnya: Jika salah satu field (misal school) kosong/null, .toLowerCase() akan error dan search berhenti total.
+        // Solusi: Tambahkan (u.field || '') untuk handle null values.
+        function filterTable() { 
+            const term = document.getElementById('searchInput').value.toLowerCase(); 
+            const filteredUsers = allUsers.filter(u => {
+                const name = (u.full_name || '').toLowerCase();
+                const school = (u.school || '').toLowerCase();
+                return name.includes(term) || school.includes(term);
+            });
+            renderTable(filteredUsers); 
+        }
 
         // --- CALENDAR (GOOGLE STYLE) ---
         function initCalendar() { 
