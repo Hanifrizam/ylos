@@ -182,6 +182,7 @@
                     <i class="fa-solid fa-file-signature w-5 text-center group-hover:scale-110 transition"></i> DigiSign 
                     <span class="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[9px] px-2 py-0.5 rounded-full ml-auto font-bold shadow-sm">PRO</span>
                 </div>
+                 <div onclick="switchTab('tracking')" id="menu-tracking" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-stopwatch w-5 text-center"></i> Daily Tracking <span class="text-[9px] text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded ml-auto font-bold">NEW</span></div>
             </div>
 
             <div>
@@ -281,6 +282,155 @@
                     <div><h2 class="text-xl md:text-2xl font-bold text-gray-900">Jadwal</h2><p class="text-gray-500 text-xs mt-1">Klik tanggal untuk event.</p></div>
                 </div>
                 <div id="calendar" class="text-xs md:text-sm"></div>
+            </div>
+            
+            <div id="section-tracking" class="content-section space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 glass-card p-6">
+                    <div>
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-stopwatch text-pink-500"></i> Admin Daily Tracking</h2>
+                        <p class="text-gray-600 text-xs mt-1">Logbook kerja tim & monitoring performa harian.</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-2 flex gap-1">
+                        <button onclick="toggleTrackingView('input')" id="btn-track-input" class="px-4 py-2 rounded-md text-xs font-bold transition bg-white text-pink-600 shadow-sm">Input Harian</button>
+                        <button onclick="toggleTrackingView('dashboard')" id="btn-track-dashboard" class="px-4 py-2 rounded-md text-xs font-bold text-gray-500 hover:bg-gray-100 transition">Dashboard Control</button>
+                    </div>
+                </div>
+
+                <div id="view-track-input" class="space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-1 glass-card p-6">
+                            <h3 class="font-bold text-gray-800 border-b border-gray-100 pb-3 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-pen-to-square"></i> Log Hari Ini
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Tanggal</label>
+                                    <input type="date" id="log-date" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:border-pink-500 outline-none">
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Jam Mulai</label>
+                                        <input type="time" id="log-start" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none" onchange="calcDuration()">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Jam Selesai</label>
+                                        <input type="time" id="log-end" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none" onchange="calcDuration()">
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-blue-50 p-3 rounded-xl flex justify-between items-center">
+                                    <span class="text-xs font-bold text-blue-600">Total Durasi:</span>
+                                    <span id="log-duration" class="text-lg font-extrabold text-blue-700">0 Jam</span>
+                                </div>
+
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Aktivitas</label>
+                                    <input type="text" id="log-activity" placeholder="Contoh: Meeting, Design..." class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Output (Hasil)</label>
+                                    <textarea id="log-output" placeholder="Apa hasil konkretnya?" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none h-20"></textarea>
+                                </div>
+                                <div id="reason-box" class="hidden">
+                                    <label class="text-[10px] font-bold text-red-500 uppercase block mb-1">Alasan (< 2 Jam)</label>
+                                    <textarea id="log-reason" placeholder="Wajib diisi karena durasi < 2 jam" class="w-full p-2.5 bg-red-50 border border-red-200 rounded-xl text-sm focus:border-red-500 outline-none h-16"></textarea>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Bukti (Link/Drive)</label>
+                                    <input type="text" id="log-proof" placeholder="Link bukti hasil kerja" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none">
+                                </div>
+                                <button onclick="submitDailyLog()" class="btn-press w-full bg-pink-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-pink-700 mt-2">
+                                    <i class="fa-solid fa-save"></i> SIMPAN LOG
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 glass-card p-6 flex flex-col">
+                            <h3 class="font-bold text-gray-800 border-b border-gray-100 pb-3 mb-4">Riwayat Logbook Saya</h3>
+                            <div class="flex-1 overflow-x-auto">
+                                <table class="modern-table text-xs">
+                                    <thead>
+                                        <tr>
+                                            <th>Tanggal</th>
+                                            <th>Jam</th>
+                                            <th>Durasi</th>
+                                            <th>Aktivitas & Output</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="my-log-list">
+                                        <tr><td colspan="5" class="text-center py-8 text-gray-400">Memuat data...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-track-dashboard" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="glass-card p-4 border-l-4 border-l-pink-500">
+                            <p class="text-[10px] text-gray-400 font-bold uppercase">Work Control</p>
+                            <h4 class="font-bold text-gray-800 text-lg">Daily Tracking</h4>
+                            <p class="text-xs text-gray-500 mt-1">Target: <span class="font-bold text-pink-600">~40 Jam/Bulan</span></p>
+                        </div>
+                         <div class="glass-card p-4 border-l-4 border-l-green-500">
+                            <p class="text-[10px] text-gray-400 font-bold uppercase">Status Aman</p>
+                            <h4 class="font-bold text-green-600 text-lg">🟢 > 40 Jam</h4>
+                            <p class="text-xs text-gray-500 mt-1">Total jam kerja aman.</p>
+                        </div>
+                         <div class="glass-card p-4 border-l-4 border-l-red-500">
+                            <p class="text-[10px] text-gray-400 font-bold uppercase">Status Kritis</p>
+                            <h4 class="font-bold text-red-600 text-lg">🔴 < 40 Jam</h4>
+                            <p class="text-xs text-gray-500 mt-1">Perlu ditingkatkan.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 overflow-hidden">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h3 class="font-bold text-gray-800 text-lg">Dashboard Control (2026)</h3>
+                            
+                            <div class="flex gap-2 w-full md:w-auto">
+                                <select id="dash-month" onchange="fetchDashboardData()" class="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold text-gray-700 outline-none focus:border-pink-500">
+                                    <option value="0">Januari 2026</option>
+                                    <option value="1">Februari 2026</option>
+                                    <option value="2">Maret 2026</option>
+                                    <option value="3">April 2026</option>
+                                    <option value="4">Mei 2026</option>
+                                    <option value="5">Juni 2026</option>
+                                    <option value="6">Juli 2026</option>
+                                    <option value="7">Agustus 2026</option>
+                                    <option value="8">September 2026</option>
+                                    <option value="9">Oktober 2026</option>
+                                    <option value="10">November 2026</option>
+                                    <option value="11">Desember 2026</option>
+                                </select>
+                                
+                                <button onclick="fetchDashboardData()" class="text-xs bg-gray-100 px-3 py-2 rounded-lg font-bold hover:bg-gray-200 transition"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                                
+                                <button onclick="resetDashboardData()" class="text-xs bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg font-bold hover:bg-red-600 hover:text-white transition flex items-center gap-2">
+                                    <i class="fa-solid fa-trash"></i> Reset Data
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-[10px] text-gray-400 uppercase border-b border-gray-200">
+                                        <th class="p-3 font-extrabold">Nama Tim</th>
+                                        <th class="p-3 font-extrabold text-center">Jabatan</th>
+                                        <th class="p-3 font-extrabold text-center bg-gray-50">Total Jam (Bulan Ini)</th>
+                                        <th class="p-3 font-extrabold text-center">Status</th>
+                                        <th class="p-3 font-extrabold text-center">Detail (Log)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-control-body" class="text-sm">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="section-digisign" class="content-section space-y-6">
@@ -591,6 +741,15 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 fetchDigiSignDocs(); 
                 loadMySignature();
                 
+                // Load Tracking Data
+                initTrackingRealtime();
+                
+                // Set Default Month (Current Month)
+                const currentMonth = new Date().getMonth();
+                document.getElementById('dash-month').value = currentMonth;
+                fetchMyLogs(); // Fetch awal
+                fetchDashboardData(); // Fetch awal
+                
                 // INIT QUILL EDITORs
                 initQuillEditors();
 
@@ -663,6 +822,288 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
         function initDatabaseRealtime() { supabaseClient.channel('db-changes').on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => { fetchUsers(); Toast.fire({ icon: 'info', title: 'Data Peserta Diperbarui' }); }).subscribe(); }
         function initDigiSignRealtime() { supabaseClient.channel('digisign-updates').on('postgres_changes', { event: '*', schema: 'public', table: 'digisign_documents' }, () => { fetchDigiSignDocs(); Toast.fire({ icon: 'info', title: 'Dokumen DigiSign Diperbarui' }); }).subscribe(); }
 
+        // --- ADMIN DAILY TRACKING LOGIC ---
+        function toggleTrackingView(view) {
+            document.getElementById('view-track-input').classList.add('hidden');
+            document.getElementById('view-track-dashboard').classList.add('hidden');
+            document.getElementById('btn-track-input').classList.remove('bg-white', 'text-pink-600', 'shadow-sm');
+            document.getElementById('btn-track-input').classList.add('text-gray-500');
+            document.getElementById('btn-track-dashboard').classList.remove('bg-white', 'text-pink-600', 'shadow-sm');
+            document.getElementById('btn-track-dashboard').classList.add('text-gray-500');
+
+            if(view === 'input') {
+                document.getElementById('view-track-input').classList.remove('hidden');
+                document.getElementById('btn-track-input').classList.add('bg-white', 'text-pink-600', 'shadow-sm');
+                document.getElementById('btn-track-input').classList.remove('text-gray-500');
+                fetchMyLogs();
+            } else {
+                document.getElementById('view-track-dashboard').classList.remove('hidden');
+                document.getElementById('btn-track-dashboard').classList.add('bg-white', 'text-pink-600', 'shadow-sm');
+                document.getElementById('btn-track-dashboard').classList.remove('text-gray-500');
+                fetchDashboardData();
+            }
+        }
+
+        function calcDuration() {
+            const start = document.getElementById('log-start').value;
+            const end = document.getElementById('log-end').value;
+            const reasonBox = document.getElementById('reason-box');
+            
+            if(start && end) {
+                const s = new Date(`2000-01-01T${start}`);
+                const e = new Date(`2000-01-01T${end}`);
+                let diff = (e - s) / 1000 / 60 / 60; // hours
+                if (diff < 0) diff += 24; // Handle lintas hari
+
+                const hours = Math.floor(diff);
+                const minutes = Math.round((diff - hours) * 60);
+                
+                document.getElementById('log-duration').innerText = `${hours} Jam ${minutes} Menit`;
+                document.getElementById('log-duration').dataset.val = diff; // Simpan nilai desimal
+
+                if (diff < 2) {
+                    reasonBox.classList.remove('hidden');
+                } else {
+                    reasonBox.classList.add('hidden');
+                }
+            }
+        }
+
+        async function submitDailyLog() {
+            const date = document.getElementById('log-date').value;
+            const start = document.getElementById('log-start').value;
+            const end = document.getElementById('log-end').value;
+            const activity = document.getElementById('log-activity').value;
+            const output = document.getElementById('log-output').value;
+            const proof = document.getElementById('log-proof').value;
+            const reason = document.getElementById('log-reason').value;
+            const duration = parseFloat(document.getElementById('log-duration').dataset.val || 0);
+
+            if(!date || !start || !end || !activity || !output) {
+                return Swal.fire('Error', 'Mohon lengkapi Tanggal, Waktu, Aktivitas, dan Output.', 'error');
+            }
+
+            if(duration < 2 && !reason) {
+                return Swal.fire('Peringatan', 'Durasi kerja di bawah 2 jam WAJIB mengisi Alasan.', 'warning');
+            }
+
+            // Status Logic sesuai Excel
+            let status = "⚠️ Dicatat";
+            if (duration >= 2 && output.length > 5) status = "✅ Terpenuhi";
+            if (duration >= 2 && output.length <= 5) status = "⚠️ Dicatat (Output Kabur)";
+            if (duration < 1) status = "❌ 0 Jam";
+
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            Swal.showLoading();
+            // Simpan ke database (Asumsi tabel 'admin_logs' ada)
+            const { error } = await supabaseClient.from('admin_logs').insert({
+                admin_id: user.id,
+                log_date: date,
+                start_time: start,
+                end_time: end,
+                total_hours: duration,
+                activity: activity,
+                output: output,
+                proof_link: proof,
+                reason: (duration < 2) ? reason : null,
+                status_label: status
+            });
+            Swal.close();
+
+            if(error) return Swal.fire('Gagal', error.message, 'error');
+
+            Toast.fire({icon: 'success', title: 'Log berhasil disimpan!'});
+            
+            // Reset Form
+            document.getElementById('log-activity').value = '';
+            document.getElementById('log-output').value = '';
+            document.getElementById('log-reason').value = '';
+            fetchMyLogs();
+        }
+
+        async function fetchMyLogs() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const { data } = await supabaseClient.from('admin_logs').select('*').eq('admin_id', user.id).order('log_date', {ascending: false}).limit(10);
+            
+            const tbody = document.getElementById('my-log-list');
+            tbody.innerHTML = '';
+            
+            if(!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-400 italic">Belum ada log kerja.</td></tr>`;
+                return;
+            }
+
+            data.forEach(log => {
+                const badge = log.status_label.includes('Terpenuhi') 
+                    ? `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold">${log.status_label}</span>`
+                    : `<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold">${log.status_label}</span>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="font-bold text-gray-700">${log.log_date}</td>
+                        <td class="font-mono text-xs">${log.start_time.slice(0,5)} - ${log.end_time.slice(0,5)}</td>
+                        <td class="font-bold text-blue-600">${log.total_hours.toFixed(1)} Jam</td>
+                        <td>
+                            <div class="font-bold text-gray-800 text-xs">${log.activity}</div>
+                            <div class="text-[10px] text-gray-500 truncate max-w-[150px]">${log.output}</div>
+                        </td>
+                        <td>${badge}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // --- NEW: RESET DASHBOARD FEATURE ---
+        async function resetDashboardData() {
+            const result = await Swal.fire({
+                title: 'Reset Dashboard?',
+                text: "PERINGATAN: Tindakan ini akan MENGHAPUS SEMUA DATA Logbook dari seluruh admin. Data tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus Semua!',
+                cancelButtonText: 'Batal'
+            });
+
+            if (result.isConfirmed) {
+                Swal.showLoading();
+                // Menghapus semua data dari tabel admin_logs
+                // Kita gunakan .gt('id', 0) sebagai trik untuk delete all rows jika RLS mengizinkan
+                const { error } = await supabaseClient
+                    .from('admin_logs')
+                    .delete()
+                    .gt('id', 0);
+
+                Swal.close();
+
+                if (error) {
+                    Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus data: ' + error.message, 'error');
+                } else {
+                    Swal.fire('Terhapus!', 'Dashboard Daily Tracking telah di-reset.', 'success');
+                    fetchDashboardData();
+                    fetchMyLogs();
+                }
+            }
+        }
+
+        async function fetchDashboardData() {
+            // Ambil Bulan yang dipilih dari Dropdown
+            const selectedMonthIndex = parseInt(document.getElementById('dash-month').value);
+            const selectedYear = 2026; // Hardcoded tahun 2026 sesuai request
+
+            // Hitung Tanggal Awal & Akhir Bulan
+            const startDate = new Date(selectedYear, selectedMonthIndex, 1);
+            const endDate = new Date(selectedYear, selectedMonthIndex + 1, 0); // Tgl terakhir bulan tsb
+            
+            // Format ke ISO String untuk Supabase Filter (YYYY-MM-DD)
+            // Kita gunakan timezone local string hack agar akurat
+            const startStr = startDate.toISOString().split('T')[0];
+            const endStr = endDate.toISOString().split('T')[0];
+
+            // 1. Ambil SEMUA data Log (dibatasi bulan yg dipilih)
+            const { data: logs, error: logError } = await supabaseClient
+                .from('admin_logs')
+                .select('*')
+                .gte('log_date', startStr)
+                .lte('log_date', endStr);
+
+            // 2. Ambil SEMUA data Profile (Untuk mencocokkan Nama)
+            const { data: profiles, error: profError } = await supabaseClient
+                .from('profiles')
+                .select('id, full_name');
+
+            if (logError || profError) {
+                console.error("Gagal ambil data:", logError || profError);
+                return;
+            }
+
+            // 3. Mapping Data (Gabungkan Log + Nama)
+            const usersMap = {};
+            
+            logs.forEach(log => {
+                // Cari nama berdasarkan admin_id
+                const userProfile = profiles.find(p => p.id === log.admin_id);
+                const name = userProfile ? userProfile.full_name : 'Tanpa Nama';
+                
+                if(!usersMap[name]) usersMap[name] = { hours: 0, logs: 0 };
+                
+                usersMap[name].hours += log.total_hours;
+                usersMap[name].logs += 1;
+            });
+
+            const tbody = document.getElementById('dashboard-control-body');
+            tbody.innerHTML = '';
+
+            // Mapping Role sesuai Excel (Pastikan Nama di Database SAMA PERSIS dengan Excel)
+            const excelRoles = {
+                'M. Fauzan Ramdani': 'Project Leader',
+                'Nava Olivia': 'Program & Event Operation Lead',
+                'Ari Juanda': 'Sponsorship & Strategic Patnership Lead',
+                'Qori': 'Finance & Administration Excecutive',
+                'Tia': 'Brand & Content Strategist',
+                'Hanif': 'Creative & Design Graphic',
+                'Farchan': 'Web Developer & IT Support',
+                'Firman': 'Logistic & General Affair'
+            };
+
+            // Render ke Tabel
+            if(Object.keys(usersMap).length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">Belum ada data log di bulan ini.</td></tr>`;
+                return;
+            }
+
+            for (const [name, stats] of Object.entries(usersMap)) {
+                // Jika nama tidak ada di excelRoles, anggap Team Member
+                let role = excelRoles[name] || Object.keys(excelRoles).find(k => name.includes(k)) || 'Team Member';
+                
+                // Logika Status BULANAN
+                // Target: 40 Jam / Bulan (Asumsi 2 jam x 20 hari kerja)
+                let status = '';
+                let statusClass = '';
+                let note = '';
+
+                if (stats.hours >= 40) {
+                    status = '🟢 Aman';
+                    statusClass = 'text-green-600 bg-green-50 border-green-200';
+                    note = 'Target Tercapai! 🔥';
+                } else if (stats.hours >= 20) {
+                    status = '🟡 Kurang';
+                    statusClass = 'text-yellow-600 bg-yellow-50 border-yellow-200';
+                    note = `Kurang ${(40 - stats.hours).toFixed(1)} jam.`;
+                } else {
+                    status = '🔴 Kritis';
+                    statusClass = 'text-red-600 bg-red-50 border-red-200';
+                    note = 'Perlu ditingkatkan segera!';
+                }
+
+                tbody.innerHTML += `
+                    <tr class="bg-white border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-3 font-bold text-gray-800">${name}</td>
+                        <td class="p-3 text-xs text-center text-gray-500">${role}</td>
+                        <td class="p-3 text-center font-mono font-bold text-blue-600 bg-blue-50/50 rounded-lg">${stats.hours.toFixed(2)} Jam</td>
+                        <td class="p-3 text-center">
+                            <span class="${statusClass} px-2 py-1 rounded-full text-[10px] font-bold border shadow-sm">${status}</span>
+                        </td>
+                        <td class="p-3 text-center text-xs italic text-gray-400">
+                            ${stats.logs} entry <span class="mx-1">•</span> ${note}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function initTrackingRealtime() {
+            supabaseClient.channel('tracking-updates').on('postgres_changes', { event: '*', schema: 'public', table: 'admin_logs' }, () => { 
+                fetchMyLogs(); 
+                // Jika sedang di dashboard, refresh dashboard juga
+                if(!document.getElementById('view-track-dashboard').classList.contains('hidden')) {
+                    fetchDashboardData();
+                }
+            }).subscribe(); 
+        }
+
         // --- EMAIL BLAST LOGIC ---
         function updateRecipientCount() {
             const val = document.getElementById('blast-recipients').value;
@@ -723,7 +1164,7 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             const emails = updateRecipientCount();
 
             const SENDER_EMAIL = "admin@ylos.site"; 
-            const SENDER_NAME = "YLOS Official";   
+            const SENDER_NAME = "YLOS Official";    
             
             const isBodyEmpty = quillBlast.getText().trim().length === 0 && body.indexOf('<img') === -1;
 
