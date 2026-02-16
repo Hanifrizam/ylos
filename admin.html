@@ -354,11 +354,11 @@
                             <input type="text" id="blast-subject" placeholder="Contoh: Pengumuman Penting YLOS" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:bg-white transition outline-none focus:border-pink-500">
                         </div>
                         <div class="flex-1 flex flex-col">
-                            <label class="text-xs font-bold text-gray-500 uppercase block mb-1">Isi Pesan (Rich Text)</label>
+                            <label class="text-xs font-bold text-gray-500 uppercase block mb-1">Isi Pesan</label>
                             <div class="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden focus-within:border-pink-500 transition flex-1 flex flex-col">
                                 <div id="editor-container" style="height: 300px; font-family: 'Plus Jakarta Sans', sans-serif;"></div>
                             </div>
-                            <p class="text-[10px] text-gray-400 mt-1 italic">*Support Font, Warna, Gambar, dan Link (Ala MS Word).</p>
+                            <p class="text-[10px] text-gray-400 mt-1 italic">*Support Font, Warna, Gambar, dan Link. Gunakan teks <strong>[Nama]</strong> untuk menyapa nama penerima secara otomatis.</p>
                         </div>
                     </div>
 
@@ -374,13 +374,13 @@
                                 <div class="pointer-events-none">
                                     <i class="fa-solid fa-file-excel text-2xl text-green-600 mb-2 group-hover:scale-110 transition"></i>
                                     <p class="text-sm font-bold text-gray-600">Import dari Excel</p>
-                                    <p class="text-[10px] text-gray-400">Klik atau drag file .xlsx ke sini</p>
+                                    <p class="text-[10px] text-gray-400">Klik atau drag file .xlsx ke sini (Otomatis deteksi Kolom Nama & Email)</p>
                                 </div>
                             </div>
 
                             <div>
                                 <label class="text-xs font-bold text-gray-500 uppercase block mb-1">List Email (Manual)</label>
-                                <textarea id="blast-recipients" class="w-full h-32 p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono focus:bg-white transition outline-none focus:border-pink-500" placeholder="email1@example.com, email2@example.com... (Pisahkan dengan koma atau enter)" onkeyup="updateRecipientCount()"></textarea>
+                                <textarea id="blast-recipients" class="w-full h-32 p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono focus:bg-white transition outline-none focus:border-pink-500" placeholder="Budi <budi@example.com>, email2@example.com... (Pisahkan dengan koma atau enter)" onkeyup="updateRecipientCount()"></textarea>
                             </div>
                         </div>
 
@@ -484,7 +484,7 @@
 
             <div id="section-announcements" class="content-section space-y-6">
                  <div class="flex justify-between items-center">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-900">Pengumuman (Rich Text)</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-900">Pengumuman</h2>
                     <span class="text-[10px] text-gray-500 bg-white px-3 py-1 rounded-full border shadow-sm flex items-center gap-1"><i class="fa-solid fa-up-down-left-right"></i> Drag untuk urutkan</span>
                 </div>
                 
@@ -825,9 +825,29 @@
         // --- EMAIL BLAST LOGIC ---
         function updateRecipientCount() {
             const val = document.getElementById('blast-recipients').value;
-            const emails = val.split(/[\n,]+/).map(e => e.trim()).filter(e => e !== "");
-            document.getElementById('recipient-count').innerText = `${emails.length} Email`;
-            return emails;
+            // Memisahkan by baris baru atau koma
+            const lines = val.split(/[\n,]+/).map(e => e.trim()).filter(e => e !== "");
+            
+            let parsedRecipients = [];
+            
+            lines.forEach(line => {
+                // Mencari format Name <email>
+                const match = line.match(/(.*?)<([^>]+)>/);
+                if (match) {
+                    const name = match[1].trim();
+                    const email = match[2].trim();
+                    if (email) parsedRecipients.push({ name: name, email: email });
+                } else {
+                    // Jika tidak ada bracket nama, tangkap email saja
+                    const emailMatch = line.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+                    if (emailMatch) {
+                        parsedRecipients.push({ name: '', email: emailMatch[1].trim() });
+                    }
+                }
+            });
+            
+            document.getElementById('recipient-count').innerText = `${parsedRecipients.length} Email`;
+            return parsedRecipients; // mengembalikan Array of Objects
         }
 
         function processExcel(input) {
@@ -841,35 +861,60 @@
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
                 
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                // Parse menjadi JSON Array Object
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
                 
-                let extractedEmails = [];
-                const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
-
+                let extractedList = [];
+                
                 jsonData.forEach(row => {
-                    row.forEach(cell => {
-                        if (typeof cell === 'string') {
-                            const matches = cell.match(emailRegex);
-                            if (matches) {
-                                extractedEmails.push(...matches);
+                    let nama = '';
+                    let email = '';
+                    
+                    // Deteksi nama kolom (Bisa case-insensitive "Nama", "name", "email", dll)
+                    for (const key in row) {
+                        const lowerKey = key.toLowerCase();
+                        if (lowerKey.includes('nama') || lowerKey.includes('name')) {
+                            nama = row[key];
+                        }
+                        if (lowerKey.includes('email') || lowerKey.includes('surel')) {
+                            email = row[key];
+                        }
+                    }
+                    
+                    // Kalau email ga ketemu dari header, paksa temukan menggunakan regex ke sel acak di baris itu
+                    if (!email) {
+                        for (const key in row) {
+                            if (typeof row[key] === 'string') {
+                                const matches = row[key].match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/i);
+                                if (matches) email = matches[0];
                             }
                         }
-                    });
+                    }
+
+                    // Gabungkan ke format Name <email>
+                    if (email) {
+                        if (nama) {
+                            extractedList.push(`${nama} <${email}>`);
+                        } else {
+                            extractedList.push(`${email}`);
+                        }
+                    }
                 });
 
-                extractedEmails = [...new Set(extractedEmails)];
+                // Buang duplikat jika ada
+                extractedList = [...new Set(extractedList)];
 
                 const textArea = document.getElementById('blast-recipients');
                 const currentText = textArea.value.trim();
                 
                 if (currentText.length > 0) {
-                    textArea.value = currentText + ",\n" + extractedEmails.join(",\n");
+                    textArea.value = currentText + ",\n" + extractedList.join(",\n");
                 } else {
-                    textArea.value = extractedEmails.join(",\n");
+                    textArea.value = extractedList.join(",\n");
                 }
 
                 updateRecipientCount();
-                Toast.fire({ icon: 'success', title: `${extractedEmails.length} Email ditambahkan dari Excel` });
+                Toast.fire({ icon: 'success', title: `${extractedList.length} Data (Email & Nama) diimpor` });
                 
                 input.value = '';
             };
@@ -879,7 +924,7 @@
         async function startBlast() {
             const subject = document.getElementById('blast-subject').value;
             const body = quillBlast.root.innerHTML; 
-            const emails = updateRecipientCount();
+            const recipients = updateRecipientCount(); // Sekarang berupa array of objects {name, email}
 
             const SENDER_EMAIL = "admin@ylos.site"; 
             const SENDER_NAME = "YLOS Official";    
@@ -887,11 +932,11 @@
             const isBodyEmpty = quillBlast.getText().trim().length === 0 && body.indexOf('<img') === -1;
 
             if (!subject || isBodyEmpty) return Swal.fire('Error', 'Subject dan Isi pesan harus diisi', 'error');
-            if (emails.length === 0) return Swal.fire('Error', 'Daftar penerima kosong', 'error');
+            if (recipients.length === 0) return Swal.fire('Error', 'Daftar penerima kosong', 'error');
 
             const result = await Swal.fire({
                 title: 'Kirim Blast Pro?',
-                text: `Mengirim ${emails.length} email via Supabase Edge Function (Resend).`,
+                text: `Mengirim ke ${recipients.length} target via Supabase Edge Function (Resend).`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Gas, Kirim!',
@@ -912,19 +957,25 @@
 
             let successCount = 0;
             let failCount = 0;
-            const total = emails.length;
+            const total = recipients.length;
 
             for (let i = 0; i < total; i++) {
-                const email = emails[i];
+                const recipient = recipients[i];
+                const email = recipient.email;
+                const nama = recipient.name || 'Peserta'; // Kalau di excel namanya kosong, ganti kata 'Peserta'
+                
                 const percent = Math.round(((i + 1) / total) * 100);
                 progressBar.style.width = `${percent}%`;
                 statusText.innerText = `${percent}%`;
                 detailText.innerText = `Mengirim ke: ${email}...`;
 
+                // REPLACE TEKS [Nama] DI EDITOR DENGAN NAMA ASLI PENERIMA
+                const personalizedBody = body.replace(/\[Nama\]/gi, nama);
+
                 try {
                     const { data, error } = await supabaseClient.functions.invoke('resend', {
-                        body: { email: email, subject: subject, body: body, sender_name: SENDER_NAME, sender_email: SENDER_EMAIL }
-                    });
+    body: { email: email, subject: subject, body: personalizedBody, sender_name: SENDER_NAME, sender_email: SENDER_EMAIL, recipient_name: nama }
+});
                     if (error) throw error;
                     successCount++;
                 } catch (e) {
