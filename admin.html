@@ -246,10 +246,10 @@
                     </span>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                     <div class="glass-card p-5 flex flex-col justify-between h-32 md:h-40 relative overflow-hidden group">
                         <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-50 rounded-full transition-transform group-hover:scale-150 duration-500"></div>
-                        <div class="relative z-10 flex items-center gap-3"><div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg md:text-xl shadow-sm"><i class="fa-solid fa-users"></i></div><span class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wide">Total Peserta</span></div>
+                        <div class="relative z-10 flex items-center gap-3"><div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg md:text-xl shadow-sm"><i class="fa-solid fa-users"></i></div><span class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wide">Peserta</span></div>
                         <div class="relative z-10 text-3xl md:text-4xl font-extrabold text-gray-900" id="stat-total">0</div>
                     </div>
                     <div class="glass-card p-5 flex flex-col justify-between h-32 md:h-40 relative overflow-hidden group">
@@ -262,6 +262,11 @@
                         <div class="relative z-10 flex items-center gap-3"><div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-yellow-100 text-yellow-600 flex items-center justify-center text-lg md:text-xl shadow-sm"><i class="fa-solid fa-clock"></i></div><span class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wide">Pending</span></div>
                         <div class="relative z-10 text-3xl md:text-4xl font-extrabold text-yellow-600" id="stat-pending">0</div>
                     </div>
+                    <div class="glass-card p-5 flex flex-col justify-between h-32 md:h-40 relative overflow-hidden group">
+                        <div class="absolute -right-6 -top-6 w-24 h-24 bg-purple-50 rounded-full transition-transform group-hover:scale-150 duration-500"></div>
+                        <div class="relative z-10 flex items-center gap-3"><div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg md:text-xl shadow-sm"><i class="fa-solid fa-globe"></i></div><span class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wide">Visitor</span></div>
+                        <div class="relative z-10 text-3xl md:text-4xl font-extrabold text-purple-600" id="stat-visitors">0</div>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
@@ -271,6 +276,30 @@
                         <div id="active-user-list" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar"><div class="text-center py-12 text-gray-400 text-sm italic">Menunggu user login...</div></div>
                     </div>
                 </div>
+
+                <div class="glass-card p-5 md:p-8 mt-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-gray-800 text-base md:text-lg flex items-center gap-2"><i class="fa-solid fa-eye text-purple-500"></i> Traffic Pengunjung Web (Anonim)</h3>
+                        <button onclick="fetchVisitors()" class="text-xs bg-purple-50 text-purple-600 px-3 py-1.5 rounded-lg hover:bg-purple-100 transition font-bold"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="modern-table w-full min-w-[700px]">
+                            <thead>
+                                <tr>
+                                    <th>IP Address</th>
+                                    <th>Lokasi Geografis</th>
+                                    <th>Device / OS</th>
+                                    <th>Browser</th>
+                                    <th>Waktu Akses</th>
+                                </tr>
+                            </thead>
+                            <tbody id="visitor-log-list">
+                                <tr><td colspan="5" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data pengunjung...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
 
             <div id="section-calendar" class="content-section space-y-6">
@@ -638,6 +667,9 @@ document.addEventListener("visibilitychange", async function() {
                         renderVerificationList(allUsers);
                     }
                 }, 60000);
+
+            // Fetch visitor anonim
+            fetchVisitors();
 
             } catch (err) {
                 console.error("Security Breach Attempt:", err);
@@ -1583,6 +1615,36 @@ document.addEventListener("visibilitychange", async function() {
             }).subscribe(); 
         }
 
+        // --- TAMBAHAN BARU: Fetch Visitor Anonim ---
+        async function fetchVisitors() {
+            try {
+                // Get total count
+                const { count } = await supabaseClient.from('visitor_logs').select('*', { count: 'exact', head: true });
+                document.getElementById('stat-visitors').innerText = count || 0;
+
+                // Get latest 10 logs
+                const { data } = await supabaseClient.from('visitor_logs').select('*').order('created_at', { ascending: false }).limit(10);
+                const tbody = document.getElementById('visitor-log-list');
+                
+                if(!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-6 text-xs italic">Belum ada data pengunjung anonim.</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = data.map(v => `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="font-mono text-xs text-gray-500 font-bold">${v.ip_address || 'Hidden'}</td>
+                        <td class="text-sm font-medium text-gray-800"><i class="fa-solid fa-location-dot text-red-400 mr-1"></i> ${v.city ? v.city + ', ' + v.country : 'Unknown'}</td>
+                        <td class="text-sm text-gray-600"><i class="fa-solid ${v.device === 'Mobile' ? 'fa-mobile-screen text-blue-400' : 'fa-desktop text-gray-400'} mr-1"></i> ${v.os || 'Unknown OS'}</td>
+                        <td class="text-sm text-gray-600"><i class="fa-brands fa-chrome text-yellow-500 mr-1"></i> ${v.browser || 'Unknown'}</td>
+                        <td class="text-xs text-gray-400">${new Date(v.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'})}</td>
+                    </tr>
+                `).join('');
+            } catch(e) {
+                console.log('Error memuat data visitor:', e);
+            }
+        }
+
         function setPreviewMode(mode) { const w = document.getElementById('preview-wrapper'); if(mode==='mobile') { w.style.width = '375px'; w.style.margin = '0 auto'; } else { w.style.width = '100%'; w.style.margin = '0'; } }
         function reloadPreview() { document.getElementById('preview-frame').contentWindow.location.reload(); Toast.fire({ icon: 'success', title: 'Preview Direfresh' }); }
         function exportToExcel() { const ws = XLSX.utils.json_to_sheet(allUsers); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, "Data_Peserta.xlsx"); Toast.fire({ icon: 'success', title: 'Download Excel dimulai' }); }
@@ -1591,5 +1653,55 @@ document.addEventListener("visibilitychange", async function() {
         // Start Security Check Immediately
         checkAdmin();
     </script>
+
+<script>
+    // --- SCRIPT PELACAK PENGUNJUNG ANONIM ---
+    async function trackVisitor() {
+        // Mencegah spam tracking di perangkat yang sama berkali-kali dalam 1 jam
+        if (sessionStorage.getItem('ylos_tracked')) return;
+
+        try {
+            // 1. Ambil Data IP & Lokasi (Menggunakan API Publik Gratis)
+            const ipRes = await fetch('https://ipapi.co/json/');
+            const ipData = await ipRes.json();
+            
+            // 2. Deteksi Device, OS, & Browser
+            const ua = navigator.userAgent;
+            let device = /Mobile|Android|iP(ad|hone|od)/i.test(ua) ? 'Mobile' : 'Desktop';
+            
+            let os = 'Unknown';
+            if (ua.indexOf('Win') !== -1) os = 'Windows';
+            else if (ua.indexOf('Mac') !== -1) os = 'MacOS';
+            else if (ua.indexOf('Android') !== -1) os = 'Android';
+            else if (ua.indexOf('like Mac') !== -1) os = 'iOS';
+            else if (ua.indexOf('Linux') !== -1) os = 'Linux';
+
+            let browser = 'Unknown';
+            if (ua.indexOf('Chrome') !== -1) browser = 'Chrome';
+            else if (ua.indexOf('Safari') !== -1) browser = 'Safari';
+            else if (ua.indexOf('Firefox') !== -1) browser = 'Firefox';
+            else if (ua.indexOf('Edge') !== -1) browser = 'Edge';
+
+            // 3. Kirim ke Supabase
+            await supabaseClient.from('visitor_logs').insert({
+                ip_address: ipData.ip || 'Unknown',
+                city: ipData.city || 'Unknown',
+                country: ipData.country_name || 'Unknown',
+                device: device,
+                os: os,
+                browser: browser
+            });
+
+            // Tandai sudah di-track (hilang otomatis kalau browser di-close)
+            sessionStorage.setItem('ylos_tracked', 'true');
+        } catch (err) {
+            console.log('Tracking visitor gagal (mungkin terblokir AdBlocker):', err);
+        }
+    }
+
+    // Jalankan tracking setelah web selesai dimuat (delay 2 detik agar web tidak berat)
+    setTimeout(trackVisitor, 2000);
+</script>
+
 </body>
 </html>
