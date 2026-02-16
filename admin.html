@@ -622,7 +622,14 @@
                 initQuillEditors();
 
                 setInterval(updatePresence, 60000); 
-                updatePresence();
+updatePresence();
+
+// Tambahan: Update last seen admin saat tab/browser ditutup
+document.addEventListener("visibilitychange", async function() {
+    if (document.visibilityState === 'hidden') {
+        await supabaseClient.rpc('update_user_presence');
+    }
+});
 
                 // Render ulang tabel setiap menit agar teks waktu berjalan otomatis
                 setInterval(() => {
@@ -1586,3 +1593,4 @@
     </script>
 </body>
 </html>
+
