@@ -550,6 +550,7 @@
 
         const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
         let allUsers=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
+        let onlineEmails = new Set(); // Menyimpan email user yang sedang online
         
         // Global var untuk Quill Editor
         var quillBlast, quillAnnounce;
@@ -622,6 +623,14 @@
 
                 setInterval(updatePresence, 60000); 
                 updatePresence();
+
+                // Render ulang tabel setiap menit agar teks waktu berjalan otomatis
+                setInterval(() => {
+                    if (allUsers.length > 0) {
+                        renderTable(allUsers);
+                        renderVerificationList(allUsers);
+                    }
+                }, 60000);
 
             } catch (err) {
                 console.error("Security Breach Attempt:", err);
@@ -825,20 +834,17 @@
         // --- EMAIL BLAST LOGIC ---
         function updateRecipientCount() {
             const val = document.getElementById('blast-recipients').value;
-            // Memisahkan by baris baru atau koma
             const lines = val.split(/[\n,]+/).map(e => e.trim()).filter(e => e !== "");
             
             let parsedRecipients = [];
             
             lines.forEach(line => {
-                // Mencari format Name <email>
                 const match = line.match(/(.*?)<([^>]+)>/);
                 if (match) {
                     const name = match[1].trim();
                     const email = match[2].trim();
                     if (email) parsedRecipients.push({ name: name, email: email });
                 } else {
-                    // Jika tidak ada bracket nama, tangkap email saja
                     const emailMatch = line.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
                     if (emailMatch) {
                         parsedRecipients.push({ name: '', email: emailMatch[1].trim() });
@@ -847,7 +853,7 @@
             });
             
             document.getElementById('recipient-count').innerText = `${parsedRecipients.length} Email`;
-            return parsedRecipients; // mengembalikan Array of Objects
+            return parsedRecipients;
         }
 
         function processExcel(input) {
@@ -861,16 +867,13 @@
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
                 
-                // Parse menjadi JSON Array Object
                 const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                
                 let extractedList = [];
                 
                 jsonData.forEach(row => {
                     let nama = '';
                     let email = '';
                     
-                    // Deteksi nama kolom (Bisa case-insensitive "Nama", "name", "email", dll)
                     for (const key in row) {
                         const lowerKey = key.toLowerCase();
                         if (lowerKey.includes('nama') || lowerKey.includes('name')) {
@@ -881,7 +884,6 @@
                         }
                     }
                     
-                    // Kalau email ga ketemu dari header, paksa temukan menggunakan regex ke sel acak di baris itu
                     if (!email) {
                         for (const key in row) {
                             if (typeof row[key] === 'string') {
@@ -891,7 +893,6 @@
                         }
                     }
 
-                    // Gabungkan ke format Name <email>
                     if (email) {
                         if (nama) {
                             extractedList.push(`${nama} <${email}>`);
@@ -901,7 +902,6 @@
                     }
                 });
 
-                // Buang duplikat jika ada
                 extractedList = [...new Set(extractedList)];
 
                 const textArea = document.getElementById('blast-recipients');
@@ -924,7 +924,7 @@
         async function startBlast() {
             const subject = document.getElementById('blast-subject').value;
             const body = quillBlast.root.innerHTML; 
-            const recipients = updateRecipientCount(); // Sekarang berupa array of objects {name, email}
+            const recipients = updateRecipientCount(); 
 
             const SENDER_EMAIL = "admin@ylos.site"; 
             const SENDER_NAME = "YLOS Official";    
@@ -962,20 +962,19 @@
             for (let i = 0; i < total; i++) {
                 const recipient = recipients[i];
                 const email = recipient.email;
-                const nama = recipient.name || 'Peserta'; // Kalau di excel namanya kosong, ganti kata 'Peserta'
+                const nama = recipient.name || 'Peserta'; 
                 
                 const percent = Math.round(((i + 1) / total) * 100);
                 progressBar.style.width = `${percent}%`;
                 statusText.innerText = `${percent}%`;
                 detailText.innerText = `Mengirim ke: ${email}...`;
 
-                // REPLACE TEKS [Nama] DI EDITOR DENGAN NAMA ASLI PENERIMA
                 const personalizedBody = body.replace(/\[Nama\]/gi, nama);
 
                 try {
                     const { data, error } = await supabaseClient.functions.invoke('resend', {
-    body: { email: email, subject: subject, body: personalizedBody, sender_name: SENDER_NAME, sender_email: SENDER_EMAIL, recipient_name: nama }
-});
+                        body: { email: email, subject: subject, body: personalizedBody, sender_name: SENDER_NAME, sender_email: SENDER_EMAIL, recipient_name: nama }
+                    });
                     if (error) throw error;
                     successCount++;
                 } catch (e) {
@@ -1227,7 +1226,7 @@
             const now = new Date();
             const seconds = Math.floor((now - date) / 1000);
             
-            if (seconds < 60) return '<span class="text-green-600 text-xs font-bold flex items-center justify-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Online</span>';
+            if (seconds < 60) return `<span class="text-gray-500 text-xs">Baru saja</span>`;
             
             const minutes = Math.floor(seconds / 60);
             if (minutes < 60) return `<span class="text-gray-500 text-xs">${minutes} mnt lalu</span>`;
@@ -1242,14 +1241,19 @@
             document.getElementById('userTableBody').innerHTML = users.map(u => { 
                 const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; 
                 const action = u.payment_status === 'Lunas' ? `<button onclick="updateStatus('${u.id}', 'Pending')" class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition font-bold">Batalkan</button>` : `<button onclick="updateStatus('${u.id}', 'Lunas')" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition font-bold">Verifikasi</button>`; 
-                const lastSeen = timeAgo(u.last_seen);
+                
+                // Cek secara realtime apakah email ini ada di set onlineEmails
+                const isOnline = onlineEmails.has(u.email);
+                const lastSeenUI = isOnline 
+                    ? '<span class="text-green-600 text-xs font-bold flex items-center justify-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Online</span>' 
+                    : timeAgo(u.last_seen);
                 
                 return `<tr class="hover:scale-[1.01] transition duration-200">
                     <td class="p-4 font-bold text-gray-800">${u.full_name || '-'}</td>
                     <td class="p-4 text-gray-500">${u.school || '-'}</td>
                     <td class="p-4 text-xs font-mono text-gray-500">${u.phone || '-'}</td>
                     <td class="p-4">${badge}</td>
-                    <td class="p-4 text-center">${lastSeen}</td>
+                    <td class="p-4 text-center">${lastSeenUI}</td>
                     <td class="p-4 text-center flex gap-2 justify-center">${action}<button onclick="deleteUser('${u.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>`; 
             }).join(''); 
@@ -1528,7 +1532,50 @@
         async function updateOrder(container, table) { const items = Array.from(container.children); for (let i = 0; i < items.length; i++) { await supabaseClient.from(table).update({ order_index: i }).eq('id', items[i].dataset.id); } }
 
         function initChart() { const ctx = document.getElementById('userChart'); if(ctx) { activityChart = new Chart(ctx.getContext('2d'), { type: 'bar', data: { labels: ['Home', 'Dashboard', 'Trip', 'Tiket'], datasets: [{ label: 'User Aktif', data: [0,0,0,0], backgroundColor: '#DB2777', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } } } }); } }
-        function initRealtimeDashboard() { const channel = supabaseClient.channel('online-users'); channel.on('presence', { event: 'sync' }, () => { const state = channel.presenceState(); let total = 0; let counts = {'Home':0, 'Dashboard':0, 'Trip':0, 'Tiket':0}; let html = ''; for (const id in state) { if(state[id][0].email) { total++; let p = state[id][0].page.replace('#',''); p = p.charAt(0).toUpperCase() + p.slice(1); if(counts[p] !== undefined) counts[p]++; html += `<div class="flex items-center justify-between p-2 bg-gray-50 rounded-xl mb-1 border border-gray-100"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div><span class="text-xs font-bold text-gray-700">${state[id][0].email}</span></div><span class="text-[10px] text-gray-500 font-mono bg-white px-2 py-0.5 rounded border shadow-sm">${p}</span></div>`; } } document.getElementById('online-count').innerText = total + " Online"; document.getElementById('active-user-list').innerHTML = html || '<div class="text-center text-xs text-gray-400 py-4">Sepi...</div>'; if(activityChart) { activityChart.data.datasets[0].data = Object.values(counts); activityChart.update(); } }).subscribe(); }
+        
+        function initRealtimeDashboard() { 
+            const channel = supabaseClient.channel('online-users'); 
+            channel.on('presence', { event: 'sync' }, () => { 
+                const state = channel.presenceState(); 
+                
+                // Hapus list lama dan kumpulkan email user yang sedang aktif
+                onlineEmails.clear();
+
+                let total = 0; 
+                let counts = {'Home':0, 'Dashboard':0, 'Trip':0, 'Tiket':0}; 
+                let html = ''; 
+
+                for (const id in state) { 
+                    if(state[id][0].email) { 
+                        total++; 
+                        
+                        // Tambahkan email ke Set
+                        onlineEmails.add(state[id][0].email);
+
+                        let p = state[id][0].page.replace('#',''); 
+                        p = p.charAt(0).toUpperCase() + p.slice(1); 
+                        if(counts[p] !== undefined) counts[p]++; 
+
+                        html += `<div class="flex items-center justify-between p-2 bg-gray-50 rounded-xl mb-1 border border-gray-100"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div><span class="text-xs font-bold text-gray-700">${state[id][0].email}</span></div><span class="text-[10px] text-gray-500 font-mono bg-white px-2 py-0.5 rounded border shadow-sm">${p}</span></div>`; 
+                    } 
+                } 
+
+                document.getElementById('online-count').innerText = total + " Online"; 
+                document.getElementById('active-user-list').innerHTML = html || '<div class="text-center text-xs text-gray-400 py-4">Sepi...</div>'; 
+                
+                if(activityChart) { 
+                    activityChart.data.datasets[0].data = Object.values(counts); 
+                    activityChart.update(); 
+                } 
+
+                // Langsung render ulang tabel supaya status "Online" instan muncul
+                if (allUsers.length > 0) {
+                    renderTable(allUsers);
+                }
+
+            }).subscribe(); 
+        }
+
         function setPreviewMode(mode) { const w = document.getElementById('preview-wrapper'); if(mode==='mobile') { w.style.width = '375px'; w.style.margin = '0 auto'; } else { w.style.width = '100%'; w.style.margin = '0'; } }
         function reloadPreview() { document.getElementById('preview-frame').contentWindow.location.reload(); Toast.fire({ icon: 'success', title: 'Preview Direfresh' }); }
         function exportToExcel() { const ws = XLSX.utils.json_to_sheet(allUsers); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, "Data_Peserta.xlsx"); Toast.fire({ icon: 'success', title: 'Download Excel dimulai' }); }
