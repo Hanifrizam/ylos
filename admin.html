@@ -146,11 +146,7 @@
 </head>
 <body class="flex h-screen overflow-hidden text-sm md:text-base">
 
-<style> body { display: none; } </style>
-
-<style>
-  body { display: none; } /* Default sembunyi agar tidak kedip */
-</style>
+<style> body { display: none; } /* Default sembunyi agar tidak kedip */ </style>
     
     <div id="security-overlay">
         <div class="loader-spinner mb-4"></div>
@@ -182,7 +178,7 @@
                     <i class="fa-solid fa-file-signature w-5 text-center group-hover:scale-110 transition"></i> DigiSign 
                     <span class="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[9px] px-2 py-0.5 rounded-full ml-auto font-bold shadow-sm">PRO</span>
                 </div>
-                 <div onclick="switchTab('tracking')" id="menu-tracking" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-stopwatch w-5 text-center"></i> Daily Tracking <span class="text-[9px] text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded ml-auto font-bold">NEW</span></div>
+                 <div onclick="switchTab('tracking')" id="menu-tracking" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-stopwatch w-5 text-center"></i> Progress Update <span class="text-[9px] text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded ml-auto font-bold">NEW</span></div>
             </div>
 
             <div>
@@ -285,152 +281,39 @@
             </div>
             
             <div id="section-tracking" class="content-section space-y-6">
+                
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 glass-card p-6">
                     <div>
-                        <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-stopwatch text-pink-500"></i> Admin Daily Tracking</h2>
-                        <p class="text-gray-600 text-xs mt-1">Logbook kerja tim & monitoring performa harian.</p>
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-folder-open text-pink-500"></i> Progress Update</h2>
+                        <p class="text-gray-600 text-xs mt-1">Sistem penyimpanan progress kerja tim berbasis folder.</p>
                     </div>
-                    <div class="bg-gray-50 rounded-lg p-2 flex gap-1">
-                        <button onclick="toggleTrackingView('input')" id="btn-track-input" class="px-4 py-2 rounded-md text-xs font-bold transition bg-white text-pink-600 shadow-sm">Input Harian</button>
-                        <button onclick="toggleTrackingView('dashboard')" id="btn-track-dashboard" class="px-4 py-2 rounded-md text-xs font-bold text-gray-500 hover:bg-gray-100 transition">Dashboard Control</button>
-                    </div>
-                </div>
-
-                <div id="view-track-input" class="space-y-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-1 glass-card p-6">
-                            <h3 class="font-bold text-gray-800 border-b border-gray-100 pb-3 mb-4 flex items-center gap-2">
-                                <i class="fa-solid fa-pen-to-square"></i> Log Hari Ini
-                            </h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Tanggal</label>
-                                    <input type="date" id="log-date" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:border-pink-500 outline-none">
-                                </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Jam Mulai</label>
-                                        <input type="time" id="log-start" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none" onchange="calcDuration()">
-                                    </div>
-                                    <div>
-                                        <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Jam Selesai</label>
-                                        <input type="time" id="log-end" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none" onchange="calcDuration()">
-                                    </div>
-                                </div>
-                                
-                                <div class="bg-blue-50 p-3 rounded-xl flex justify-between items-center">
-                                    <span class="text-xs font-bold text-blue-600">Total Durasi:</span>
-                                    <span id="log-duration" class="text-lg font-extrabold text-blue-700">0 Jam</span>
-                                </div>
-
-                                <div>
-                                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Aktivitas</label>
-                                    <input type="text" id="log-activity" placeholder="Contoh: Meeting, Design..." class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none">
-                                </div>
-                                <div>
-                                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Output (Hasil)</label>
-                                    <textarea id="log-output" placeholder="Apa hasil konkretnya?" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none h-20"></textarea>
-                                </div>
-                                <div id="reason-box" class="hidden">
-                                    <label class="text-[10px] font-bold text-red-500 uppercase block mb-1">Alasan (< 2 Jam)</label>
-                                    <textarea id="log-reason" placeholder="Wajib diisi karena durasi < 2 jam" class="w-full p-2.5 bg-red-50 border border-red-200 rounded-xl text-sm focus:border-red-500 outline-none h-16"></textarea>
-                                </div>
-                                <div>
-                                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Bukti (Link/Drive)</label>
-                                    <input type="text" id="log-proof" placeholder="Link bukti hasil kerja" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-pink-500 outline-none">
-                                </div>
-                                <button onclick="submitDailyLog()" class="btn-press w-full bg-pink-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-pink-700 mt-2">
-                                    <i class="fa-solid fa-save"></i> SIMPAN LOG
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="lg:col-span-2 glass-card p-6 flex flex-col">
-                            <h3 class="font-bold text-gray-800 border-b border-gray-100 pb-3 mb-4">Riwayat Logbook Saya</h3>
-                            <div class="flex-1 overflow-x-auto">
-                                <table class="modern-table text-xs">
-                                    <thead>
-                                        <tr>
-                                            <th>Tanggal</th>
-                                            <th>Jam</th>
-                                            <th>Durasi</th>
-                                            <th>Aktivitas & Output</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="my-log-list">
-                                        <tr><td colspan="5" class="text-center py-8 text-gray-400">Memuat data...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <div id="tracking-controls" class="w-full md:w-auto">
+                        <button onclick="addFolder()" class="w-full md:w-auto px-4 py-2 rounded-xl text-sm font-bold transition bg-gray-900 text-white shadow-lg hover:bg-black flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Tambah Folder
+                        </button>
                     </div>
                 </div>
 
-                <div id="view-track-dashboard" class="space-y-6 hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div class="glass-card p-4 border-l-4 border-l-pink-500">
-                            <p class="text-[10px] text-gray-400 font-bold uppercase">Work Control</p>
-                            <h4 class="font-bold text-gray-800 text-lg">Daily Tracking</h4>
-                            <p class="text-xs text-gray-500 mt-1">Target: <span class="font-bold text-pink-600">~40 Jam/Bulan</span></p>
-                        </div>
-                         <div class="glass-card p-4 border-l-4 border-l-green-500">
-                            <p class="text-[10px] text-gray-400 font-bold uppercase">Status Aman</p>
-                            <h4 class="font-bold text-green-600 text-lg">🟢 > 40 Jam</h4>
-                            <p class="text-xs text-gray-500 mt-1">Total jam kerja aman.</p>
-                        </div>
-                         <div class="glass-card p-4 border-l-4 border-l-red-500">
-                            <p class="text-[10px] text-gray-400 font-bold uppercase">Status Kritis</p>
-                            <h4 class="font-bold text-red-600 text-lg">🔴 < 40 Jam</h4>
-                            <p class="text-xs text-gray-500 mt-1">Perlu ditingkatkan.</p>
-                        </div>
+                <div id="view-folders" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
                     </div>
 
-                    <div class="glass-card p-6 overflow-hidden">
-                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                            <h3 class="font-bold text-gray-800 text-lg">Dashboard Control (2026)</h3>
-                            
-                            <div class="flex gap-2 w-full md:w-auto">
-                                <select id="dash-month" onchange="fetchDashboardData()" class="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold text-gray-700 outline-none focus:border-pink-500">
-                                    <option value="0">Januari 2026</option>
-                                    <option value="1">Februari 2026</option>
-                                    <option value="2">Maret 2026</option>
-                                    <option value="3">April 2026</option>
-                                    <option value="4">Mei 2026</option>
-                                    <option value="5">Juni 2026</option>
-                                    <option value="6">Juli 2026</option>
-                                    <option value="7">Agustus 2026</option>
-                                    <option value="8">September 2026</option>
-                                    <option value="9">Oktober 2026</option>
-                                    <option value="10">November 2026</option>
-                                    <option value="11">Desember 2026</option>
-                                </select>
-                                
-                                <button onclick="fetchDashboardData()" class="text-xs bg-gray-100 px-3 py-2 rounded-lg font-bold hover:bg-gray-200 transition"><i class="fa-solid fa-rotate"></i> Refresh</button>
-                                
-                                <button onclick="resetDashboardData()" class="text-xs bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg font-bold hover:bg-red-600 hover:text-white transition flex items-center gap-2">
-                                    <i class="fa-solid fa-trash"></i> Reset Data
-                                </button>
-                            </div>
+                <div id="view-folder-detail" class="hidden glass-card p-6 flex flex-col gap-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-100 pb-4 gap-4">
+                        <div class="flex items-center gap-3">
+                            <button onclick="closeFolder()" class="text-gray-400 hover:text-pink-600 bg-gray-50 hover:bg-pink-50 w-8 h-8 rounded-lg flex items-center justify-center transition">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2"><i class="fa-solid fa-folder text-yellow-400"></i> <span id="current-folder-title">Nama Folder</span></h3>
                         </div>
-                        
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="text-[10px] text-gray-400 uppercase border-b border-gray-200">
-                                        <th class="p-3 font-extrabold">Nama Tim</th>
-                                        <th class="p-3 font-extrabold text-center">Jabatan</th>
-                                        <th class="p-3 font-extrabold text-center bg-gray-50">Total Jam (Bulan Ini)</th>
-                                        <th class="p-3 font-extrabold text-center">Status</th>
-                                        <th class="p-3 font-extrabold text-center">Detail (Log)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="dashboard-control-body" class="text-sm">
-                                    </tbody>
-                            </table>
-                        </div>
+                        <button onclick="addProgress()" class="w-full md:w-auto btn-press bg-pink-600 text-white px-4 py-2 rounded-xl font-bold text-xs shadow-md hover:bg-pink-700 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-pen"></i> Tambah Progress
+                        </button>
                     </div>
+                    
+                    <div id="progress-list" class="space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
+                        </div>
                 </div>
+
             </div>
 
             <div id="section-digisign" class="content-section space-y-6">
@@ -660,13 +543,10 @@
 
     <script>
         // CONFIG
-        // --- KONFIGURASI YANG BENAR ---
-const supabaseUrl = 'https://jrslgkxwjvugvgakxwsd.supabase.co';
+        const supabaseUrl = 'https://jrslgkxwjvugvgakxwsd.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'; 
 
-// PASTE KODE YANG DIAWALI 'eyJ...' DI BAWAH INI (JANGAN PAKAI sb_publishable)
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'; 
-
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
         let allUsers=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
@@ -678,17 +558,18 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
         var editingAnnounceId = null;
         var editingModuleId = null;
 
+        // Variables untuk Folder Tracking
+        let currentFolderId = null;
+
         // MOBILE SIDEBAR TOGGLE
         function toggleSidebar() {
             const sidebar = document.getElementById('main-sidebar');
             const backdrop = document.getElementById('mobile-backdrop');
             
             if (sidebar.classList.contains('-translate-x-full')) {
-                // Open
                 sidebar.classList.remove('-translate-x-full');
                 backdrop.classList.remove('hidden');
             } else {
-                // Close
                 sidebar.classList.add('-translate-x-full');
                 backdrop.classList.add('hidden');
             }
@@ -698,11 +579,8 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
         async function checkAdmin() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
-                
-                // 1. Cek Sesi Login
                 if (!session) throw new Error("Unauthorized");
 
-                // 2. Cek Role di Database (Double Protection)
                 const { data: profile, error } = await supabaseClient
                     .from('profiles')
                     .select('role, full_name')
@@ -711,25 +589,19 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
                 if (error || !profile) throw new Error("Profile Error");
 
-                // 3. VALIDASI KETAT: Hanya Role Admin yang lolos
                 if (profile.role !== 'admin') {
-                    // Jika user login tapi bukan admin, PAKSA LOGOUT
                     await supabaseClient.auth.signOut();
                     throw new Error("Access Denied: Not an Admin");
                 }
 
-                // 4. Lolos Validasi -> Buka UI
                 document.getElementById('security-status').innerText = "Access Granted.";
                 document.getElementById('admin-name-display').innerText = `Halo, ${profile.full_name}`;
                 
-                // Animasi buka overlay
                 const overlay = document.getElementById('security-overlay');
                 overlay.style.opacity = '0';
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                }, 500);
+                setTimeout(() => { overlay.style.display = 'none'; }, 500);
 
-                // Load Data
+                // Load Data Utama
                 fetchUsers(); 
                 fetchAnnouncements(); 
                 fetchModules(); 
@@ -741,29 +613,20 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 fetchDigiSignDocs(); 
                 loadMySignature();
                 
-                // Load Tracking Data
+                // Load Folder Tracking
+                fetchFolders();
                 initTrackingRealtime();
-                
-                // Set Default Month (Current Month)
-                const currentMonth = new Date().getMonth();
-                document.getElementById('dash-month').value = currentMonth;
-                fetchMyLogs(); // Fetch awal
-                fetchDashboardData(); // Fetch awal
                 
                 // INIT QUILL EDITORs
                 initQuillEditors();
 
-                // REQUEST UPDATE: Start tracking presence (Last Online)
-                setInterval(updatePresence, 60000); // Update every minute
+                setInterval(updatePresence, 60000); 
                 updatePresence();
 
             } catch (err) {
                 console.error("Security Breach Attempt:", err);
-                
-                // HANCURKAN HALAMAN (Nuke DOM) agar tidak bisa di-inspect
                 document.body.innerHTML = '';
                 
-                // Tampilkan Alert Error lalu tendang
                 await Swal.fire({
                     icon: 'error',
                     title: 'AKSES DITOLAK!',
@@ -778,9 +641,7 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             }
         }
 
-        // --- INIT QUILL JS (2 Instances) ---
         function initQuillEditors() {
-            // Config Toolbar
             const toolbarOptions = [
                 [{ 'font': [] }],
                 [{ 'size': ['small', false, 'large', 'huge'] }],
@@ -794,315 +655,172 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 ['clean']
             ];
 
-            // 1. Editor untuk Email Blast
-            quillBlast = new Quill('#editor-container', {
-                theme: 'snow',
-                modules: { toolbar: toolbarOptions },
-                placeholder: 'Tulis pesan email Anda di sini...'
-            });
-
-            // 2. Editor untuk Pengumuman (NEW)
-            quillAnnounce = new Quill('#announce-editor-container', {
-                theme: 'snow',
-                modules: { toolbar: toolbarOptions },
-                placeholder: 'Tulis isi pengumuman lengkap di sini (bisa gambar & link)...'
-            });
+            quillBlast = new Quill('#editor-container', { theme: 'snow', modules: { toolbar: toolbarOptions }, placeholder: 'Tulis pesan email Anda di sini...' });
+            quillAnnounce = new Quill('#announce-editor-container', { theme: 'snow', modules: { toolbar: toolbarOptions }, placeholder: 'Tulis isi pengumuman lengkap di sini (bisa gambar & link)...' });
         }
 
-        // --- REQUEST UPDATE: FUNCTION TO TRACK PRESENCE ---
         async function updatePresence() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if(user) {
-                // Mengupdate kolom last_seen di database
-                await supabaseClient.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', user.id);
-            }
+            if(user) await supabaseClient.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', user.id);
         }
 
-        // --- REALTIME LISTENERS ---
         function initDatabaseRealtime() { supabaseClient.channel('db-changes').on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => { fetchUsers(); Toast.fire({ icon: 'info', title: 'Data Peserta Diperbarui' }); }).subscribe(); }
         function initDigiSignRealtime() { supabaseClient.channel('digisign-updates').on('postgres_changes', { event: '*', schema: 'public', table: 'digisign_documents' }, () => { fetchDigiSignDocs(); Toast.fire({ icon: 'info', title: 'Dokumen DigiSign Diperbarui' }); }).subscribe(); }
 
-        // --- ADMIN DAILY TRACKING LOGIC ---
-        function toggleTrackingView(view) {
-            document.getElementById('view-track-input').classList.add('hidden');
-            document.getElementById('view-track-dashboard').classList.add('hidden');
-            document.getElementById('btn-track-input').classList.remove('bg-white', 'text-pink-600', 'shadow-sm');
-            document.getElementById('btn-track-input').classList.add('text-gray-500');
-            document.getElementById('btn-track-dashboard').classList.remove('bg-white', 'text-pink-600', 'shadow-sm');
-            document.getElementById('btn-track-dashboard').classList.add('text-gray-500');
 
-            if(view === 'input') {
-                document.getElementById('view-track-input').classList.remove('hidden');
-                document.getElementById('btn-track-input').classList.add('bg-white', 'text-pink-600', 'shadow-sm');
-                document.getElementById('btn-track-input').classList.remove('text-gray-500');
-                fetchMyLogs();
-            } else {
-                document.getElementById('view-track-dashboard').classList.remove('hidden');
-                document.getElementById('btn-track-dashboard').classList.add('bg-white', 'text-pink-600', 'shadow-sm');
-                document.getElementById('btn-track-dashboard').classList.remove('text-gray-500');
-                fetchDashboardData();
-            }
-        }
+        /* =========================================================
+           FOLDER BASED DAILY TRACKING LOGIC 
+        ========================================================= */
 
-        function calcDuration() {
-            const start = document.getElementById('log-start').value;
-            const end = document.getElementById('log-end').value;
-            const reasonBox = document.getElementById('reason-box');
-            
-            if(start && end) {
-                const s = new Date(`2000-01-01T${start}`);
-                const e = new Date(`2000-01-01T${end}`);
-                let diff = (e - s) / 1000 / 60 / 60; // hours
-                if (diff < 0) diff += 24; // Handle lintas hari
+        async function fetchFolders() {
+            const { data, error } = await supabaseClient.from('tracking_folders').select('*').order('created_at', { ascending: true });
+            const container = document.getElementById('view-folders');
+            if (error) { console.error(error); return; }
 
-                const hours = Math.floor(diff);
-                const minutes = Math.round((diff - hours) * 60);
-                
-                document.getElementById('log-duration').innerText = `${hours} Jam ${minutes} Menit`;
-                document.getElementById('log-duration').dataset.val = diff; // Simpan nilai desimal
-
-                if (diff < 2) {
-                    reasonBox.classList.remove('hidden');
-                } else {
-                    reasonBox.classList.add('hidden');
-                }
-            }
-        }
-
-        async function submitDailyLog() {
-            const date = document.getElementById('log-date').value;
-            const start = document.getElementById('log-start').value;
-            const end = document.getElementById('log-end').value;
-            const activity = document.getElementById('log-activity').value;
-            const output = document.getElementById('log-output').value;
-            const proof = document.getElementById('log-proof').value;
-            const reason = document.getElementById('log-reason').value;
-            const duration = parseFloat(document.getElementById('log-duration').dataset.val || 0);
-
-            if(!date || !start || !end || !activity || !output) {
-                return Swal.fire('Error', 'Mohon lengkapi Tanggal, Waktu, Aktivitas, dan Output.', 'error');
-            }
-
-            if(duration < 2 && !reason) {
-                return Swal.fire('Peringatan', 'Durasi kerja di bawah 2 jam WAJIB mengisi Alasan.', 'warning');
-            }
-
-            // Status Logic sesuai Excel
-            let status = "⚠️ Dicatat";
-            if (duration >= 2 && output.length > 5) status = "✅ Terpenuhi";
-            if (duration >= 2 && output.length <= 5) status = "⚠️ Dicatat (Output Kabur)";
-            if (duration < 1) status = "❌ 0 Jam";
-
-            const { data: { user } } = await supabaseClient.auth.getUser();
-
-            Swal.showLoading();
-            // Simpan ke database (Asumsi tabel 'admin_logs' ada)
-            const { error } = await supabaseClient.from('admin_logs').insert({
-                admin_id: user.id,
-                log_date: date,
-                start_time: start,
-                end_time: end,
-                total_hours: duration,
-                activity: activity,
-                output: output,
-                proof_link: proof,
-                reason: (duration < 2) ? reason : null,
-                status_label: status
-            });
-            Swal.close();
-
-            if(error) return Swal.fire('Gagal', error.message, 'error');
-
-            Toast.fire({icon: 'success', title: 'Log berhasil disimpan!'});
-            
-            // Reset Form
-            document.getElementById('log-activity').value = '';
-            document.getElementById('log-output').value = '';
-            document.getElementById('log-reason').value = '';
-            fetchMyLogs();
-        }
-
-        async function fetchMyLogs() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const { data } = await supabaseClient.from('admin_logs').select('*').eq('admin_id', user.id).order('log_date', {ascending: false}).limit(10);
-            
-            const tbody = document.getElementById('my-log-list');
-            tbody.innerHTML = '';
-            
-            if(!data || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-400 italic">Belum ada log kerja.</td></tr>`;
+            if (!data || data.length === 0) {
+                container.innerHTML = `<div class="col-span-full glass-card p-8 text-center text-gray-400 italic">Belum ada folder tracking. Klik "Tambah Folder" untuk memulai.</div>`;
                 return;
             }
 
-            data.forEach(log => {
-                const badge = log.status_label.includes('Terpenuhi') 
-                    ? `<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold">${log.status_label}</span>`
-                    : `<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold">${log.status_label}</span>`;
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="font-bold text-gray-700">${log.log_date}</td>
-                        <td class="font-mono text-xs">${log.start_time.slice(0,5)} - ${log.end_time.slice(0,5)}</td>
-                        <td class="font-bold text-blue-600">${log.total_hours.toFixed(1)} Jam</td>
-                        <td>
-                            <div class="font-bold text-gray-800 text-xs">${log.activity}</div>
-                            <div class="text-[10px] text-gray-500 truncate max-w-[150px]">${log.output}</div>
-                        </td>
-                        <td>${badge}</td>
-                    </tr>
-                `;
-            });
+            container.innerHTML = data.map(folder => `
+                <div class="glass-card p-4 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-pink-300 hover:bg-pink-50 transition relative group" onclick="openFolder('${folder.id}', '${folder.name}')">
+                    <button onclick="event.stopPropagation(); deleteFolder('${folder.id}')" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 opacity-0 lg:group-hover:opacity-100 transition"><i class="fa-solid fa-trash text-xs"></i></button>
+                    <i class="fa-solid fa-folder text-4xl text-yellow-400 drop-shadow-sm group-hover:scale-110 transition duration-300"></i>
+                    <span class="font-bold text-gray-700 text-sm text-center truncate w-full">${folder.name}</span>
+                </div>
+            `).join('');
         }
 
-        // --- NEW: RESET DASHBOARD FEATURE ---
-        async function resetDashboardData() {
-            const result = await Swal.fire({
-                title: 'Reset Dashboard?',
-                text: "PERINGATAN: Tindakan ini akan MENGHAPUS SEMUA DATA Logbook dari seluruh admin. Data tidak bisa dikembalikan!",
-                icon: 'warning',
+        async function addFolder() {
+            const { value: folderName } = await Swal.fire({
+                title: 'Buat Folder Baru',
+                input: 'text',
+                inputPlaceholder: 'Nama Folder (Misal: Nama Tim / Divisi)',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Hapus Semua!',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Buat Folder',
+                confirmButtonColor: '#DB2777',
+                cancelButtonText: 'Batal',
+                inputValidator: (value) => { if (!value) return 'Nama folder tidak boleh kosong!' }
             });
 
-            if (result.isConfirmed) {
+            if (folderName) {
+                const { data: { user } } = await supabaseClient.auth.getUser();
                 Swal.showLoading();
-                // Menghapus semua data dari tabel admin_logs
-                // Kita gunakan .gt('id', 0) sebagai trik untuk delete all rows jika RLS mengizinkan
-                const { error } = await supabaseClient
-                    .from('admin_logs')
-                    .delete()
-                    .gt('id', 0);
+                const { error } = await supabaseClient.from('tracking_folders').insert({ name: folderName, created_by: user.id });
+                Swal.close();
+                if (error) return Swal.fire('Error', error.message, 'error');
+                Toast.fire({ icon: 'success', title: 'Folder dibuat' });
+                fetchFolders();
+            }
+        }
 
+        async function openFolder(id, name) {
+            currentFolderId = id;
+            document.getElementById('current-folder-title').innerText = name;
+            document.getElementById('view-folders').classList.add('hidden');
+            document.getElementById('view-folder-detail').classList.remove('hidden');
+            document.getElementById('tracking-controls').classList.add('hidden');
+            fetchProgress(id);
+        }
+
+        function closeFolder() {
+            currentFolderId = null;
+            document.getElementById('view-folders').classList.remove('hidden');
+            document.getElementById('view-folder-detail').classList.add('hidden');
+            document.getElementById('tracking-controls').classList.remove('hidden');
+            fetchFolders();
+        }
+
+        async function fetchProgress(folderId) {
+            const container = document.getElementById('progress-list');
+            container.innerHTML = `<div class="text-center text-gray-400 text-xs py-4"><i class="fa-solid fa-spinner fa-spin"></i> Memuat progress...</div>`;
+
+            const { data, error } = await supabaseClient.from('tracking_progress').select('*').eq('folder_id', folderId).order('created_at', { ascending: false });
+            if (error) { container.innerHTML = `<div class="text-red-500 text-xs text-center py-4">Gagal memuat data.</div>`; return; }
+
+            if (!data || data.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs italic bg-gray-50 rounded-xl border border-dashed border-gray-200">Folder masih kosong. Tambahkan progress pertama!</div>`;
+                return;
+            }
+
+            container.innerHTML = data.map(prog => `
+                <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition group relative">
+                    <button onclick="deleteProgress('${prog.id}', '${prog.folder_id}')" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 hidden md:block opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-trash text-xs"></i></button>
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-pink-500 to-rose-600 text-white flex items-center justify-center text-[10px] font-bold">${prog.author_name ? prog.author_name.charAt(0).toUpperCase() : 'A'}</div>
+                        <span class="font-bold text-gray-800 text-xs">${prog.author_name || 'Admin'}</span>
+                        <span class="text-[10px] text-gray-400"><i class="fa-regular fa-clock"></i> ${new Date(prog.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <p class="text-sm text-gray-600 whitespace-pre-line leading-relaxed">${prog.content}</p>
+                    <button onclick="deleteProgress('${prog.id}', '${prog.folder_id}')" class="md:hidden mt-3 text-[10px] text-red-500 font-bold bg-red-50 px-2 py-1 rounded inline-block">Hapus</button>
+                </div>
+            `).join('');
+        }
+
+        async function addProgress() {
+            const { value: content } = await Swal.fire({
+                title: 'Tambah Progress',
+                input: 'textarea',
+                inputPlaceholder: 'Tuliskan progress kerja atau laporan harian kamu di sini...',
+                showCancelButton: true,
+                confirmButtonText: 'Simpan',
+                confirmButtonColor: '#DB2777',
+                cancelButtonText: 'Batal',
+                customClass: { input: 'h-32 text-sm' },
+                inputValidator: (value) => { if (!value) return 'Progress tidak boleh kosong!' }
+            });
+
+            if (content && currentFolderId) {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                const { data: profile } = await supabaseClient.from('profiles').select('full_name').eq('id', user.id).single();
+                const authorName = profile ? profile.full_name : 'Admin';
+
+                Swal.showLoading();
+                const { error } = await supabaseClient.from('tracking_progress').insert({
+                    folder_id: currentFolderId,
+                    content: content,
+                    created_by: user.id,
+                    author_name: authorName
+                });
                 Swal.close();
 
-                if (error) {
-                    Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus data: ' + error.message, 'error');
-                } else {
-                    Swal.fire('Terhapus!', 'Dashboard Daily Tracking telah di-reset.', 'success');
-                    fetchDashboardData();
-                    fetchMyLogs();
-                }
+                if (error) return Swal.fire('Error', error.message, 'error');
+                Toast.fire({ icon: 'success', title: 'Progress disimpan' });
+                fetchProgress(currentFolderId);
             }
         }
 
-        async function fetchDashboardData() {
-            // Ambil Bulan yang dipilih dari Dropdown
-            const selectedMonthIndex = parseInt(document.getElementById('dash-month').value);
-            const selectedYear = 2026; // Hardcoded tahun 2026 sesuai request
-
-            // Hitung Tanggal Awal & Akhir Bulan
-            const startDate = new Date(selectedYear, selectedMonthIndex, 1);
-            const endDate = new Date(selectedYear, selectedMonthIndex + 1, 0); // Tgl terakhir bulan tsb
-            
-            // Format ke ISO String untuk Supabase Filter (YYYY-MM-DD)
-            // Kita gunakan timezone local string hack agar akurat
-            const startStr = startDate.toISOString().split('T')[0];
-            const endStr = endDate.toISOString().split('T')[0];
-
-            // 1. Ambil SEMUA data Log (dibatasi bulan yg dipilih)
-            const { data: logs, error: logError } = await supabaseClient
-                .from('admin_logs')
-                .select('*')
-                .gte('log_date', startStr)
-                .lte('log_date', endStr);
-
-            // 2. Ambil SEMUA data Profile (Untuk mencocokkan Nama)
-            const { data: profiles, error: profError } = await supabaseClient
-                .from('profiles')
-                .select('id, full_name');
-
-            if (logError || profError) {
-                console.error("Gagal ambil data:", logError || profError);
-                return;
+        async function deleteFolder(id) {
+            if ((await Swal.fire({title:'Hapus Folder?', text:'Semua isi progress di dalamnya akan ikut terhapus permanen.', icon:'warning', showCancelButton:true, confirmButtonColor:'#d33', confirmButtonText:'Ya, hapus!'})).isConfirmed) {
+                await supabaseClient.from('tracking_folders').delete().eq('id', id);
+                Toast.fire({ icon: 'success', title: 'Folder dihapus' });
+                fetchFolders();
             }
+        }
 
-            // 3. Mapping Data (Gabungkan Log + Nama)
-            const usersMap = {};
-            
-            logs.forEach(log => {
-                // Cari nama berdasarkan admin_id
-                const userProfile = profiles.find(p => p.id === log.admin_id);
-                const name = userProfile ? userProfile.full_name : 'Tanpa Nama';
-                
-                if(!usersMap[name]) usersMap[name] = { hours: 0, logs: 0 };
-                
-                usersMap[name].hours += log.total_hours;
-                usersMap[name].logs += 1;
-            });
-
-            const tbody = document.getElementById('dashboard-control-body');
-            tbody.innerHTML = '';
-
-            // Mapping Role sesuai Excel (Pastikan Nama di Database SAMA PERSIS dengan Excel)
-            const excelRoles = {
-                'M. Fauzan Ramdani': 'Project Leader',
-                'Nava Olivia': 'Program & Event Operation Lead',
-                'Ari Juanda': 'Sponsorship & Strategic Patnership Lead',
-                'Qori': 'Finance & Administration Excecutive',
-                'Tia': 'Brand & Content Strategist',
-                'Hanif': 'Creative & Design Graphic',
-                'Farchan': 'Web Developer & IT Support',
-                'Firman': 'Logistic & General Affair'
-            };
-
-            // Render ke Tabel
-            if(Object.keys(usersMap).length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">Belum ada data log di bulan ini.</td></tr>`;
-                return;
-            }
-
-            for (const [name, stats] of Object.entries(usersMap)) {
-                // Jika nama tidak ada di excelRoles, anggap Team Member
-                let role = excelRoles[name] || Object.keys(excelRoles).find(k => name.includes(k)) || 'Team Member';
-                
-                // Logika Status BULANAN
-                // Target: 40 Jam / Bulan (Asumsi 2 jam x 20 hari kerja)
-                let status = '';
-                let statusClass = '';
-                let note = '';
-
-                if (stats.hours >= 40) {
-                    status = '🟢 Aman';
-                    statusClass = 'text-green-600 bg-green-50 border-green-200';
-                    note = 'Target Tercapai! 🔥';
-                } else if (stats.hours >= 20) {
-                    status = '🟡 Kurang';
-                    statusClass = 'text-yellow-600 bg-yellow-50 border-yellow-200';
-                    note = `Kurang ${(40 - stats.hours).toFixed(1)} jam.`;
-                } else {
-                    status = '🔴 Kritis';
-                    statusClass = 'text-red-600 bg-red-50 border-red-200';
-                    note = 'Perlu ditingkatkan segera!';
-                }
-
-                tbody.innerHTML += `
-                    <tr class="bg-white border-b border-gray-100 hover:bg-gray-50 transition">
-                        <td class="p-3 font-bold text-gray-800">${name}</td>
-                        <td class="p-3 text-xs text-center text-gray-500">${role}</td>
-                        <td class="p-3 text-center font-mono font-bold text-blue-600 bg-blue-50/50 rounded-lg">${stats.hours.toFixed(2)} Jam</td>
-                        <td class="p-3 text-center">
-                            <span class="${statusClass} px-2 py-1 rounded-full text-[10px] font-bold border shadow-sm">${status}</span>
-                        </td>
-                        <td class="p-3 text-center text-xs italic text-gray-400">
-                            ${stats.logs} entry <span class="mx-1">•</span> ${note}
-                        </td>
-                    </tr>
-                `;
+        async function deleteProgress(progId, folderId) {
+            if ((await Swal.fire({title:'Hapus Progress?', icon:'warning', showCancelButton:true, confirmButtonColor:'#d33'})).isConfirmed) {
+                await supabaseClient.from('tracking_progress').delete().eq('id', progId);
+                Toast.fire({ icon: 'success', title: 'Progress dihapus' });
+                fetchProgress(folderId);
             }
         }
 
         function initTrackingRealtime() {
-            supabaseClient.channel('tracking-updates').on('postgres_changes', { event: '*', schema: 'public', table: 'admin_logs' }, () => { 
-                fetchMyLogs(); 
-                // Jika sedang di dashboard, refresh dashboard juga
-                if(!document.getElementById('view-track-dashboard').classList.contains('hidden')) {
-                    fetchDashboardData();
+            supabaseClient.channel('tracking-folders-updates').on('postgres_changes', { event: '*', schema: 'public', table: 'tracking_folders' }, () => {
+                if (!currentFolderId) fetchFolders();
+            }).subscribe();
+            
+            supabaseClient.channel('tracking-progress-updates').on('postgres_changes', { event: '*', schema: 'public', table: 'tracking_progress' }, (payload) => {
+                if (currentFolderId && (payload.new?.folder_id === currentFolderId || payload.old?.folder_id === currentFolderId)) {
+                    fetchProgress(currentFolderId);
                 }
-            }).subscribe(); 
+            }).subscribe();
         }
+
+        /* =========================================================
+           END LOGIC FOLDER BASED TRACKING
+        ========================================================= */
 
         // --- EMAIL BLAST LOGIC ---
         function updateRecipientCount() {
@@ -1205,23 +923,14 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
                 try {
                     const { data, error } = await supabaseClient.functions.invoke('resend', {
-                        body: {
-                            email: email,
-                            subject: subject,
-                            body: body,
-                            sender_name: SENDER_NAME,
-                            sender_email: SENDER_EMAIL
-                        }
+                        body: { email: email, subject: subject, body: body, sender_name: SENDER_NAME, sender_email: SENDER_EMAIL }
                     });
-
                     if (error) throw error;
                     successCount++;
-
                 } catch (e) {
                     console.error(`[GAGAL] ${email}:`, e);
                     failCount++;
                 }
-                
                 await new Promise(r => setTimeout(r, 1000));
             }
 
@@ -1316,7 +1025,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             await new Promise(r => setTimeout(r, 500));
 
             try {
-                // Init Signature Pad
                 const sigCanvas = document.getElementById('signature-pad'); 
                 const ratio = Math.max(window.devicePixelRatio || 1, 1);
                 sigCanvas.width = sigCanvas.offsetWidth * ratio; 
@@ -1327,21 +1035,17 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 signaturePad = new SignaturePad(sigCanvas); 
                 signaturePad.clear();
 
-                // Download PDF
                 const { data, error } = await supabaseClient.storage.from('digisign-files').download(fileName); 
                 if (error) throw error; 
                 pdfBytes = await data.arrayBuffer();
 
-                // Load PDF Object
                 const loadingTask = pdfjsLib.getDocument({data: cloneBuffer(pdfBytes)});
                 currentPdfObject = await loadingTask.promise;
                 totalPdfPages = currentPdfObject.numPages;
                 
-                // Reset ke Halaman 1
                 currentPageNum = 1;
                 await renderCurrentPage();
 
-                // Reset Signature Drag Element position
                 const dragEl = document.getElementById('drag-signature'); 
                 dragEl.classList.add('hidden'); 
                 dragEl.style.top = '100px'; 
@@ -1349,42 +1053,31 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 initDraggable(dragEl); 
                 
                 Swal.close();
-            } catch (err) { 
-                Swal.fire('Gagal', err.message, 'error'); 
-            }
+            } catch (err) { Swal.fire('Gagal', err.message, 'error'); }
         }
         function useSignature() {
             if (signaturePad && signaturePad.isEmpty()) return Toast.fire({ icon: 'warning', title: 'Tanda tangan dulu dong!' });
             const dataUrl = signaturePad.toDataURL(); document.getElementById('drag-sig-img').src = dataUrl; document.getElementById('drag-signature').classList.remove('hidden');
             Toast.fire({ icon: 'success', title: 'Geser & Resize Tanda Tangan!' });
-            if(window.innerWidth < 768) { }
             if(!mySavedSignature) { Swal.fire({ title: 'Simpan Tanda Tangan?', text: 'Untuk penggunaan berikutnya.', icon: 'question', showCancelButton: true, confirmButtonText: 'Ya', cancelButtonText: 'Nanti' }).then((res) => { if(res.isConfirmed) saveMySignature(dataUrl); }); }
         }
         function initDraggable(el) {
             let isDragging = false, startX, startY, initialLeft, initialTop;
-            const container = document.getElementById('pdf-wrapper');
-            
             const handleStart = (clientX, clientY) => {
                 if(clientX > el.getBoundingClientRect().right - 15 && clientY > el.getBoundingClientRect().bottom - 15) return; 
                 isDragging = true; startX = clientX; startY = clientY; 
                 initialLeft = el.offsetLeft; initialTop = el.offsetTop; 
                 el.style.cursor = 'grabbing'; 
             }
-
             const handleMove = (clientX, clientY, e) => {
                 if(!isDragging) return; if(e) e.preventDefault();
                 el.style.left = `${initialLeft + clientX - startX}px`; 
                 el.style.top = `${initialTop + clientY - startY}px`; 
             }
-
             const handleEnd = () => { isDragging = false; el.style.cursor = 'grab'; };
-
-            // Mouse events
             el.onmousedown = (e) => handleStart(e.clientX, e.clientY);
             window.onmousemove = (e) => handleMove(e.clientX, e.clientY, e);
             window.onmouseup = handleEnd;
-
-            // Touch events
             el.ontouchstart = (e) => handleStart(e.touches[0].clientX, e.touches[0].clientY);
             window.ontouchmove = (e) => handleMove(e.touches[0].clientX, e.touches[0].clientY, e);
             window.ontouchend = handleEnd;
@@ -1397,7 +1090,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             
             try {
                 const pdfDoc = await PDFLib.PDFDocument.load(cloneBuffer(pdfBytes));
-                
                 const pages = pdfDoc.getPages();
                 const activePageIdx = currentPageNum - 1; 
                 const activePage = pages[activePageIdx];
@@ -1433,9 +1125,7 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 closeSigningModal(); 
                 fetchDigiSignDocs(); 
                 Swal.fire({ icon: 'success', title: 'Berhasil!', text: `Dokumen ditandatangani di Halaman ${currentPageNum}.`, showConfirmButton: false, timer: 2000 });
-            } catch (err) { 
-                Swal.fire('Gagal', err.message, 'error'); 
-            }
+            } catch (err) { Swal.fire('Gagal', err.message, 'error'); }
         }
         function closeSigningModal() { document.getElementById('signing-modal').classList.add('hidden'); } function clearPad() { if(signaturePad) signaturePad.clear(); }
         async function loadMySignature() { const { data: { user } } = await supabaseClient.auth.getUser(); const { data } = await supabaseClient.from('admin_signatures').select('signature_data').eq('admin_id', user.id).single(); const container = document.getElementById('saved-sig-container'); if (data && data.signature_data) { mySavedSignature = data.signature_data; container.innerHTML = `<div onclick="useSavedSignature()" class="bg-white border-2 border-gray-200 rounded-xl p-2 cursor-pointer hover:border-pink-500 hover:shadow-md transition group relative h-24 flex items-center justify-center"><img src="${data.signature_data}" class="max-h-full max-w-full object-contain"><div class="absolute inset-0 bg-pink-600/10 opacity-0 group-hover:opacity-100 transition rounded-xl flex items-center justify-center backdrop-blur-sm"><span class="bg-white text-pink-600 px-3 py-1 rounded-full text-xs font-bold shadow-sm">Pakai Ini</span></div></div><div class="text-center mt-2"><button onclick="deleteMySignature()" class="text-xs text-red-400 hover:text-red-600 underline">Hapus</button></div>`; } else { container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs italic bg-gray-50 rounded-xl border border-gray-100 border-dashed">Belum ada.</div>`; mySavedSignature = null; } }
@@ -1461,7 +1151,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             }
         }
 
-
         async function renderCurrentPage() {
             if (!currentPdfObject) return;
             document.getElementById('page-indicator').innerText = `Page ${currentPageNum}/${totalPdfPages}`;
@@ -1478,7 +1167,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             canvas.width = scaledViewport.width;
             await page.render({canvasContext: ctx, viewport: scaledViewport}).promise;
         }
-
 
         async function fetchUsers() { const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); allUsers = data||[]; renderTable(allUsers); renderVerificationList(allUsers); document.getElementById('stat-total').innerText = allUsers.length; document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; document.getElementById('table-total').innerText = allUsers.length; }
         
@@ -1616,11 +1304,10 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
         }
         function initCalendarRealtime() { supabaseClient.channel('calendar-sync').on('postgres_changes', { event: '*', schema: 'public', table: 'admin_calendar' }, () => { if(calendarInstance) calendarInstance.refetchEvents(); }).subscribe(); }
         
-        // --- ANNOUNCEMENTS LOGIC (ENHANCED with EDIT & RICH TEXT) ---
+        // --- ANNOUNCEMENTS LOGIC ---
         async function fetchAnnouncements() { 
             const { data } = await supabaseClient.from('announcements').select('*').order('order_index', {ascending: true}); 
             
-            // Render list dengan tombol Edit
             document.getElementById('announcement-list').innerHTML = data.map(item => `
                 <div data-id="${item.id}" class="glass-card p-4 flex items-center gap-4 group draggable-item cursor-move mb-3">
                     <i class="fa-solid fa-grip-vertical text-gray-300 group-hover:text-pink-400 transition"></i>
@@ -1634,11 +1321,10 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                     </div>
                 </div>`).join(''); 
             
-            // Enhanced Drag & Drop for Mobile
             new Sortable(document.getElementById('announcement-list'), { 
                 animation: 200, 
                 handle: '.fa-grip-vertical', 
-                delay: 100, // Delay agar tidak swipe scroll di mobile
+                delay: 100, 
                 delayOnTouchOnly: true,
                 ghostClass: 'sortable-ghost',
                 dragClass: 'sortable-drag',
@@ -1655,11 +1341,9 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             }
 
             if(editingAnnounceId) {
-                // Update
                 await supabaseClient.from('announcements').update({ title, content }).eq('id', editingAnnounceId);
                 Toast.fire({ icon: 'success', title: 'Pengumuman Diperbarui' });
             } else {
-                // Insert New
                 await supabaseClient.from('announcements').insert({ title, content });
                 Toast.fire({ icon: 'success', title: 'Pengumuman Diposting' });
             }
@@ -1676,13 +1360,11 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             if(data) {
                 editingAnnounceId = id;
                 document.getElementById('announce-title').value = data.title;
-                quillAnnounce.root.innerHTML = data.content; // Load HTML ke Editor
+                quillAnnounce.root.innerHTML = data.content;
                 
-                // Ubah Tampilan Tombol
                 document.getElementById('btn-save-announce').innerText = "Simpan Perubahan";
                 document.getElementById('btn-cancel-announce').classList.remove('hidden');
                 
-                // Scroll ke atas
                 document.getElementById('section-announcements').scrollIntoView({ behavior: 'smooth' });
             }
         }
@@ -1704,7 +1386,7 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
         }
 
 
-        // --- MODULES LOGIC (ENHANCED with EDIT) ---
+        // --- MODULES LOGIC ---
         async function fetchModules() { 
             const { data } = await supabaseClient.from('modules').select('*').order('order_index', {ascending: true}); 
             
@@ -1742,11 +1424,9 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             if(!title || !link_url) return Toast.fire({icon: 'warning', title: 'Lengkapi Data Materi'});
 
             if(editingModuleId) {
-                // Update
                 await supabaseClient.from('modules').update({ title, link_url, category, is_premium }).eq('id', editingModuleId);
                 Toast.fire({ icon: 'success', title: 'Materi Diperbarui' });
             } else {
-                // Insert
                 await supabaseClient.from('modules').insert({ title, link_url, category, is_premium });
                 Toast.fire({ icon: 'success', title: 'Materi Diupload' });
             }
@@ -1767,7 +1447,6 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
                 document.getElementById('mod-category').value = data.category;
                 document.getElementById('mod-premium').value = data.is_premium.toString();
                 
-                // Ubah Tampilan Tombol
                 document.getElementById('btn-save-module').innerText = "Simpan Perubahan";
                 document.getElementById('btn-save-module').classList.remove('bg-purple-600');
                 document.getElementById('btn-save-module').classList.add('bg-pink-600');
