@@ -106,6 +106,16 @@
             }
         }
 
+                window.addEventListener('hashchange', async () => {
+                    const newState = {
+                        email: session.user.email,
+                        page: window.location.hash || 'Home',
+                        login_time: new Date().toLocaleTimeString()
+                    };
+                    await channel.track(newState);
+                });
+            
+        
         setTimeout(initTracking, 2000); 
     </script>
 
@@ -219,7 +229,6 @@
             </h1>
         </div>
     </div>
-
     <nav class="fixed w-full z-50 transition-all duration-300 top-0 left-0">
         <div class="glass shadow-sm w-full">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -652,126 +661,126 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
-                    <div class="w-full md:w-1/2 order-1 md:order-1">
-                        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
-                            <img src="bang-ojan-foto.jpg" alt="Mentoring" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                        </div>
-                    </div>
-                    <div class="w-full md:w-1/2 order-2 md:order-2">
-                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
-                            Personal Growth
-                        </span>
-                        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
-                            Bedah 1-on-1 Menjadi Organizator
-                        </h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">
-                            Sesi mentoring eksklusif dan privat. Kamu akan dibedah potensi kepemimpinannya, review CV organisasi, hingga simulasi interview untuk persiapan karir organisasi yang lebih strategis.
-                        </p>
-                        <ul class="space-y-3">
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-user-doctor text-blue-500 w-6"></i> Diagnosis Potensi Diri
-                            </li>
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-file-contract text-blue-500 w-6"></i> CV & Portfolio Review
-                            </li>
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-handshake text-blue-500 w-6"></i> Simulasi Wawancara Pimpinan
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+<div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
+    <div class="w-full md:w-1/2 order-1 md:order-1">
+        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
+            <img src="bang ojan foto.jpg" alt="Mentoring" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+        </div>
+    </div>
+    <div class="w-full md:w-1/2 order-2 md:order-2">
+        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+            Personal Growth
+        </span>
+        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
+            Bedah 1-on-1 Menjadi Organizator
+        </h3>
+        <p class="text-gray-600 mb-6 leading-relaxed">
+            Sesi mentoring eksklusif dan privat. Kamu akan dibedah potensi kepemimpinannya, review CV organisasi, hingga simulasi interview untuk persiapan karir organisasi yang lebih strategis.
+        </p>
+        <ul class="space-y-3">
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-user-doctor text-blue-500 w-6"></i> Diagnosis Potensi Diri
+            </li>
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-file-contract text-blue-500 w-6"></i> CV & Portfolio Review
+            </li>
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-handshake text-blue-500 w-6"></i> Simulasi Wawancara Pimpinan
+            </li>
+        </ul>
+    </div>
+</div>
 
-                <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
-                    <div class="w-full md:w-1/2 order-2 md:order-1">
-                        <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
-                            Real World Challenge
-                        </span>
-                        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
-                            Organization Case Simulation & Campus Immersion
-                        </h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">
-                            Rasakan atmosfer nyata penyelesaian masalah organisasi. Kamu akan diterjunkan langsung ke dalam simulasi krisis organisasi dan menjelajahi ekosistem kampus terbaik.
-                        </p>
-                        <ul class="space-y-3">
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-chess-knight text-purple-500 w-6"></i> Crisis Management Simulation
-                            </li>
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-building-columns text-purple-500 w-6"></i> Campus Ecosystem Tour
-                            </li>
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-users-gear text-purple-500 w-6"></i> Strategic Decision Making
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="w-full md:w-1/2 order-1 md:order-2">
-                        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
-                            <img src="foto tia.JPG" alt="Simulation" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-                        </div>
-                    </div>
-                </div>
+<div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
+    <div class="w-full md:w-1/2 order-2 md:order-1">
+        <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+            Real World Challenge
+        </span>
+        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
+            Organization Case Simulation & Campus Immersion
+        </h3>
+        <p class="text-gray-600 mb-6 leading-relaxed">
+            Rasakan atmosfer nyata penyelesaian masalah organisasi. Kamu akan diterjunkan langsung ke dalam simulasi krisis organisasi dan menjelajahi ekosistem kampus terbaik.
+        </p>
+        <ul class="space-y-3">
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-chess-knight text-purple-500 w-6"></i> Crisis Management Simulation
+            </li>
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-building-columns text-purple-500 w-6"></i> Campus Ecosystem Tour
+            </li>
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-users-gear text-purple-500 w-6"></i> Strategic Decision Making
+            </li>
+        </ul>
+    </div>
+    <div class="w-full md:w-1/2 order-1 md:order-2">
+        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
+            <img src="foto tia.JPG" alt="Simulation" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+        </div>
+    </div>
+</div>
 
-                <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
-                    <div class="w-full md:w-1/2 order-1 md:order-1">
-                        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
-                            <img src="foto comunity.jpg" alt="Community" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-                        </div>
-                    </div>
-                    <div class="w-full md:w-1/2 order-2 md:order-2">
-                        <span class="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
-                            Networking
-                        </span>
-                        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
-                            The YLOS Community
-                        </h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">
-                            Bukan sekadar acara 3 hari. Bergabunglah dengan jejaring eksklusif para pemimpin muda dari seluruh Indonesia untuk kolaborasi jangka panjang.
-                        </p>
-                        <ul class="space-y-3">
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-infinity text-pink-500 w-6"></i> Lifetime Alumni Access
-                            </li>
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-circle-nodes text-pink-500 w-6"></i> National Networking
-                            </li>
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-hand-holding-heart text-pink-500 w-6"></i> Support System & Collaboration
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+<div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
+    <div class="w-full md:w-1/2 order-1 md:order-1">
+        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
+            <img src="foto comunity.jpg" alt="Community" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+        </div>
+    </div>
+    <div class="w-full md:w-1/2 order-2 md:order-2">
+        <span class="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+            Networking
+        </span>
+        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
+            The YLOS Community
+        </h3>
+        <p class="text-gray-600 mb-6 leading-relaxed">
+            Bukan sekadar acara 3 hari. Bergabunglah dengan jejaring eksklusif para pemimpin muda dari seluruh Indonesia untuk kolaborasi jangka panjang.
+        </p>
+        <ul class="space-y-3">
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-infinity text-pink-500 w-6"></i> Lifetime Alumni Access
+            </li>
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-circle-nodes text-pink-500 w-6"></i> National Networking
+            </li>
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-hand-holding-heart text-pink-500 w-6"></i> Support System & Collaboration
+            </li>
+        </ul>
+    </div>
+</div>
 
-                <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24 mb-12">
-                    <div class="w-full md:w-1/2 order-2 md:order-1">
-                        <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
-                            Core Foundation
-                        </span>
-                        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
-                            Character & Leadership Building Bootcamp
-                        </h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">
-                            Pondasi utama seorang pemimpin. Bootcamp intensif yang dirancang untuk menguji ketahanan mental, kerja sama tim, dan kemampuan memimpin di bawah tekanan.
-                        </p>
-                        <ul class="space-y-3">
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-dumbbell text-orange-500 w-6"></i> Mental Agility Training
-                            </li>
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-people-group text-orange-500 w-6"></i> Team Dynamics Challenge
-                            </li>
-                            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                                <i class="fa-solid fa-microphone-lines text-orange-500 w-6"></i> Public Speaking & Influence
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="w-full md:w-1/2 order-1 md:order-2">
-                        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
-                            <img src="foto bootcamp.jpeg" alt="Leadership" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-                        </div>
-                    </div>
-                </div>
+<div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24 mb-12">
+    <div class="w-full md:w-1/2 order-2 md:order-1">
+        <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+            Core Foundation
+        </span>
+        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
+            Character & Leadership Building Bootcamp
+        </h3>
+        <p class="text-gray-600 mb-6 leading-relaxed">
+            Pondasi utama seorang pemimpin. Bootcamp intensif yang dirancang untuk menguji ketahanan mental, kerja sama tim, dan kemampuan memimpin di bawah tekanan.
+        </p>
+        <ul class="space-y-3">
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-dumbbell text-orange-500 w-6"></i> Mental Agility Training
+            </li>
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-people-group text-orange-500 w-6"></i> Team Dynamics Challenge
+            </li>
+            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                <i class="fa-solid fa-microphone-lines text-orange-500 w-6"></i> Public Speaking & Influence
+            </li>
+        </ul>
+    </div>
+    <div class="w-full md:w-1/2 order-1 md:order-2">
+        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
+            <img src="foto bootcamp.jpeg" alt="Leadership" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+        </div>
+    </div>
+</div>
                 
                 <div class="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20">
                     <div class="lg:w-1/2 w-full">
@@ -942,15 +951,6 @@
                     <input type="password" id="login-password" required class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition font-medium" placeholder="••••••••">
                 </div>
                 <button type="submit" class="w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-black transition shadow-lg hover:-translate-y-0.5 transform duration-200">Masuk Sekarang</button>
-                
-                <div class="flex items-center my-4">
-                    <div class="flex-1 border-t border-gray-200"></div>
-                    <span class="px-3 text-xs text-gray-400 font-bold uppercase tracking-wider">ATAU</span>
-                    <div class="flex-1 border-t border-gray-200"></div>
-                </div>
-                <button type="button" onclick="loginWithGoogle()" class="w-full bg-white border border-gray-200 text-gray-700 font-bold py-3.5 rounded-xl hover:bg-gray-50 transition shadow-sm flex items-center justify-center gap-3">
-                    <i class="fa-brands fa-google text-red-500 text-lg"></i> Lanjutkan dengan Google
-                </button>
             </form>
             
             <p class="text-center mt-8 text-sm text-gray-500">Belum punya akun? <button onclick="showPage('register')" class="text-ylosPink font-bold hover:underline">Daftar Seleksi</button></p>
@@ -988,7 +988,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-bold mb-2 text-gray-700">Password</label>
-                    <input type="password" id="reg-password" required class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition" placeholder="Minimal 8 karakter">
+                    <input type="password" id="reg-password" required class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition" placeholder="Minimal 6 karakter">
                 </div>
                 <div>
                     <label class="block text-sm font-bold mb-2 text-gray-700">Jalur Pendaftaran</label>
@@ -1011,15 +1011,6 @@
                 </div>
 
                 <button type="submit" id="btn-reg" class="w-full bg-gradient-to-r from-ylosPink to-rose-500 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition duration-300">Daftar Sekarang</button>
-                
-                <div class="flex items-center my-4">
-                    <div class="flex-1 border-t border-gray-200"></div>
-                    <span class="px-3 text-xs text-gray-400 font-bold uppercase tracking-wider">ATAU</span>
-                    <div class="flex-1 border-t border-gray-200"></div>
-                </div>
-                <button type="button" onclick="loginWithGoogle()" class="w-full bg-white border border-gray-200 text-gray-700 font-bold py-3.5 rounded-xl hover:bg-gray-50 transition shadow-sm flex items-center justify-center gap-3">
-                    <i class="fa-brands fa-google text-red-500 text-lg"></i> Daftar dengan Google
-                </button>
             </form>
             <p class="text-center mt-6 text-sm text-gray-500">Sudah punya akun? <button onclick="showPage('login')" class="text-ylosPink font-bold hover:underline">Login disini</button></p>
         </div>
@@ -1123,32 +1114,6 @@
         </div>
     </div>
 
-    <div id="completion-modal" class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-gray-900/80 backdrop-blur-sm px-4">
-        <div class="bg-white w-full max-w-md p-8 rounded-3xl shadow-2xl relative animate-fade-in-up">
-            <h3 class="text-2xl font-bold text-gray-900 mb-2">Tinggal Selangkah Lagi! 🎯</h3>
-            <p class="text-sm text-gray-500 mb-6">Kami butuh beberapa data tambahan untuk melengkapi pendaftaran YLOS 2026 kamu.</p>
-            
-            <form onsubmit="submitCompletionForm(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold mb-1 text-gray-700">Asal Sekolah</label>
-                    <input type="text" id="comp-school" required class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink outline-none" placeholder="SMA/SMK...">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold mb-1 text-gray-700">No. WhatsApp</label>
-                    <input type="tel" id="comp-phone" required class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink outline-none" placeholder="0812...">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold mb-1 text-gray-700">Jalur Pendaftaran</label>
-                    <select id="comp-package" required class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink outline-none">
-                        <option value="Jalur Seleksi (Commitment Fee)">Jalur Seleksi - Commitment Fee</option>
-                        <option value="Self Funded (Jalur Mandiri)">Self Funded - Jalur Mandiri</option>
-                    </select>
-                </div>
-                <button type="submit" id="btn-comp" class="w-full mt-4 bg-gradient-to-r from-ylosPink to-rose-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition">Simpan & Masuk Dashboard</button>
-            </form>
-        </div>
-    </div>
-
     <script>
         const supabaseClient = supabase.createClient(
             'https://jrslgkxwjvugvgakxwsd.supabase.co', 
@@ -1173,13 +1138,14 @@
             const welcomeOverlay = document.getElementById('welcome-overlay');
             if (welcomeOverlay) {
                 if (!localStorage.getItem('ylos_welcome_seen')) {
+                    // Tampilkan animasi, lalu hilangkan setelah durasi yang ditentukan
                     setTimeout(() => {
                         welcomeOverlay.classList.add('welcome-fade-out');
-                        setTimeout(() => welcomeOverlay.remove(), 1000); 
+                        setTimeout(() => welcomeOverlay.remove(), 1000); // Hapus elemen dari DOM
                     }, 3500);
                     localStorage.setItem('ylos_welcome_seen', 'true');
                 } else {
-                    welcomeOverlay.remove(); 
+                    welcomeOverlay.remove(); // Hapus langsung jika sudah pernah melihat
                 }
             }
         });
@@ -1199,6 +1165,7 @@
             const currentActive = document.querySelector('.active-section');
             const targetPage = document.getElementById('page-' + pageId);
 
+            // Jika sedang berada di page yang berbeda, lakukan efek fade out dulu
             if (currentActive && currentActive.id !== targetPage.id) {
                 currentActive.style.opacity = '0';
                 currentActive.style.transform = 'translateY(15px)';
@@ -1209,7 +1176,7 @@
                         const el = document.getElementById(id);
                         el.classList.remove('active-section');
                         el.classList.add('hidden-section');
-                        el.style = ''; 
+                        el.style = ''; // Reset inline styles
                     });
                     
                     targetPage.classList.remove('hidden-section');
@@ -1221,8 +1188,9 @@
                     } else {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
-                }, 300); 
+                }, 300); // Menunggu animasi fade out selesai
             } else {
+                // Initial load
                 ['page-home', 'page-login', 'page-register', 'page-dashboard'].forEach(id => {
                     document.getElementById(id).classList.remove('active-section');
                     document.getElementById(id).classList.add('hidden-section');
@@ -1231,6 +1199,7 @@
                 targetPage.classList.add('active-section');
             }
 
+            // Menutup mobile menu secara smooth jika terbuka
             const menu = document.getElementById('mobile-menu');
             if (menu && menu.classList.contains('mobile-menu-visible')) {
                 menu.classList.add('mobile-menu-hidden');
@@ -1252,58 +1221,7 @@
 
         function mobileLinkClick(id) { 
             showPage(id); 
-        }
-
-        // --- FITUR LOGIN GOOGLE (BARU) ---
-        async function loginWithGoogle() {
-            const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: window.location.origin + '/index.html',
-                    queryParams: {
-                      prompt: 'select_account' // Memaksa Google untuk memunculkan pilihan akun agar tidak "nyangkut"
-                    }
-                }
-            });
-            if (error) Swal.fire('Error', error.message, 'error');
-        }
-
-        // --- FITUR LENGKAPI PROFIL GOOGLE (BARU) ---
-        async function submitCompletionForm(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-comp');
-            btn.innerText = "Menyimpan...";
-            btn.disabled = true;
-
-            try {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                const school = document.getElementById('comp-school').value;
-                const phone = document.getElementById('comp-phone').value;
-                const pkg = document.getElementById('comp-package').value;
-
-                const fullName = user.user_metadata.full_name || 'Peserta YLOS';
-
-                const { error } = await supabaseClient.from('profiles').update({
-                    full_name: fullName,
-                    school: school,
-                    phone: phone,
-                    package_type: pkg
-                }).eq('id', user.id);
-
-                if (error) throw error;
-
-                document.getElementById('completion-modal').classList.add('hidden');
-                Swal.fire({ icon: 'success', title: 'Data Lengkap!', text: 'Selamat datang di YLOS 2026', timer: 1500, showConfirmButton: false });
-                
-                loadDashboard(user.id);
-                showPage('dashboard');
-
-            } catch (err) {
-                Swal.fire('Gagal', err.message, 'error');
-            } finally {
-                btn.innerText = "Simpan & Masuk Dashboard";
-                btn.disabled = false;
-            }
+            // Menu tertutup secara smooth karena showPage() sudah menanganinya
         }
 
         async function handleRegister(e) {
@@ -1388,13 +1306,11 @@
             }
         }
 
-        // --- UPDATED: FITUR LOGOUT ---
         async function logout() {
             await Swal.fire({ icon: 'success', title: 'Logout Berhasil', text: 'Sampai jumpa lagi!', timer: 1500, showConfirmButton: false });
             await supabaseClient.auth.signOut();
             userSession = null;
-            // Menghilangkan hash (#dashboard) dari URL dan me-reload ke halaman home (bersih)
-            window.location.href = window.location.origin + window.location.pathname;
+            window.location.reload();
         }
 
         function openLynkPayment() {
@@ -1571,8 +1487,7 @@
             }
         }
 
-        // --- UPDATED: onAuthStateChange (Cek Kelengkapan Profil Google) ---
-        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
             userSession = session;
             if(event === 'PASSWORD_RECOVERY') { window.location.href = 'reset.html'; return; }
             
@@ -1585,23 +1500,12 @@
                 els.dp.classList.add('hidden'); els.mp.classList.add('hidden');
                 els.dm.classList.remove('hidden'); els.mm.classList.remove('hidden');
                 document.getElementById('user-display-name').innerText = session.user.email;
+                loadDashboard(session.user.id);
                 
-                // CEK APAKAH PROFIL SUDAH LENGKAP
-                const { data: profile } = await supabaseClient.from('profiles').select('school, phone').eq('id', session.user.id).single();
-                
-                if (profile && (!profile.school || !profile.phone)) {
-                    // Tampilkan modal lengkapi profil
-                    document.getElementById('completion-modal').classList.remove('hidden');
-                } else {
-                    // Profil lengkap, load dashboard
-                    loadDashboard(session.user.id);
-                    
-                    const isLoginPage = document.getElementById('page-login').classList.contains('active-section');
-                    const isRegisterPage = document.getElementById('page-register').classList.contains('active-section');
-                    if (isLoginPage || isRegisterPage) showPage('dashboard');
-                    if (window.location.hash === '#dashboard') showPage('dashboard');
-                }
-
+                const isLoginPage = document.getElementById('page-login').classList.contains('active-section');
+                const isRegisterPage = document.getElementById('page-register').classList.contains('active-section');
+                if (isLoginPage || isRegisterPage) showPage('dashboard');
+                if (window.location.hash === '#dashboard') showPage('dashboard');
             } else {
                 els.dp.classList.remove('hidden'); els.mp.classList.remove('hidden');
                 els.dm.classList.add('hidden'); els.mm.classList.add('hidden');
