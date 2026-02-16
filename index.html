@@ -62,12 +62,28 @@
         async function initTracking() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if(session) {
+                // 1. PANGGIL FUNGSI AMAN (RPC) SAAT BARU BUKA WEB
+                await supabaseClient.rpc('update_user_presence');
+                
+                // 2. PANGGIL FUNGSI AMAN BERKALA TIAP 1 MENIT
+                setInterval(async () => {
+                    await supabaseClient.rpc('update_user_presence');
+                }, 60000);
+
+                // 3. PANGGIL FUNGSI AMAN SAAT TAB DITUTUP
+                document.addEventListener("visibilitychange", async function() {
+                    if (document.visibilityState === 'hidden') {
+                        await supabaseClient.rpc('update_user_presence');
+                    }
+                });
+
+                // LOGIC STATUS ONLINE (PRESENCE)
                 const channel = supabaseClient.channel('online-users', {
                     config: { presence: { key: session.user.id } }
                 });
 
                 channel.on('presence', { event: 'sync' }, () => {
-                    // User online
+                    // User online syncing
                 }).subscribe(async (status) => {
                     if (status === 'SUBSCRIBED') {
                         const userState = {
@@ -78,6 +94,17 @@
                         await channel.track(userState);
                     }
                 });
+
+                window.addEventListener('hashchange', async () => {
+                    const newState = {
+                        email: session.user.email,
+                        page: window.location.hash || 'Home',
+                        login_time: new Date().toLocaleTimeString()
+                    };
+                    await channel.track(newState);
+                });
+            }
+        }
 
                 window.addEventListener('hashchange', async () => {
                     const newState = {
