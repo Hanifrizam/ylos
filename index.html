@@ -97,7 +97,7 @@
         .hidden-section { display: none !important; }
         .active-section { display: block; animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         /* Glassmorphism Utilities */
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); }
@@ -153,10 +153,55 @@
         /* Timeline Specific Styles */
         .timeline-item { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
         .timeline-item.visible { opacity: 1; transform: translateY(0); }
+
+        /* --- TAMBAHAN BARU: Smooth Mobile Menu --- */
+        #mobile-menu {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: top center;
+        }
+        .mobile-menu-hidden {
+            opacity: 0;
+            transform: scaleY(0.9) translateY(-10px);
+            pointer-events: none;
+            visibility: hidden;
+        }
+        .mobile-menu-visible {
+            opacity: 1;
+            transform: scaleY(1) translateY(0);
+            pointer-events: auto;
+            visibility: visible;
+        }
+
+        /* --- TAMBAHAN BARU: Welcome Animation Effect --- */
+        @keyframes welcomePop {
+            0% { opacity: 0; transform: scale(0.9) translateY(30px); filter: blur(8px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
+        }
+        .welcome-fade-out {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-40px) scale(1.05) !important;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="font-sans text-gray-800 bg-gray-50 antialiased overflow-x-hidden selection:bg-ylosPink selection:text-white">
 
+    <div id="welcome-overlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/70 backdrop-blur-2xl transition-all duration-1000 ease-in-out">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-ylosPink/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-ylosYellow/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+            <div class="absolute top-[40%] left-[40%] w-96 h-96 bg-purple-400/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+        </div>
+        <div class="relative z-10 text-center px-6 transform scale-95 opacity-0 animate-[welcomePop_1.2s_ease-out_forwards]">
+            <p class="text-xl md:text-2xl font-extrabold text-gray-500 tracking-widest uppercase mb-4 opacity-80">Welcome to YLOS</p>
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-extrabold text-gray-900 tracking-tight leading-[1.1]">
+                Be <span class="text-transparent bg-clip-text bg-gradient-to-r from-ylosPink to-purple-600">Relevant.</span><br>
+                Shape <span class="text-transparent bg-clip-text bg-gradient-to-r from-ylosGreen to-teal-500">Character.</span><br>
+                Lead the Future.
+            </h1>
+        </div>
+    </div>
     <nav class="fixed w-full z-50 transition-all duration-300 top-0 left-0">
         <div class="glass shadow-sm w-full">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -207,7 +252,7 @@
             </div>
         </div>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-2xl absolute w-full left-0 top-20 z-40 p-4 rounded-b-3xl">
+        <div id="mobile-menu" class="md:hidden mobile-menu-hidden bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-2xl absolute w-full left-0 top-20 z-40 p-4 rounded-b-3xl">
             <div class="space-y-2">
                 <a href="#home" onclick="mobileLinkClick('home')" class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-700 hover:bg-pink-50 hover:text-ylosPink transition"><i class="fa-solid fa-house w-6 text-center"></i> Beranda</a>
                 <a href="#about" onclick="mobileLinkClick('home')" class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-700 hover:bg-pink-50 hover:text-ylosPink transition"><i class="fa-solid fa-circle-info w-6 text-center"></i> Tentang</a>
@@ -272,7 +317,7 @@
                         Daftar Seleksi
                     </button>
                     <a href="#trip" class="bg-white text-gray-800 border border-gray-200 px-10 py-4 rounded-full font-bold text-lg shadow-md hover:shadow-lg hover:border-ylosPink hover:text-ylosPink transition flex items-center justify-center gap-2 group w-full sm:w-auto">
-                        Lihat Program <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        Liat Program <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                     </a>
                 </div>
             </div>
@@ -474,6 +519,7 @@
                 </div>
             </div>
         </section>
+        
         <section id="speakers" class="py-20 bg-gray-900 text-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -1060,6 +1106,23 @@
         let userSession = null;
         let captchaCorrectAnswer = 0;
 
+        // --- TAMBAHAN BARU: Welcome Overlay Logic ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const welcomeOverlay = document.getElementById('welcome-overlay');
+            if (welcomeOverlay) {
+                if (!localStorage.getItem('ylos_welcome_seen')) {
+                    // Tampilkan animasi, lalu hilangkan setelah durasi yang ditentukan
+                    setTimeout(() => {
+                        welcomeOverlay.classList.add('welcome-fade-out');
+                        setTimeout(() => welcomeOverlay.remove(), 1000); // Hapus elemen dari DOM
+                    }, 3500);
+                    localStorage.setItem('ylos_welcome_seen', 'true');
+                } else {
+                    welcomeOverlay.remove(); // Hapus langsung jika sudah pernah melihat
+                }
+            }
+        });
+
         function generateCaptcha() {
             const n1 = Math.floor(Math.random()*10)+1, n2 = Math.floor(Math.random()*10)+1;
             captchaCorrectAnswer = n1 + n2;
@@ -1067,32 +1130,71 @@
             document.getElementById('captcha-input').value = '';
         }
 
+        // --- UPDATED: Smooth Transition ShowPage ---
         function showPage(pageId) {
             if (userSession && (pageId === 'login' || pageId === 'register')) pageId = 'dashboard';
             if (pageId === 'register') generateCaptcha();
 
-            ['page-home', 'page-login', 'page-register', 'page-dashboard'].forEach(id => {
-                document.getElementById(id).classList.remove('active-section');
-                document.getElementById(id).classList.add('hidden-section');
-            });
-            document.getElementById('page-' + pageId).classList.remove('hidden-section');
-            document.getElementById('page-' + pageId).classList.add('active-section');
-            document.getElementById('mobile-menu').classList.add('hidden');
-            
-            // Handle anchors within home page
-            if (pageId === 'home' && window.location.hash) {
-                const element = document.querySelector(window.location.hash);
-                if (element) element.scrollIntoView({behavior: 'smooth'});
+            const currentActive = document.querySelector('.active-section');
+            const targetPage = document.getElementById('page-' + pageId);
+
+            // Jika sedang berada di page yang berbeda, lakukan efek fade out dulu
+            if (currentActive && currentActive.id !== targetPage.id) {
+                currentActive.style.opacity = '0';
+                currentActive.style.transform = 'translateY(15px)';
+                currentActive.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+
+                setTimeout(() => {
+                    ['page-home', 'page-login', 'page-register', 'page-dashboard'].forEach(id => {
+                        const el = document.getElementById(id);
+                        el.classList.remove('active-section');
+                        el.classList.add('hidden-section');
+                        el.style = ''; // Reset inline styles
+                    });
+                    
+                    targetPage.classList.remove('hidden-section');
+                    targetPage.classList.add('active-section');
+                    
+                    if (pageId === 'home' && window.location.hash) {
+                        const element = document.querySelector(window.location.hash);
+                        if (element) element.scrollIntoView({behavior: 'smooth'});
+                    } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }, 300); // Menunggu animasi fade out selesai
             } else {
-                window.scrollTo(0,0);
+                // Initial load
+                ['page-home', 'page-login', 'page-register', 'page-dashboard'].forEach(id => {
+                    document.getElementById(id).classList.remove('active-section');
+                    document.getElementById(id).classList.add('hidden-section');
+                });
+                targetPage.classList.remove('hidden-section');
+                targetPage.classList.add('active-section');
+            }
+
+            // Menutup mobile menu secara smooth jika terbuka
+            const menu = document.getElementById('mobile-menu');
+            if (menu && menu.classList.contains('mobile-menu-visible')) {
+                menu.classList.add('mobile-menu-hidden');
+                menu.classList.remove('mobile-menu-visible');
             }
         }
         
-        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
+        // --- UPDATED: Smooth Toggle Mobile Menu ---
+        function toggleMobileMenu() { 
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('mobile-menu-hidden')) {
+                menu.classList.remove('mobile-menu-hidden');
+                menu.classList.add('mobile-menu-visible');
+            } else {
+                menu.classList.add('mobile-menu-hidden');
+                menu.classList.remove('mobile-menu-visible');
+            }
+        }
+
         function mobileLinkClick(id) { 
             showPage(id); 
-            // Close menu
-            document.getElementById('mobile-menu').classList.add('hidden');
+            // Menu tertutup secara smooth karena showPage() sudah menanganinya
         }
 
         async function handleRegister(e) {
@@ -1207,7 +1309,6 @@
         
         function contactAdmin() { window.open(`https://wa.me/6281234567890?text=Halo Admin, saya butuh bantuan.`, '_blank'); }
 
-        // --- DASHBOARD LOGIC (Updated to Handle Rich Text from Admin) ---
         async function loadDashboard(userId) {
             const urlParams = new URLSearchParams(window.location.search);
             const isPreviewMode = urlParams.get('preview') === 'true';
@@ -1225,7 +1326,6 @@
                 document.getElementById('mobile-user-name').innerText = profile.full_name;
                 document.getElementById('dash-package').innerText = profile.package_type;
                 
-                // Logic Penentuan Link
                 if (profile.package_type && (profile.package_type.includes('Mandiri') || profile.package_type.includes('Self Funded'))) {
                     CURRENT_PAYMENT_URL = LINK_SELF_FUNDED;
                     CURRENT_WA_LINK = WA_LINK_SELF_FUNDED;
@@ -1275,7 +1375,6 @@
         }
 
         async function loadCMSContent(isLunas) {
-            // Announcements
             const { data: announcements } = await supabaseClient.from('announcements').select('*').eq('is_active', true).order('order_index', {ascending: true});
             if(announcements && announcements.length > 0) {
                 document.getElementById('announcement-container').classList.remove('hidden');
@@ -1296,7 +1395,6 @@
                             </div>
                         `;
                     } else {
-                        // RENDER HTML CONTENT (Rich Text)
                         container.innerHTML += `
                             <div class="bg-blue-50/50 border-l-4 border-blue-500 p-5 rounded-r-2xl hover:bg-blue-50 transition">
                                 <h4 class="font-bold text-gray-900 text-base mb-3">${ann.title}</h4>
@@ -1312,7 +1410,6 @@
                     }
                 });
 
-                // Attach Click Event for Image Zoom (Lightbox Effect)
                 document.querySelectorAll('.prose img').forEach(img => {
                     img.onclick = function() {
                         Swal.fire({
@@ -1329,7 +1426,6 @@
                 });
             }
 
-            // Modules
             const { data: modules } = await supabaseClient.from('modules').select('*').order('order_index', {ascending: true});
             const modContainer = document.getElementById('modules-content');
             if(modules && modules.length > 0) {
@@ -1390,7 +1486,6 @@
             }
         });
 
-        // Intersection Observer for Timeline Animation
         document.addEventListener("DOMContentLoaded", function() {
             const observerOptions = {
                 root: null,
