@@ -58,130 +58,28 @@
         }
     </script>
 
-    <script>
-        async function initTracking() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if(session) {
-                // 1. PANGGIL FUNGSI AMAN (RPC) SAAT BARU BUKA WEB
-                await supabaseClient.rpc('update_user_presence');
-                
-                // 2. PANGGIL FUNGSI AMAN BERKALA TIAP 1 MENIT
-                setInterval(async () => {
-                    await supabaseClient.rpc('update_user_presence');
-                }, 60000);
-
-                // 3. PANGGIL FUNGSI AMAN SAAT TAB DITUTUP
-                document.addEventListener("visibilitychange", async function() {
-                    if (document.visibilityState === 'hidden') {
-                        await supabaseClient.rpc('update_user_presence');
-                    }
-                });
-
-                // LOGIC STATUS ONLINE (PRESENCE)
-                const channel = supabaseClient.channel('online-users', {
-                    config: { presence: { key: session.user.id } }
-                });
-
-                channel.on('presence', { event: 'sync' }, () => {
-                    // User online syncing
-                }).subscribe(async (status) => {
-                    if (status === 'SUBSCRIBED') {
-                        const userState = {
-                            email: session.user.email,
-                            page: window.location.hash || 'Home',
-                            login_time: new Date().toLocaleTimeString()
-                        };
-                        await channel.track(userState);
-                    }
-                });
-
-                window.addEventListener('hashchange', async () => {
-                    const newState = {
-                        email: session.user.email,
-                        page: window.location.hash || 'Home',
-                        login_time: new Date().toLocaleTimeString()
-                    };
-                    await channel.track(newState);
-                });
-            }
-        }
-
-                window.addEventListener('hashchange', async () => {
-                    const newState = {
-                        email: session.user.email,
-                        page: window.location.hash || 'Home',
-                        login_time: new Date().toLocaleTimeString()
-                    };
-                    await channel.track(newState);
-                });
-            
-        
-        setTimeout(initTracking, 2000); 
-    </script>
-
     <style>
-        /* FIX PENTING: Gunakan !important agar tidak tertimpa class 'flex' dari Tailwind */
         .hidden-section { display: none !important; }
         .active-section { display: block; animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Glassmorphism Utilities */
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #FF85B3; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #DB2777; }
 
-        /* SweetAlert Styling Match */
         div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
             background-color: #FF85B3 !important;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(255, 133, 179, 0.4);
         }
 
-        /* --- UPDATED: Rich Text Typography for Announcements --- */
-        .prose { color: #374151; font-size: 0.95rem; line-height: 1.7; word-wrap: break-word; }
-        .prose p { margin-bottom: 0.75em; }
-        .prose p:last-child { margin-bottom: 0; }
-        
-        /* Responsive Images in Content */
-        .prose img { 
-            max-width: 100%; 
-            height: auto; 
-            border-radius: 0.75rem; 
-            margin: 1rem 0; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
-            cursor: zoom-in; 
-            transition: transform 0.2s;
-        }
-        .prose img:hover { transform: scale(1.01); }
-
-        /* Text Formatting */
-        .prose strong, .prose b { font-weight: 700; color: #111827; }
-        .prose em, .prose i { font-style: italic; }
-        .prose u { text-decoration: underline; text-decoration-color: #FF85B3; }
-        
-        /* Links */
-        .prose a { color: #DB2777; text-decoration: underline; font-weight: 600; transition: color 0.2s; }
-        .prose a:hover { color: #BE185D; }
-
-        /* Lists */
-        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
-        .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
-        .prose li { margin-bottom: 0.25rem; }
-
-        /* Headings inside content */
-        .prose h1 { font-size: 1.5rem; font-weight: 800; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #111827; }
-        .prose h2 { font-size: 1.25rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #1F2937; }
-        
-        /* Timeline Specific Styles */
         .timeline-item { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
         .timeline-item.visible { opacity: 1; transform: translateY(0); }
 
-        /* --- TAMBAHAN BARU: Smooth Mobile Menu --- */
         #mobile-menu {
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             transform-origin: top center;
@@ -199,7 +97,6 @@
             visibility: visible;
         }
 
-        /* --- TAMBAHAN BARU: Welcome Animation Effect --- */
         @keyframes welcomePop {
             0% { opacity: 0; transform: scale(0.9) translateY(30px); filter: blur(8px); }
             100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
@@ -229,6 +126,7 @@
             </h1>
         </div>
     </div>
+
     <nav class="fixed w-full z-50 transition-all duration-300 top-0 left-0">
         <div class="glass shadow-sm w-full">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -255,7 +153,6 @@
                         <a href="#speakers" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Pembicara</a>
                         <a href="#trip" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Program</a> 
                         <a href="#pricing" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Daftar</a>
-                        <a href="admin.html" id="nav-desktop-admin" class="hidden ml-4 text-pink-600 font-bold text-xs border border-pink-200 px-4 py-2 rounded-full bg-pink-50 hover:bg-pink-100 transition shadow-sm">ADMIN PANEL</a>
                     </div>
 
                     <div class="hidden md:block">
@@ -264,15 +161,7 @@
                             <button onclick="showPage('register')" class="bg-gradient-to-r from-ylosPink to-rose-500 text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg shadow-pink-200 hover:shadow-xl hover:-translate-y-0.5 transition duration-300">Daftar Sekarang</button>
                         </div>
                         <div id="nav-member" class="hidden flex items-center gap-4">
-                            <div class="flex flex-col text-right mr-2">
-                                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Logged in as</span>
-                                <span id="user-display-name" class="text-sm font-bold text-gray-900 leading-none">User</span>
-                            </div>
-                            
-                            <button id="btn-dash-user" onclick="showPage('dashboard')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-full font-bold text-sm transition">Dashboard</button>
-                            <button id="btn-dash-admin" onclick="window.location.href='admin.html'" class="hidden bg-gray-900 text-white px-5 py-2.5 rounded-full font-bold text-xs hover:bg-black transition shadow-lg">Kontrol Admin</button>
-                            
-                            <button onclick="logout()" class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-red-500 hover:bg-red-50 transition" title="Keluar"><i class="fa-solid fa-power-off"></i></button>
+                            <button onclick="window.location.href='dashboard.html'" class="bg-gray-900 text-white px-5 py-2.5 rounded-full font-bold text-sm transition hover:bg-black shadow-lg">Masuk Dashboard ➔</button>
                         </div>
                     </div>
                 </div>
@@ -296,16 +185,7 @@
                 </div>
 
                 <div id="mobile-nav-member" class="hidden space-y-3">
-                    <div class="px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-ylosPink font-bold text-xl">Hi</div>
-                        <div>
-                            <span id="mobile-user-name" class="text-sm font-bold text-gray-900 block truncate max-w-[200px]">User</span>
-                            <span class="text-xs text-green-600 font-bold flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Online</span>
-                        </div>
-                    </div>
-                    <button id="btn-mobile-dash-user" onclick="mobileLinkClick('dashboard')" class="w-full text-left px-4 py-3.5 text-base font-bold text-white bg-ylosPink hover:bg-rose-500 rounded-xl shadow-md transition">📊 Buka Dashboard</button>
-                    <button id="btn-mobile-dash-admin" onclick="window.location.href='admin.html'" class="hidden w-full text-left px-4 py-3.5 text-base font-bold text-white bg-gray-900 rounded-xl shadow-md transition">🛠️ Kontrol Admin</button>
-                    <button onclick="logout()" class="w-full text-left px-4 py-3 text-base font-bold text-red-500 hover:bg-red-50 rounded-xl transition"><i class="fa-solid fa-power-off w-6 text-center"></i> Keluar</button>
+                    <button onclick="window.location.href='dashboard.html'" class="w-full text-left px-4 py-3.5 text-base font-bold text-white bg-ylosPink hover:bg-rose-500 rounded-xl shadow-md transition">📊 Buka Dashboard</button>
                 </div>
             </div>
         </div>
@@ -1017,136 +897,25 @@
         </div>
     </div>
 
-    <div id="page-dashboard" class="hidden-section pt-28 pb-20 min-h-screen bg-gray-50">
-        <div class="max-w-6xl mx-auto px-4 md:px-6">
-            
-            <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-8 md:p-10 text-white mb-10 shadow-2xl relative overflow-hidden">
-                <div class="relative z-10">
-                    <div class="inline-block px-3 py-1 bg-white/10 rounded-full text-xs font-bold uppercase tracking-widest mb-3 backdrop-blur-sm border border-white/10">Member Area</div>
-                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Halo, <span id="dash-name" class="text-transparent bg-clip-text bg-gradient-to-r from-ylosPink to-ylosYellow">Leader!</span> 👋</h2>
-                    <p class="opacity-80 text-sm md:text-base max-w-xl">Selamat datang di dashboard peserta YLOS 2026. Pantau status dan akses materimu di sini.</p>
-                </div>
-                <div class="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-ylosPink/20 to-transparent skew-x-12 transform translate-x-20"></div>
-                <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-ylosYellow/20 rounded-full blur-3xl"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                
-                <div class="md:col-span-1 space-y-6">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300">
-                        <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2"><i class="fa-solid fa-wallet text-gray-400"></i> Invoice & Payment</h3>
-                        
-                        <div class="space-y-4">
-                            <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100">
-                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1">Paket Dipilih</p>
-                                <p id="dash-package" class="text-xl font-extrabold text-gray-900">Loading...</p>
-                            </div>
-                            
-                            <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 flex justify-between items-center">
-                                <div>
-                                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1">Status</p>
-                                    <span id="dash-status" class="inline-block px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-bold">Loading...</span>
-                                </div>
-                                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-400">
-                                    <i class="fa-solid fa-file-invoice"></i>
-                                </div>
-                            </div>
-                            
-                            <div id="payment-actions">
-                                <button onclick="openLynkPayment()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-4 rounded-2xl font-bold text-sm shadow-lg shadow-indigo-200 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 animate-pulse">
-                                    💳 Bayar & Finalisasi
-                                </button>
-                                <p class="text-center text-xs text-gray-400 mt-3 flex justify-center items-center gap-1"><i class="fa-solid fa-lock"></i> Secured by LYNK</p>
-                                <button onclick="contactAdmin()" class="w-full mt-3 border border-gray-200 text-gray-500 py-3 rounded-xl font-bold text-xs hover:bg-gray-50 hover:text-gray-700 transition">Butuh Bantuan?</button>
-                            </div>
-                            
-                            <div id="wa-group-access" class="hidden space-y-3 pt-2">
-                                <button onclick="joinWaGroup()" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-2xl font-bold text-sm transition shadow-lg flex items-center justify-center gap-2">
-                                    <i class="fa-brands fa-whatsapp text-xl"></i> Gabung Grup WhatsApp
-                                </button>
-                                <p class="text-xs text-green-600 text-center font-bold bg-green-50 py-2 rounded-lg">Akses Khusus Member Lunas</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">📢 Info Akun</h3>
-                        <div class="flex gap-4 items-start">
-                            <div class="w-10 h-10 rounded-full bg-pink-50 flex items-center justify-center text-ylosPink flex-shrink-0 mt-1">
-                                <i class="fa-solid fa-circle-info"></i>
-                            </div>
-                            <div>
-                                <p id="dash-announce-title" class="font-bold text-gray-800 text-sm">Menunggu Pembayaran</p>
-                                <p id="dash-announce-desc" class="text-xs text-gray-500 mt-1 leading-relaxed">Silakan selesaikan pembayaran. Admin akan memverifikasi maks. 1x24 jam.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="md:col-span-2 space-y-8">
-                    
-                    <div id="announcement-container" class="hidden">
-                        <div class="flex items-center gap-3 mb-4">
-                            <h3 class="text-xl font-bold text-gray-900">Pengumuman Terbaru</h3>
-                            <div class="h-px bg-gray-200 flex-1"></div>
-                        </div>
-                        <div id="announcement-content" class="space-y-4">
-                            </div>
-                    </div>
-
-                    <div>
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600"><i class="fa-solid fa-book-open"></i></div>
-                            <h3 class="text-xl font-bold text-gray-900">Modul & Materi</h3>
-                        </div>
-                        
-                        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 min-h-[200px]">
-                            <div id="modules-content" class="space-y-4">
-                                <div class="flex flex-col items-center justify-center py-10 text-gray-400">
-                                    <i class="fa-solid fa-folder-open text-4xl mb-3 opacity-50"></i>
-                                    <p class="text-sm italic">Belum ada materi yang diposting admin.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         const supabaseClient = supabase.createClient(
             'https://jrslgkxwjvugvgakxwsd.supabase.co', 
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'
         );
         
-        // --- KONFIGURASI LINK PEMBAYARAN & WHATSAPP ---
-        const LINK_COMMITMENT_FEE = "https://lynk.id/ylos.id/1xd4663dpvrn/checkout?token=cGFyYW1zPSU1QiU1RCZiaWRfcHJpY2U9MCZxdHlfcHJvZD0x";
-        const LINK_SELF_FUNDED = "https://lynk.id/ylos.id/er400x4wrlp1/checkout?token=cGFyYW1zPSU1QiU1RCZiaWRfcHJpY2U9MCZxdHlfcHJvZD0x";
-        
-        const WA_LINK_COMMITMENT = "https://chat.whatsapp.com/EeSgj62k95V2Xwp4eXLqOp?mode=gi_c"; 
-        const WA_LINK_SELF_FUNDED = "https://chat.whatsapp.com/BvCU3Pv0zMvFrVFQ49Om5g?mode=gi_c"; 
-        
-        let CURRENT_PAYMENT_URL = "";
-        let CURRENT_WA_LINK = "";
-        
-        let userSession = null;
         let captchaCorrectAnswer = 0;
 
-        // --- TAMBAHAN BARU: Welcome Overlay Logic ---
         document.addEventListener("DOMContentLoaded", () => {
             const welcomeOverlay = document.getElementById('welcome-overlay');
             if (welcomeOverlay) {
                 if (!localStorage.getItem('ylos_welcome_seen')) {
-                    // Tampilkan animasi, lalu hilangkan setelah durasi yang ditentukan
                     setTimeout(() => {
                         welcomeOverlay.classList.add('welcome-fade-out');
-                        setTimeout(() => welcomeOverlay.remove(), 1000); // Hapus elemen dari DOM
+                        setTimeout(() => welcomeOverlay.remove(), 1000);
                     }, 3500);
                     localStorage.setItem('ylos_welcome_seen', 'true');
                 } else {
-                    welcomeOverlay.remove(); // Hapus langsung jika sudah pernah melihat
+                    welcomeOverlay.remove();
                 }
             }
         });
@@ -1158,26 +927,25 @@
             document.getElementById('captcha-input').value = '';
         }
 
-        // --- UPDATED: Smooth Transition ShowPage ---
         function showPage(pageId) {
-            if (userSession && (pageId === 'login' || pageId === 'register')) pageId = 'dashboard';
             if (pageId === 'register') generateCaptcha();
 
             const currentActive = document.querySelector('.active-section');
             const targetPage = document.getElementById('page-' + pageId);
 
-            // Jika sedang berada di page yang berbeda, lakukan efek fade out dulu
             if (currentActive && currentActive.id !== targetPage.id) {
                 currentActive.style.opacity = '0';
                 currentActive.style.transform = 'translateY(15px)';
                 currentActive.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
 
                 setTimeout(() => {
-                    ['page-home', 'page-login', 'page-register', 'page-dashboard'].forEach(id => {
+                    ['page-home', 'page-login', 'page-register'].forEach(id => {
                         const el = document.getElementById(id);
-                        el.classList.remove('active-section');
-                        el.classList.add('hidden-section');
-                        el.style = ''; // Reset inline styles
+                        if(el){
+                            el.classList.remove('active-section');
+                            el.classList.add('hidden-section');
+                            el.style = '';
+                        }
                     });
                     
                     targetPage.classList.remove('hidden-section');
@@ -1189,18 +957,19 @@
                     } else {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
-                }, 300); // Menunggu animasi fade out selesai
+                }, 300);
             } else {
-                // Initial load
-                ['page-home', 'page-login', 'page-register', 'page-dashboard'].forEach(id => {
-                    document.getElementById(id).classList.remove('active-section');
-                    document.getElementById(id).classList.add('hidden-section');
+                ['page-home', 'page-login', 'page-register'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el){
+                        el.classList.remove('active-section');
+                        el.classList.add('hidden-section');
+                    }
                 });
                 targetPage.classList.remove('hidden-section');
                 targetPage.classList.add('active-section');
             }
 
-            // Menutup mobile menu secara smooth jika terbuka
             const menu = document.getElementById('mobile-menu');
             if (menu && menu.classList.contains('mobile-menu-visible')) {
                 menu.classList.add('mobile-menu-hidden');
@@ -1208,7 +977,6 @@
             }
         }
         
-        // --- UPDATED: Smooth Toggle Mobile Menu ---
         function toggleMobileMenu() { 
             const menu = document.getElementById('mobile-menu');
             if (menu.classList.contains('mobile-menu-hidden')) {
@@ -1222,7 +990,6 @@
 
         function mobileLinkClick(id) { 
             showPage(id); 
-            // Menu tertutup secara smooth karena showPage() sudah menanganinya
         }
 
         async function handleRegister(e) {
@@ -1261,7 +1028,7 @@
 
             const { data, error } = await supabaseClient.auth.signUp({ 
                 email: email, password: password,
-                options: { emailRedirectTo: 'https://ylos.site', data: metadata }
+                options: { emailRedirectTo: window.location.origin + '/dashboard.html', data: metadata }
             });
 
             if(error) { 
@@ -1297,220 +1064,29 @@
                 btn.innerText = originalText;
             } else {
                 btn.innerText = "Sukses!";
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Login Berhasil! 👋',
-                    text: 'Selamat datang kembali di YLOS.',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            }
-        }
-
-        async function logout() {
-            await Swal.fire({ icon: 'success', title: 'Logout Berhasil', text: 'Sampai jumpa lagi!', timer: 1500, showConfirmButton: false });
-            await supabaseClient.auth.signOut();
-            userSession = null;
-            window.location.reload();
-        }
-
-        function openLynkPayment() {
-            if (!CURRENT_PAYMENT_URL) {
-                Swal.fire('Error', 'Link pembayaran belum dimuat. Silakan refresh halaman.', 'error');
-                return;
-            }
-            Swal.fire({
-                title: 'Pembayaran Dibuka 💳',
-                html: `Anda akan diarahkan ke halaman pembayaran aman via <b>LYNK</b>.`,
-                imageUrl: 'LOGO YLOS 5x5.png', imageWidth: 80, imageHeight: 80,
-                showCancelButton: true, confirmButtonText: 'Lanjut Bayar ➔', cancelButtonText: 'Batal', confirmButtonColor: '#FF85B3', cancelButtonColor: '#d33'
-            }).then((result) => { if (result.isConfirmed) window.open(CURRENT_PAYMENT_URL, '_blank'); });
-        }
-
-        function joinWaGroup() { 
-            if (CURRENT_WA_LINK) {
-                window.open(CURRENT_WA_LINK, '_blank'); 
-            } else {
-                Swal.fire('Error', 'Link grup belum tersedia. Silakan hubungi admin.', 'error');
-            }
-        }
-        
-        function contactAdmin() { window.open(`https://wa.me/6281290774332?text=Halo Admin, saya butuh bantuan.`, '_blank'); }
-
-        async function loadDashboard(userId) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const isPreviewMode = urlParams.get('preview') === 'true';
-
-            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
-            
-            if(profile) {
-                if (isPreviewMode) {
-                    profile.role = 'user';
-                    profile.payment_status = 'Lunas';
-                    profile.full_name = "Tampilan Peserta (Preview)";
-                }
-
-                document.getElementById('dash-name').innerText = profile.full_name;
-                document.getElementById('mobile-user-name').innerText = profile.full_name;
-                document.getElementById('dash-package').innerText = profile.package_type;
-                
-                if (profile.package_type && (profile.package_type.includes('Mandiri') || profile.package_type.includes('Self Funded'))) {
-                    CURRENT_PAYMENT_URL = LINK_SELF_FUNDED;
-                    CURRENT_WA_LINK = WA_LINK_SELF_FUNDED;
-                } else {
-                    CURRENT_PAYMENT_URL = LINK_COMMITMENT_FEE;
-                    CURRENT_WA_LINK = WA_LINK_COMMITMENT;
-                }
-                
-                const statusEl = document.getElementById('dash-status');
-                const btnPay = document.getElementById('payment-actions');
-                const waGroup = document.getElementById('wa-group-access');
-                const announceTitle = document.getElementById('dash-announce-title');
-                const announceDesc = document.getElementById('dash-announce-desc');
-                
-                const isLunas = profile.payment_status === 'Lunas';
-
-                if(isLunas) {
-                    statusEl.innerText = 'LUNAS (Verified)';
-                    statusEl.className = 'inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200';
-                    btnPay.classList.add('hidden');
-                    waGroup.classList.remove('hidden');
-                    announceTitle.innerText = "Akun Aktif 🎉";
-                    announceTitle.className = "font-bold text-green-700 text-sm";
-                    announceDesc.innerText = "Selamat! Akunmu sudah terverifikasi. Silakan akses materi di samping.";
-                } else {
-                    statusEl.innerText = 'Menunggu Pembayaran';
-                    statusEl.className = 'inline-block px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold border border-yellow-200';
-                    btnPay.classList.remove('hidden');
-                    waGroup.classList.add('hidden');
-                }
-
-                if(profile.role === 'admin') {
-                    document.getElementById('nav-desktop-admin').classList.remove('hidden');
-                    document.getElementById('btn-dash-user').classList.add('hidden');
-                    document.getElementById('btn-dash-admin').classList.remove('hidden');
-                    document.getElementById('btn-mobile-dash-user').classList.add('hidden');
-                    document.getElementById('btn-mobile-dash-admin').classList.remove('hidden');
-                } else {
-                    document.getElementById('nav-desktop-admin').classList.add('hidden');
-                    document.getElementById('btn-dash-user').classList.remove('hidden');
-                    document.getElementById('btn-dash-admin').classList.add('hidden');
-                    document.getElementById('btn-mobile-dash-user').classList.remove('hidden');
-                    document.getElementById('btn-mobile-dash-admin').classList.add('hidden');
-                    loadCMSContent(isLunas);
-                }
-            }
-        }
-
-        async function loadCMSContent(isLunas) {
-            const { data: announcements } = await supabaseClient.from('announcements').select('*').eq('is_active', true).order('order_index', {ascending: true});
-            if(announcements && announcements.length > 0) {
-                document.getElementById('announcement-container').classList.remove('hidden');
-                const container = document.getElementById('announcement-content');
-                container.innerHTML = '';
-                
-                announcements.forEach(ann => {
-                    let isLocked = (ann.is_premium === true) && !isLunas;
-
-                    if (isLocked) {
-                        container.innerHTML += `
-                            <div class="bg-gray-50 border-l-4 border-gray-300 p-5 rounded-r-2xl">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <h4 class="font-bold text-gray-500 text-base flex items-center gap-2"><i class="fa-solid fa-lock"></i> Pengumuman Terkunci</h4>
-                                    <span class="bg-ylosPink text-white text-[10px] px-2 py-0.5 rounded-full font-bold">Premium</span>
-                                </div>
-                                <p class="text-sm text-gray-400 italic">Selesaikan pembayaran untuk melihat pengumuman ini.</p>
-                            </div>
-                        `;
-                    } else {
-                        container.innerHTML += `
-                            <div class="bg-blue-50/50 border-l-4 border-blue-500 p-5 rounded-r-2xl hover:bg-blue-50 transition">
-                                <h4 class="font-bold text-gray-900 text-base mb-3">${ann.title}</h4>
-                                <div class="prose text-sm text-gray-600">
-                                    ${ann.content} 
-                                </div>
-                                <div class="flex items-center gap-2 mt-4 text-xs text-gray-400 font-medium pt-3 border-t border-blue-100">
-                                    <i class="fa-regular fa-clock"></i>
-                                    <span>${new Date(ann.created_at).toLocaleDateString()}</span>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-
-                document.querySelectorAll('.prose img').forEach(img => {
-                    img.onclick = function() {
-                        Swal.fire({
-                            imageUrl: this.src,
-                            width: 'auto',
-                            padding: 0,
-                            showConfirmButton: false,
-                            showCloseButton: true,
-                            background: 'transparent',
-                            backdrop: 'rgba(0,0,0,0.85)',
-                            customClass: { popup: 'rounded-xl overflow-hidden' }
-                        });
-                    };
-                });
-            }
-
-            const { data: modules } = await supabaseClient.from('modules').select('*').order('order_index', {ascending: true});
-            const modContainer = document.getElementById('modules-content');
-            if(modules && modules.length > 0) {
-                modContainer.innerHTML = '';
-                modules.forEach(mod => {
-                    let isLocked = mod.is_premium && !isLunas;
-                    let icon = mod.category === 'Video' ? 'fa-circle-play' : 'fa-file-lines';
-                    let iconColor = mod.category === 'Video' ? 'text-red-500 bg-red-50' : 'text-blue-500 bg-blue-50';
-                    let action = isLocked 
-                        ? `<button disabled class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-200"><i class="fa-solid fa-lock"></i> Terkunci</button>`
-                        : `<a href="${mod.link_url}" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow-md shadow-purple-100 transform hover:-translate-y-0.5">Buka <i class="fa-solid fa-arrow-up-right-from-square"></i></a>`;
-                    
-                    let opacity = isLocked ? 'opacity-75' : '';
-                    let titleColor = isLocked ? 'text-gray-500' : 'text-gray-900 group-hover:text-purple-700';
-
-                    modContainer.innerHTML += `
-                        <div class="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-white hover:shadow-md hover:border-purple-100 transition duration-300 ${opacity} group">
-                            <div class="flex items-center gap-4">
-                                <div class="${iconColor} w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-sm ${!isLocked ? 'group-hover:scale-110' : ''} transition-transform">
-                                    <i class="fa-solid ${icon}"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold ${titleColor} text-sm md:text-base transition">${mod.title}</h4>
-                                    <span class="inline-block mt-1 px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] uppercase font-bold tracking-wider rounded-md">${mod.category}</span>
-                                    ${isLocked ? '<span class="ml-1 inline-block px-2 py-0.5 bg-red-100 text-red-500 text-[10px] font-bold rounded-md">Locked</span>' : ''}
-                                </div>
-                            </div>
-                            ${action}
-                        </div>
-                    `;
-                });
+                window.location.href = 'dashboard.html';
             }
         }
 
         supabaseClient.auth.onAuthStateChange((event, session) => {
-            userSession = session;
             if(event === 'PASSWORD_RECOVERY') { window.location.href = 'reset.html'; return; }
             
-            const els = {
-                dp: document.getElementById('nav-public'), dm: document.getElementById('nav-member'),
-                mp: document.getElementById('mobile-nav-public'), mm: document.getElementById('mobile-nav-member')
-            };
+            const dp = document.getElementById('nav-public');
+            const dm = document.getElementById('nav-member');
+            const mp = document.getElementById('mobile-nav-public');
+            const mm = document.getElementById('mobile-nav-member');
 
             if(session) {
-                els.dp.classList.add('hidden'); els.mp.classList.add('hidden');
-                els.dm.classList.remove('hidden'); els.mm.classList.remove('hidden');
-                document.getElementById('user-display-name').innerText = session.user.email;
-                loadDashboard(session.user.id);
+                dp.classList.add('hidden'); mp.classList.add('hidden');
+                dm.classList.remove('hidden'); mm.classList.remove('hidden');
                 
-                const isLoginPage = document.getElementById('page-login').classList.contains('active-section');
-                const isRegisterPage = document.getElementById('page-register').classList.contains('active-section');
-                if (isLoginPage || isRegisterPage) showPage('dashboard');
-                if (window.location.hash === '#dashboard') showPage('dashboard');
+                const currentHash = window.location.hash;
+                if(currentHash === '#login' || currentHash === '#register') {
+                    window.location.href = 'dashboard.html';
+                }
             } else {
-                els.dp.classList.remove('hidden'); els.mp.classList.remove('hidden');
-                els.dm.classList.add('hidden'); els.mm.classList.add('hidden');
-                if(document.getElementById('page-dashboard').classList.contains('active-section')) showPage('home');
+                dp.classList.remove('hidden'); mp.classList.remove('hidden');
+                dm.classList.add('hidden'); mm.classList.add('hidden');
             }
         });
 
