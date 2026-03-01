@@ -388,7 +388,22 @@
                                 <div id="editor-container" style="height: 300px; font-family: 'Plus Jakarta Sans', sans-serif;"></div>
                             </div>
                             <p class="text-[10px] text-gray-400 mt-1 italic">*Support Font, Warna, Gambar, dan Link. Gunakan teks <strong>[Nama]</strong> untuk menyapa nama penerima secara otomatis.</p>
-                        </div>
+                            
+                            <div class="mt-4 border-t border-gray-100 pt-3">
+                                <label class="text-xs font-bold text-gray-500 uppercase block mb-2">Lampiran File (Opsional)</label>
+                                <div class="flex items-center gap-3">
+                                    <label class="cursor-pointer bg-white border border-gray-200 text-gray-600 px-4 py-2 rounded-xl text-xs font-bold hover:border-pink-400 hover:text-pink-600 transition flex items-center gap-2 shadow-sm">
+                                        <i class="fa-solid fa-paperclip"></i> Pilih File
+                                        <input type="file" id="blast-attachment" class="hidden" onchange="updateAttachmentName(this)">
+                                    </label>
+                                    <span id="blast-attachment-name" class="text-xs text-gray-500 font-mono truncate max-w-[150px] md:max-w-[250px]">Belum ada file</span>
+                                    <button id="btn-clear-attachment" onclick="clearAttachment()" class="hidden text-red-500 hover:text-red-700 text-xs w-6 h-6 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 transition">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                <p class="text-[10px] text-gray-400 mt-1.5 italic">*Maksimal ukuran file 5MB. Pastikan Edge Function mendukung array attachments.</p>
+                            </div>
+                            </div>
                     </div>
 
                     <div class="flex flex-col gap-6">
@@ -483,11 +498,18 @@
                             <h2 class="font-bold text-gray-800 text-lg md:text-xl">Data Peserta</h2>
                             <span class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded font-bold">Total: <span id="table-total">0</span></span>
                         </div>
+                        
                         <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
                              <div class="relative w-full md:w-auto">
                                 <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
                                 <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama..." class="pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-pink-500 transition shadow-sm w-full md:w-64">
                              </div>
+                             
+                             <select id="filterPayment" onchange="filterTable()" class="pl-4 pr-8 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-pink-500 transition shadow-sm w-full md:w-auto bg-white text-gray-600 cursor-pointer">
+                                 <option value="">Semua Status</option>
+                                 <option value="Lunas">Status: Lunas</option>
+                                 <option value="Pending">Status: Pending</option>
+                             </select>
                              <button onclick="exportToExcel()" class="btn-press text-xs bg-green-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm hover:bg-green-700 flex items-center justify-center gap-2 w-full md:w-auto"><i class="fa-solid fa-file-excel"></i> Export</button>
                         </div>
                     </div>
@@ -497,14 +519,20 @@
 
             <div id="section-verification" class="content-section space-y-6">
                  <div class="glass-card p-4 md:p-6">
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                        <div><h2 class="font-bold text-gray-800 text-lg md:text-xl">Bantuan Verifikasi</h2><p class="text-xs text-gray-500 mt-1">Kirim ulang link login.</p></div>
-                        <div class="flex gap-2 w-full md:w-auto">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4"> <div><h2 class="font-bold text-gray-800 text-lg md:text-xl">Bantuan Verifikasi</h2><p class="text-xs text-gray-500 mt-1">Kirim ulang link login.</p></div>
+                        
+                        <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
                             <div class="relative w-full md:w-64">
                                 <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
                                 <input type="text" id="searchVerification" onkeyup="filterVerification()" placeholder="Cari email/nama..." class="pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-pink-500 transition shadow-sm w-full">
                             </div>
-                            <button onclick="fetchUsers()" class="btn-press text-xs bg-white border border-gray-200 text-gray-600 px-3 py-2 rounded-xl font-bold hover:bg-gray-50 flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> <span class="hidden md:inline">Refresh</span></button>
+                            
+                            <select id="filterReg" onchange="filterVerification()" class="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-pink-500 transition shadow-sm w-full md:w-auto bg-white text-gray-600 cursor-pointer">
+                                <option value="">Semua Pendaftar</option>
+                                <option value="registered">Berhasil Mendaftar</option>
+                                <option value="unregistered">Menunggu Konfirmasi</option>
+                            </select>
+                            <button onclick="fetchUsers()" class="btn-press text-xs bg-white border border-gray-200 text-gray-600 px-3 py-2.5 rounded-xl font-bold hover:bg-gray-50 flex items-center justify-center gap-2"><i class="fa-solid fa-rotate-right"></i> <span class="hidden md:inline">Refresh</span></button>
                         </div>
                     </div>
                     <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama</th><th>Email</th><th>WhatsApp</th><th>Status Pendaftaran</th><th>Status Login</th><th class="text-center">Aksi</th></tr></thead><tbody id="verification-list"></tbody></table></div>
@@ -563,7 +591,7 @@
                 </div>
                 <div id="preview-container" class="flex-1 bg-gray-200 rounded-xl md:rounded-3xl flex justify-center items-center p-2 md:p-8 border border-gray-300 overflow-hidden shadow-inner min-h-[500px]">
                     <div id="preview-wrapper" class="w-full h-full bg-white shadow-2xl rounded-2xl border-[4px] md:border-[12px] border-gray-800 overflow-hidden transition-all duration-500 relative">
-                        <iframe id="preview-frame" src="index.html?preview=true#dashboard" class="w-full h-full" frameborder="0"></iframe>
+                        <iframe id="preview-frame" src="dashboard.html?preview=true" class="w-full h-full" frameborder="0"></iframe>
                     </div>
                 </div>
             </div>
@@ -579,7 +607,7 @@
 
         const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
         let allUsers=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
-        let onlineEmails = new Set(); // Menyimpan email user yang sedang online
+        let onlineEmails = new Set(); 
         
         // Global var untuk Quill Editor
         var quillBlast, quillAnnounce;
@@ -590,6 +618,10 @@
 
         // Variables untuk Folder Tracking
         let currentFolderId = null;
+        
+        // Variables untuk Email Marketing Attachment
+        let blastAttachmentData = null;
+        let blastAttachmentName = "";
 
         // MOBILE SIDEBAR TOGGLE
         function toggleSidebar() {
@@ -651,14 +683,14 @@
                 initQuillEditors();
 
                 setInterval(updatePresence, 60000); 
-updatePresence();
+                updatePresence();
 
-// Tambahan: Update last seen admin saat tab/browser ditutup
-document.addEventListener("visibilitychange", async function() {
-    if (document.visibilityState === 'hidden') {
-        await supabaseClient.rpc('update_user_presence');
-    }
-});
+                // Tambahan: Update last seen admin saat tab/browser ditutup
+                document.addEventListener("visibilitychange", async function() {
+                    if (document.visibilityState === 'hidden') {
+                        await supabaseClient.rpc('update_user_presence');
+                    }
+                });
 
                 // Render ulang tabel setiap menit agar teks waktu berjalan otomatis
                 setInterval(() => {
@@ -715,9 +747,8 @@ document.addEventListener("visibilitychange", async function() {
         function initDatabaseRealtime() { supabaseClient.channel('db-changes').on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => { fetchUsers(); Toast.fire({ icon: 'info', title: 'Data Peserta Diperbarui' }); }).subscribe(); }
         function initDigiSignRealtime() { supabaseClient.channel('digisign-updates').on('postgres_changes', { event: '*', schema: 'public', table: 'digisign_documents' }, () => { fetchDigiSignDocs(); Toast.fire({ icon: 'info', title: 'Dokumen DigiSign Diperbarui' }); }).subscribe(); }
 
-
         /* =========================================================
-           FOLDER BASED DAILY TRACKING LOGIC 
+            FOLDER BASED DAILY TRACKING LOGIC 
         ========================================================= */
 
         async function fetchFolders() {
@@ -867,7 +898,7 @@ document.addEventListener("visibilitychange", async function() {
         }
 
         /* =========================================================
-           END LOGIC FOLDER BASED TRACKING
+            END LOGIC FOLDER BASED TRACKING
         ========================================================= */
 
         // --- EMAIL BLAST LOGIC ---
@@ -960,6 +991,41 @@ document.addEventListener("visibilitychange", async function() {
             reader.readAsArrayBuffer(file);
         }
 
+        // --- TAMBAHAN LOGIKA LAMPIRAN FILE ---
+        function updateAttachmentName(input) {
+            const file = input.files[0];
+            if (!file) {
+                clearAttachment();
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire('File Terlalu Besar', 'Maksimal ukuran file adalah 5MB untuk menghemat resource.', 'warning');
+                clearAttachment();
+                return;
+            }
+
+            document.getElementById('blast-attachment-name').innerText = file.name;
+            document.getElementById('btn-clear-attachment').classList.remove('hidden');
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64String = e.target.result.split(',')[1];
+                blastAttachmentData = base64String;
+                blastAttachmentName = file.name;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearAttachment() {
+            document.getElementById('blast-attachment').value = '';
+            document.getElementById('blast-attachment-name').innerText = 'Belum ada file';
+            document.getElementById('btn-clear-attachment').classList.add('hidden');
+            blastAttachmentData = null;
+            blastAttachmentName = "";
+        }
+        // --- SELESAI TAMBAHAN LOGIKA LAMPIRAN FILE ---
+
         async function startBlast() {
             const subject = document.getElementById('blast-subject').value;
             const body = quillBlast.root.innerHTML; 
@@ -998,6 +1064,14 @@ document.addEventListener("visibilitychange", async function() {
             let failCount = 0;
             const total = recipients.length;
 
+            const attachments = [];
+            if (blastAttachmentData && blastAttachmentName) {
+                attachments.push({
+                    filename: blastAttachmentName,
+                    content: blastAttachmentData
+                });
+            }
+
             for (let i = 0; i < total; i++) {
                 const recipient = recipients[i];
                 const email = recipient.email;
@@ -1010,9 +1084,22 @@ document.addEventListener("visibilitychange", async function() {
 
                 const personalizedBody = body.replace(/\[Nama\]/gi, nama);
 
+                const payloadContent = { 
+                    email: email, 
+                    subject: subject, 
+                    body: personalizedBody, 
+                    sender_name: SENDER_NAME, 
+                    sender_email: SENDER_EMAIL, 
+                    recipient_name: nama 
+                };
+
+                if (attachments.length > 0) {
+                    payloadContent.attachments = attachments;
+                }
+
                 try {
                     const { data, error } = await supabaseClient.functions.invoke('resend', {
-                        body: { email: email, subject: subject, body: personalizedBody, sender_name: SENDER_NAME, sender_email: SENDER_EMAIL, recipient_name: nama }
+                        body: payloadContent
                     });
                     if (error) throw error;
                     successCount++;
@@ -1276,12 +1363,28 @@ document.addEventListener("visibilitychange", async function() {
             return `<span class="text-gray-400 text-xs">${date.toLocaleDateString('id-ID')}</span>`;
         }
 
+        function filterTable() { 
+            const term = document.getElementById('searchInput').value.toLowerCase(); 
+            const paymentFilter = document.getElementById('filterPayment').value; 
+            
+            const filteredUsers = allUsers.filter(u => {
+                const name = (u.full_name || '').toLowerCase();
+                const school = (u.school || '').toLowerCase();
+                
+                const matchTerm = name.includes(term) || school.includes(term);
+                const matchPayment = paymentFilter === "" || u.payment_status === paymentFilter;
+                
+                return matchTerm && matchPayment;
+            });
+            
+            renderTable(filteredUsers); 
+        }
+
         function renderTable(users) { 
             document.getElementById('userTableBody').innerHTML = users.map(u => { 
                 const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; 
                 const action = u.payment_status === 'Lunas' ? `<button onclick="updateStatus('${u.id}', 'Pending')" class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition font-bold">Batalkan</button>` : `<button onclick="updateStatus('${u.id}', 'Lunas')" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition font-bold">Verifikasi</button>`; 
                 
-                // Cek secara realtime apakah email ini ada di set onlineEmails
                 const isOnline = onlineEmails.has(u.email);
                 const lastSeenUI = isOnline 
                     ? '<span class="text-green-600 text-xs font-bold flex items-center justify-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Online</span>' 
@@ -1300,10 +1403,24 @@ document.addEventListener("visibilitychange", async function() {
         
         function filterVerification() {
             const term = document.getElementById('searchVerification').value.toLowerCase();
-            const filtered = allUsers.filter(u => 
-                (u.full_name && u.full_name.toLowerCase().includes(term)) || 
-                (u.email && u.email.toLowerCase().includes(term))
-            );
+            const regFilter = document.getElementById('filterReg').value; 
+            
+            const filtered = allUsers.filter(u => {
+                const nameMatch = (u.full_name && u.full_name.toLowerCase().includes(term));
+                const emailMatch = (u.email && u.email.toLowerCase().includes(term));
+                
+                const matchTerm = nameMatch || emailMatch;
+                
+                let matchReg = true; 
+                if (regFilter === "registered") {
+                    matchReg = u.email ? true : false;
+                } else if (regFilter === "unregistered") {
+                    matchReg = !u.email ? true : false;
+                }
+                
+                return matchTerm && matchReg;
+            });
+            
             renderVerificationList(filtered);
         }
 
@@ -1328,25 +1445,16 @@ document.addEventListener("visibilitychange", async function() {
         async function updateStatus(id, status) { Swal.showLoading(); await supabaseClient.from('profiles').update({ payment_status: status }).eq('id', id); Swal.close(); fetchUsers(); Toast.fire({ icon: 'success', title: 'Status diupdate' }); }
         async function deleteUser(id) { if((await Swal.fire({title:'Hapus Data?', text:'Tindakan ini permanen', icon:'warning', showCancelButton:true})).isConfirmed) { await supabaseClient.from('profiles').delete().eq('id', id); fetchUsers(); Toast.fire({ icon: 'success', title: 'Data dihapus' }); } }
         
+        // --- Perubahan pada fungsi URL Redirect Resend Link ---
         async function resendEmail(email) { 
             Swal.showLoading(); 
-            const { error } = await supabaseClient.auth.resend({ type: 'signup', email: email, options: { emailRedirectTo: window.location.origin + '/index.html' } }); 
+            const { error } = await supabaseClient.auth.resend({ type: 'signup', email: email, options: { emailRedirectTo: window.location.origin + '/dashboard.html' } }); 
             if (error) {
                 if(error.message.includes("already")) {
-                    const { error: magicLinkError } = await supabaseClient.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin + '/index.html' } });
+                    const { error: magicLinkError } = await supabaseClient.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin + '/dashboard.html' } });
                     if(magicLinkError) { Swal.fire('Gagal', magicLinkError.message, 'error'); } else { Swal.fire({ icon: 'success', title: 'Link Login Terkirim!', text: `User ongoing. Link login dikirim ke ${email}`, showConfirmButton: false, timer: 2000 }); }
                 } else { Swal.fire('Gagal', error.message, 'error'); }
             } else { Swal.fire({ icon: 'success', title: 'Verifikasi Terkirim!', text: `Link verifikasi dikirim ke ${email}`, showConfirmButton: false, timer: 2000 }); }
-        }
-        
-        function filterTable() { 
-            const term = document.getElementById('searchInput').value.toLowerCase(); 
-            const filteredUsers = allUsers.filter(u => {
-                const name = (u.full_name || '').toLowerCase();
-                const school = (u.school || '').toLowerCase();
-                return name.includes(term) || school.includes(term);
-            });
-            renderTable(filteredUsers); 
         }
 
         // --- CALENDAR (GOOGLE STYLE) ---
@@ -1577,7 +1685,6 @@ document.addEventListener("visibilitychange", async function() {
             channel.on('presence', { event: 'sync' }, () => { 
                 const state = channel.presenceState(); 
                 
-                // Hapus list lama dan kumpulkan email user yang sedang aktif
                 onlineEmails.clear();
 
                 let total = 0; 
@@ -1588,7 +1695,6 @@ document.addEventListener("visibilitychange", async function() {
                     if(state[id][0].email) { 
                         total++; 
                         
-                        // Tambahkan email ke Set
                         onlineEmails.add(state[id][0].email);
 
                         let p = state[id][0].page.replace('#',''); 
@@ -1607,7 +1713,6 @@ document.addEventListener("visibilitychange", async function() {
                     activityChart.update(); 
                 } 
 
-                // Langsung render ulang tabel supaya status "Online" instan muncul
                 if (allUsers.length > 0) {
                     renderTable(allUsers);
                 }
@@ -1618,11 +1723,9 @@ document.addEventListener("visibilitychange", async function() {
         // --- TAMBAHAN BARU: Fetch Visitor Anonim ---
         async function fetchVisitors() {
             try {
-                // Get total count
                 const { count } = await supabaseClient.from('visitor_logs').select('*', { count: 'exact', head: true });
                 document.getElementById('stat-visitors').innerText = count || 0;
 
-                // Get latest 10 logs
                 const { data } = await supabaseClient.from('visitor_logs').select('*').order('created_at', { ascending: false }).limit(10);
                 const tbody = document.getElementById('visitor-log-list');
                 
@@ -1657,15 +1760,12 @@ document.addEventListener("visibilitychange", async function() {
 <script>
     // --- SCRIPT PELACAK PENGUNJUNG ANONIM ---
     async function trackVisitor() {
-        // Mencegah spam tracking di perangkat yang sama berkali-kali dalam 1 jam
         if (sessionStorage.getItem('ylos_tracked')) return;
 
         try {
-            // 1. Ambil Data IP & Lokasi (Menggunakan API Publik Gratis)
             const ipRes = await fetch('https://ipapi.co/json/');
             const ipData = await ipRes.json();
             
-            // 2. Deteksi Device, OS, & Browser
             const ua = navigator.userAgent;
             let device = /Mobile|Android|iP(ad|hone|od)/i.test(ua) ? 'Mobile' : 'Desktop';
             
@@ -1682,7 +1782,6 @@ document.addEventListener("visibilitychange", async function() {
             else if (ua.indexOf('Firefox') !== -1) browser = 'Firefox';
             else if (ua.indexOf('Edge') !== -1) browser = 'Edge';
 
-            // 3. Kirim ke Supabase
             await supabaseClient.from('visitor_logs').insert({
                 ip_address: ipData.ip || 'Unknown',
                 city: ipData.city || 'Unknown',
@@ -1692,14 +1791,12 @@ document.addEventListener("visibilitychange", async function() {
                 browser: browser
             });
 
-            // Tandai sudah di-track (hilang otomatis kalau browser di-close)
             sessionStorage.setItem('ylos_tracked', 'true');
         } catch (err) {
             console.log('Tracking visitor gagal (mungkin terblokir AdBlocker):', err);
         }
     }
 
-    // Jalankan tracking setelah web selesai dimuat (delay 2 detik agar web tidak berat)
     setTimeout(trackVisitor, 2000);
 </script>
 
