@@ -510,6 +510,14 @@
                                  <option value="Lunas">Status: Lunas</option>
                                  <option value="Pending">Status: Pending</option>
                              </select>
+
+                             <select id="sortUser" onchange="filterTable()" class="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-pink-500 transition shadow-sm w-full md:w-auto bg-white text-gray-600 cursor-pointer">
+                                 <option value="terbaru">Pendaftar Terbaru</option>
+                                 <option value="terlama">Pendaftar Terlama</option>
+                                 <option value="last_seen_new">Aktivitas Terakhir</option>
+                                 <option value="last_seen_old">Aktivitas Terlama</option>
+                             </select>
+
                              <button onclick="exportToExcel()" class="btn-press text-xs bg-green-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm hover:bg-green-700 flex items-center justify-center gap-2 w-full md:w-auto"><i class="fa-solid fa-file-excel"></i> Export</button>
                         </div>
                     </div>
@@ -695,7 +703,7 @@
                 // Render ulang tabel setiap menit agar teks waktu berjalan otomatis
                 setInterval(() => {
                     if (allUsers.length > 0) {
-                        renderTable(allUsers);
+                        filterTable(); // Memanggil filterTable agar sorting & filter tidak reset
                         renderVerificationList(allUsers);
                     }
                 }, 60000);
@@ -1137,33 +1145,136 @@
             document.getElementById('ds-need-sign').innerText = inbox || 0; document.getElementById('ds-sent-personal').innerText = sent || 0; document.getElementById('ds-completed-global').innerText = done || 0;
             const badge = document.getElementById('badge-inbox'); badge.innerText = inbox || 0; inbox > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
         }
+
         async function fetchDigiSignDocs(filter = 'inbox') {
             updateDigiSignStats();
             document.querySelectorAll('.ds-tab').forEach(b => { b.classList.remove('active'); });
             document.getElementById(filter === 'inbox' ? 'tab-inbox' : filter === 'sent' ? 'tab-sent' : 'tab-completed').classList.add('active');
+            
             const { data: { user } } = await supabaseClient.auth.getUser();
-            let query = supabaseClient.from('digisign_documents').select('*, requester:requester_id(full_name), signer:signer_id(full_name)');
+            
+            // PERBAIKAN QUERY: Menggunakan sintaks Supabase yang aman untuk relasi
+            let query = supabaseClient.from('digisign_documents')
+                .select('*, requester:profiles!digisign_documents_requester_id_fkey(full_name), signer:profiles!digisign_documents_signer_id_fkey(full_name)');
+            
+            // Filter Data Berdasarkan Tab
             if(filter === 'inbox') query = query.eq('signer_id', user.id).eq('status', 'pending');
             else if(filter === 'sent') query = query.eq('requester_id', user.id);
             else if(filter === 'completed') query = query.eq('status', 'signed');
-            const { data } = await query.order('created_at', {ascending: false});
-            const tbody = document.getElementById('digisign-list'); tbody.innerHTML = '';
+            
+            let { data, error } = await query.order('created_at', {ascending: false});
+
+            // ==========================================
+            // FALLBACK SYSTEM (Penyelamat Error 400)
+            // ==========================================
+            // Jika relasi FK gagal ditarik (error 400), kita jalankan flat query biasa
+            // sehingga dokumen tetap muncul meski nama tracking-nya fallback ke "System"
+            if (error) {
+                console.warn("Warning: Relasi tabel Profiles gagal (Error 400). Menggunakan flat query sebagai fallback.", error);
+                
+                let fallback = supabaseClient.from('digisign_documents').select('*');
+                if(filter === 'inbox') fallback = fallback.eq('signer_id', user.id).eq('status', 'pending');
+                else if(filter === 'sent') fallback = fallback.eq('requester_id', user.id);
+                else if(filter === 'completed') fallback = fallback.eq('status', 'signed');
+                
+                const res = await fallback.order('created_at', {ascending: false});
+                data = res.data;
+                if(res.error) console.error("Fallback juga gagal:", res.error);
+            }
+
+            const tbody = document.getElementById('digisign-list'); 
+            tbody.innerHTML = '';
+            
             if(!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400 italic">Tidak ada dokumen.</td></tr>`; return; }
+            
             data.forEach(doc => {
-                let tracking = `<div class="flex flex-col md:flex-row items-start md:items-center gap-2 text-xs bg-gray-50 w-fit px-3 py-1 rounded-full"><span class="font-bold text-blue-600">${doc.requester?.full_name || 'Admin'}</span> <i class="fa-solid fa-arrow-right text-gray-400 text-[10px] hidden md:inline"></i> <span class="font-bold text-pink-600">${doc.signer?.full_name || 'Admin'}</span></div>`;
+                let tracking = `<div class="flex flex-col md:flex-row items-start md:items-center gap-2 text-xs bg-gray-50 w-fit px-3 py-1 rounded-full"><span class="font-bold text-blue-600">${doc.requester?.full_name || 'System'}</span> <i class="fa-solid fa-arrow-right text-gray-400 text-[10px] hidden md:inline"></i> <span class="font-bold text-pink-600">${doc.signer?.full_name || 'User'}</span></div>`;
                 let btn = '';
-                if(filter === 'inbox') btn = `<button onclick="openSigningRoom('${doc.id}', '${doc.filename}')" class="bg-pink-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-pink-700 shadow-sm transition transform hover:-translate-y-0.5 whitespace-nowrap">Tanda Tangani</button>`;
-                else if(doc.status === 'signed') btn = `<button onclick="downloadSignedDoc('${doc.signed_file_path.split('/').pop()}')" class="text-green-600 font-bold text-xs hover:underline flex items-center gap-1 mx-auto bg-green-50 px-3 py-1 rounded-lg border border-green-200"><i class="fa-solid fa-download"></i> Unduh</button>`;
-                else btn = `<span class="text-gray-400 text-xs font-mono bg-gray-50 px-2 py-1 rounded">Menunggu...</span>`;
-                let status = doc.status === 'signed' ? '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase border border-green-200">Selesai</span>' : '<span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase border border-yellow-200">Pending</span>';
-                tbody.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 font-medium text-gray-800"><div class="truncate max-w-[150px] md:max-w-none" title="${doc.filename}">${doc.filename}</div></td><td class="px-6 py-4">${tracking}</td><td class="px-6 py-4">${status}</td><td class="px-6 py-4 text-center">${btn}</td></tr>`;
+                let statusHtml = '';
+
+                const signedFileDisplay = doc.signed_file_path ? doc.signed_file_path.split('/').pop() : 'ttd_document.pdf';
+
+                if (doc.status === 'signed') {
+                    statusHtml = '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase border border-green-200">Selesai</span>';
+                    btn = `<button onclick="downloadSignedDoc('${signedFileDisplay}')" class="text-green-600 font-bold text-xs hover:underline flex items-center justify-center gap-1 mx-auto bg-green-50 px-3 py-1 rounded-lg border border-green-200"><i class="fa-solid fa-download"></i> Unduh</button>`;
+                    
+                    if (filter === 'sent') {
+                        btn += `<button onclick="deleteDigiSignDoc('${doc.id}')" class="mt-1 text-red-400 hover:text-red-600 p-1.5 rounded bg-red-50 hover:bg-red-100 transition flex items-center justify-center w-full mx-auto"><i class="fa-solid fa-trash"></i> Hapus</button>`;
+                    }
+                } else if (doc.status === 'rejected') {
+                    statusHtml = `<div class="flex flex-col gap-1"><span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase border border-red-200 w-fit">Ditolak</span><span class="text-[10px] text-red-500 italic max-w-[150px] truncate" title="${doc.rejection_note || 'Tanpa catatan'}">Note: ${doc.rejection_note || '-'}</span></div>`;
+                    
+                    if (filter === 'sent') {
+                        btn = `<div class="flex gap-2 justify-center items-center">
+                            <span class="text-red-400 text-xs font-mono bg-red-50 px-2 py-1 rounded">Ditolak</span>
+                            <button onclick="deleteDigiSignDoc('${doc.id}')" class="text-red-400 hover:text-red-600 p-1.5 rounded bg-red-50 hover:bg-red-100 transition"><i class="fa-solid fa-trash"></i></button>
+                        </div>`;
+                    } else {
+                        btn = `<span class="text-red-400 text-xs font-mono bg-red-50 px-2 py-1 rounded">Ditolak</span>`;
+                    }
+                } else {
+                    statusHtml = '<span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase border border-yellow-200">Pending</span>';
+                    
+                    if(filter === 'inbox') {
+                        btn = `<div class="flex gap-2 justify-center">
+                            <button onclick="openSigningRoom('${doc.id}', '${doc.filename}')" class="bg-pink-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-pink-700 shadow-sm transition transform hover:-translate-y-0.5 whitespace-nowrap"><i class="fa-solid fa-pen-nib"></i> Sign</button>
+                            <button onclick="rejectDigiSignDoc('${doc.id}')" class="bg-white border border-red-200 text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition transform hover:-translate-y-0.5 whitespace-nowrap"><i class="fa-solid fa-xmark"></i> Tolak</button>
+                        </div>`;
+                    } else if (filter === 'sent') {
+                        btn = `<div class="flex items-center justify-center gap-2">
+                            <span class="text-gray-400 text-xs font-mono bg-gray-50 px-2 py-1 rounded">Menunggu...</span>
+                            <button onclick="deleteDigiSignDoc('${doc.id}')" class="text-red-400 hover:text-red-600 p-1.5 rounded bg-red-50 hover:bg-red-100 transition"><i class="fa-solid fa-trash"></i></button>
+                        </div>`;
+                    } else {
+                        btn = `<span class="text-gray-400 text-xs font-mono bg-gray-50 px-2 py-1 rounded">Menunggu...</span>`;
+                    }
+                }
+                
+                tbody.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 font-medium text-gray-800"><div class="truncate max-w-[150px] md:max-w-none" title="${doc.filename}">${doc.filename}</div></td><td class="px-6 py-4">${tracking}</td><td class="px-6 py-4">${statusHtml}</td><td class="px-6 py-4 text-center">${btn}</td></tr>`;
             });
         }
+
+        // FITUR BARU: Hapus Request Dokumen
+        async function deleteDigiSignDoc(id) {
+            if((await Swal.fire({title:'Hapus Dokumen?', text:'Dokumen ini akan dihapus permanen dari sistem.', icon:'warning', showCancelButton:true, confirmButtonColor:'#d33', confirmButtonText:'Ya, hapus!'})).isConfirmed) {
+                Swal.showLoading();
+                await supabaseClient.from('digisign_documents').delete().eq('id', id);
+                fetchDigiSignDocs('sent');
+                updateDigiSignStats();
+                Toast.fire({ icon: 'success', title: 'Request berhasil dihapus' });
+            }
+        }
+
+        // FITUR BARU: Penolakan Dokumen dengan Notes
+        async function rejectDigiSignDoc(id) {
+            const { value: note } = await Swal.fire({
+                title: 'Tolak Dokumen',
+                input: 'textarea',
+                inputLabel: 'Alasan Penolakan / Permintaan Revisi',
+                inputPlaceholder: 'Tuliskan pesan kepada pengirim surat...',
+                showCancelButton: true,
+                confirmButtonText: 'Kirim Penolakan',
+                confirmButtonColor: '#DC2626',
+                cancelButtonText: 'Batal',
+                inputValidator: (value) => { if (!value) return 'Catatan alasan harus diisi!' }
+            });
+
+            if (note) {
+                Swal.showLoading();
+                await supabaseClient.from('digisign_documents').update({ status: 'rejected', rejection_note: note }).eq('id', id);
+                fetchDigiSignDocs('inbox');
+                updateDigiSignStats();
+                Swal.fire({ icon: 'success', title: 'Ditolak', text: 'Dokumen telah dikembalikan ke pengirim.' });
+            }
+        }
+
         async function downloadSignedDoc(fileName) {
+            if(!fileName) return Toast.fire({ icon: 'error', title: 'File tidak ditemukan' });
             const { data, error } = await supabaseClient.storage.from('digisign-files').download('signed/' + fileName);
             if (error) return Toast.fire({ icon: 'error', title: 'Gagal Download' });
             const url = window.URL.createObjectURL(data); const a = document.createElement('a'); a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); a.remove(); Toast.fire({ icon: 'success', title: 'Mendownload...' });
         }
+
         async function openUploadModal() {
             const { data: admins } = await supabaseClient.from('profiles').select('id, full_name').eq('role', 'admin');
             const { data: { user } } = await supabaseClient.auth.getUser();
@@ -1173,7 +1284,7 @@
                 Swal.fire({title:'Mengirim...', didOpen:()=>Swal.showLoading()}); const fname = `${Date.now()}_${f.file.name}`;
                 await supabaseClient.storage.from('digisign-files').upload(fname, f.file); const {data:{publicUrl}} = supabaseClient.storage.from('digisign-files').getPublicUrl(fname);
                 await supabaseClient.from('digisign_documents').insert({ filename: fname, file_path: publicUrl, signer_id: f.signer, requester_id: user.id });
-                Swal.fire({ icon: 'success', title: 'Terkirim!', text: 'Request tanda tangan telah dikirim.', timer: 2000, showConfirmButton: false}); fetchDigiSignDocs();
+                Swal.fire({ icon: 'success', title: 'Terkirim!', text: 'Request tanda tangan telah dikirim.', timer: 2000, showConfirmButton: false}); fetchDigiSignDocs('sent');
             }
         }
 
@@ -1344,7 +1455,19 @@
             await page.render({canvasContext: ctx, viewport: scaledViewport}).promise;
         }
 
-        async function fetchUsers() { const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); allUsers = data||[]; renderTable(allUsers); renderVerificationList(allUsers); document.getElementById('stat-total').innerText = allUsers.length; document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; document.getElementById('table-total').innerText = allUsers.length; }
+        async function fetchUsers() { 
+            const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); 
+            allUsers = data||[]; 
+            
+            // Memanggil filterTable agar aturan filter & urutan langsung teraplikasi
+            filterTable(); 
+            renderVerificationList(allUsers); 
+            
+            document.getElementById('stat-total').innerText = allUsers.length; 
+            document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; 
+            document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; 
+            document.getElementById('table-total').innerText = allUsers.length; 
+        }
         
         function timeAgo(dateString) {
             if(!dateString) return '<span class="text-gray-400 text-xs italic">-</span>';
@@ -1366,8 +1489,10 @@
         function filterTable() { 
             const term = document.getElementById('searchInput').value.toLowerCase(); 
             const paymentFilter = document.getElementById('filterPayment').value; 
+            const sortFilter = document.getElementById('sortUser').value; // Ambil nilai sorting
             
-            const filteredUsers = allUsers.filter(u => {
+            // 1. Lakukan Filter berdasarkan Pencarian & Status
+            let filteredUsers = allUsers.filter(u => {
                 const name = (u.full_name || '').toLowerCase();
                 const school = (u.school || '').toLowerCase();
                 
@@ -1375,6 +1500,28 @@
                 const matchPayment = paymentFilter === "" || u.payment_status === paymentFilter;
                 
                 return matchTerm && matchPayment;
+            });
+
+            // 2. Lakukan Sorting Data
+            filteredUsers.sort((a, b) => {
+                if (sortFilter === 'terbaru') {
+                    // Pendaftar Terbaru (created_at terbesar ke terkecil)
+                    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+                } else if (sortFilter === 'terlama') {
+                    // Pendaftar Terlama (created_at terkecil ke terbesar)
+                    return new Date(a.created_at || 0) - new Date(b.created_at || 0);
+                } else if (sortFilter === 'last_seen_new') {
+                    // Aktivitas Terakhir / Terbaru (Waktu tertinggi berada di atas)
+                    const dateA = a.last_seen ? new Date(a.last_seen).getTime() : 0;
+                    const dateB = b.last_seen ? new Date(b.last_seen).getTime() : 0;
+                    return dateB - dateA;
+                } else if (sortFilter === 'last_seen_old') {
+                    // Aktivitas Terlama (Waktu terendah berada di atas)
+                    const dateA = a.last_seen ? new Date(a.last_seen).getTime() : 0;
+                    const dateB = b.last_seen ? new Date(b.last_seen).getTime() : 0;
+                    return dateA - dateB;
+                }
+                return 0;
             });
             
             renderTable(filteredUsers); 
@@ -1445,7 +1592,6 @@
         async function updateStatus(id, status) { Swal.showLoading(); await supabaseClient.from('profiles').update({ payment_status: status }).eq('id', id); Swal.close(); fetchUsers(); Toast.fire({ icon: 'success', title: 'Status diupdate' }); }
         async function deleteUser(id) { if((await Swal.fire({title:'Hapus Data?', text:'Tindakan ini permanen', icon:'warning', showCancelButton:true})).isConfirmed) { await supabaseClient.from('profiles').delete().eq('id', id); fetchUsers(); Toast.fire({ icon: 'success', title: 'Data dihapus' }); } }
         
-        // --- Perubahan pada fungsi URL Redirect Resend Link ---
         async function resendEmail(email) { 
             Swal.showLoading(); 
             const { error } = await supabaseClient.auth.resend({ type: 'signup', email: email, options: { emailRedirectTo: window.location.origin + '/dashboard.html' } }); 
@@ -1714,7 +1860,7 @@
                 } 
 
                 if (allUsers.length > 0) {
-                    renderTable(allUsers);
+                    filterTable(); // Mempertahankan filter/sorting saat user login/logout
                 }
 
             }).subscribe(); 
