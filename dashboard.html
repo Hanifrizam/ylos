@@ -10,6 +10,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -33,23 +36,20 @@
                 // Jika ada sesi, tampilkan UI
                 document.documentElement.style.visibility = '';
 
-                // Fungsi perenderan
                 const renderUI = () => {
                     const emailDisplay = document.getElementById('user-email-display');
                     if (emailDisplay) emailDisplay.innerText = session.user.email;
                     
-                    // Pastikan fungsi dari body sudah bisa dipanggil
                     if (typeof loadDashboard === 'function') {
                         loadDashboard(session.user.id);
                         initTracking(session);
                     }
                 };
 
-                // FIX: Mencegah Race Condition DOMContentLoaded
                 if (document.readyState === 'loading') {
                     document.addEventListener('DOMContentLoaded', renderUI);
                 } else {
-                    renderUI(); // Eksekusi langsung jika DOM sudah ter-load
+                    renderUI(); 
                 }
             } catch (err) {
                 console.error("Auth check failed:", err);
@@ -89,24 +89,39 @@
         .prose { color: #374151; font-size: 0.95rem; line-height: 1.7; word-wrap: break-word; }
         .prose p { margin-bottom: 0.75em; }
         .prose img { max-width: 100%; height: auto; border-radius: 0.75rem; margin: 1rem 0; cursor: zoom-in; }
-        .prose a { color: #DB2777; text-decoration: underline; font-weight: 600; }
+        .prose a { color: #DB2777; text-decoration: underline; font-weight: 600; transition: color 0.2s; }
+        .prose a:hover { color: #BE185D; }
         .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
         
-        /* Animasi Tab */
-        .tab-content { display: none; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; }
-        .tab-content.active { display: block; opacity: 1; transform: translateY(0); }
+        /* Animasi Tab Transisi Halus (FIXED) */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeUp 0.4s ease forwards; }
+        
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         
         .nav-item.active { background-color: #fdf2f8; color: #DB2777; border-right: 4px solid #FF85B3; font-weight: 700; }
         .nav-item { border-right: 4px solid transparent; }
+
+        /* Quill Custom Style for Dashboard */
+        .ql-toolbar { border-top-left-radius: 16px; border-top-right-radius: 16px; border-color: #E5E7EB !important; background-color: #F9FAFB; padding: 12px !important; }
+        .ql-container { border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; border-color: #E5E7EB !important; background-color: white; font-family: 'Plus Jakarta Sans', sans-serif !important; font-size: 14px !important; }
+        .ql-editor { min-height: 250px; padding: 20px !important; }
+        .ql-editor.ql-blank::before { font-style: italic; color: #9CA3AF; }
+
+        .btn-press-anim { transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s; }
+        .btn-press-anim:active { transform: scale(0.97); }
     </style>
 </head>
 <body class="font-sans text-gray-800 bg-gray-50 flex h-screen overflow-hidden selection:bg-ylosPink selection:text-white">
 
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-gray-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-gray-900/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity duration-300"></div>
 
-    <aside id="sidebar" class="bg-white w-72 h-full border-r border-gray-200 flex flex-col fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-2xl lg:shadow-none">
+    <aside id="sidebar" class="bg-white w-72 h-full border-r border-gray-100 flex flex-col fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-2xl lg:shadow-none">
         
-        <div class="h-20 flex items-center gap-3 px-6 border-b border-gray-100 cursor-pointer" onclick="window.location.href='index.html'">
+        <div class="h-20 flex items-center gap-3 px-6 border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition" onclick="window.location.href='index.html'">
             <img src="LOGO YLOS 5x5.png" alt="Logo" class="h-10 w-auto object-contain">
             <div class="flex flex-col justify-center">
                 <span class="font-extrabold text-xl tracking-tighter text-gray-900 leading-none">YLOS</span>
@@ -114,145 +129,159 @@
             </div>
         </div>
 
-        <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-ylosPink to-ylosYellow flex items-center justify-center text-white font-bold text-lg shadow-md">
+        <div class="px-6 py-6 border-b border-gray-50 bg-gradient-to-b from-gray-50/50 to-white">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-ylosPink to-ylosYellow flex items-center justify-center text-white font-bold text-xl shadow-md ring-4 ring-pink-50">
                     <i class="fa-solid fa-user"></i>
                 </div>
                 <div class="overflow-hidden">
                     <p id="sidebar-user-name" class="font-bold text-gray-900 text-sm truncate">Loading...</p>
-                    <p id="user-email-display" class="text-xs text-gray-500 truncate">user@email.com</p>
+                    <p id="user-email-display" class="text-xs text-gray-500 truncate mt-0.5">user@email.com</p>
                 </div>
             </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto py-4">
-            <p class="px-6 text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Main Menu</p>
-            <nav class="space-y-1">
-                <button onclick="switchTab('overview')" id="nav-overview" class="nav-item active w-full flex items-center gap-3 px-6 py-3.5 text-gray-600 hover:bg-gray-50 transition text-left text-sm font-medium">
+        <div class="flex-1 overflow-y-auto py-6">
+            <p class="px-6 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 opacity-80">Menu Utama</p>
+            <nav class="space-y-1.5 px-3">
+                <button onclick="switchTab('overview')" id="nav-overview" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition text-left text-sm font-medium">
                     <i class="fa-solid fa-house w-5 text-center"></i> Beranda
                 </button>
-                <button onclick="switchTab('materi')" id="nav-materi" class="nav-item w-full flex items-center gap-3 px-6 py-3.5 text-gray-600 hover:bg-gray-50 transition text-left text-sm font-medium">
+                <button onclick="switchTab('materi')" id="nav-materi" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition text-left text-sm font-medium">
                     <i class="fa-solid fa-book-open w-5 text-center"></i> Modul & Materi
                 </button>
-                <button onclick="switchTab('video')" id="nav-video" class="nav-item w-full flex items-center justify-between px-6 py-3.5 text-gray-600 hover:bg-gray-50 transition text-left text-sm font-medium group">
+                <button onclick="switchTab('video')" id="nav-video" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition text-left text-sm font-medium group">
                     <div class="flex items-center gap-3">
                         <i class="fa-solid fa-circle-play w-5 text-center group-hover:text-ylosPink transition"></i> Video Upskilling
                     </div>
                     <i class="fa-solid fa-lock text-gray-300 text-xs"></i>
                 </button>
-                <button onclick="switchTab('tugas')" id="nav-tugas" class="nav-item w-full flex items-center justify-between px-6 py-3.5 text-gray-600 hover:bg-gray-50 transition text-left text-sm font-medium group">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-medal w-5 text-center group-hover:text-ylosYellow transition"></i> Penugasan
+                <button onclick="switchTab('tugas')" id="nav-tugas" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition text-left text-sm font-medium group relative overflow-hidden">
+                    <div class="flex items-center gap-3 relative z-10">
+                        <i class="fa-solid fa-clipboard-list w-5 text-center group-hover:text-orange-500 transition"></i> Penugasan
                     </div>
-                    <i class="fa-solid fa-lock text-gray-300 text-xs"></i>
+                    <i id="lock-icon-tugas" class="fa-solid fa-lock text-gray-300 text-xs relative z-10 hidden"></i>
                 </button>
             </nav>
 
-            <p class="px-6 text-xs font-bold text-gray-400 uppercase tracking-widest mt-8 mb-2">Akun</p>
-            <nav class="space-y-1">
-                <button onclick="switchTab('pengaturan')" id="nav-pengaturan" class="nav-item w-full flex items-center gap-3 px-6 py-3.5 text-gray-600 hover:bg-gray-50 transition text-left text-sm font-medium">
+            <p class="px-6 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mt-8 mb-3 opacity-80">Akun</p>
+            <nav class="space-y-1.5 px-3">
+                <button onclick="switchTab('pengaturan')" id="nav-pengaturan" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition text-left text-sm font-medium">
                     <i class="fa-solid fa-gear w-5 text-center"></i> Pengaturan
                 </button>
-                <button id="btn-admin-panel" onclick="window.location.href='admin.html'" class="hidden nav-item w-full flex items-center gap-3 px-6 py-3.5 text-purple-600 hover:bg-purple-50 transition text-left text-sm font-bold">
+                <button id="btn-admin-panel" onclick="window.location.href='admin.html'" class="hidden nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-purple-600 hover:bg-purple-50 transition text-left text-sm font-bold border border-transparent hover:border-purple-100">
                     <i class="fa-solid fa-toolbox w-5 text-center"></i> Panel Admin
                 </button>
             </nav>
         </div>
 
-        <div class="p-4 border-t border-gray-100">
-            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600 transition font-bold text-sm">
+        <div class="p-5 border-t border-gray-50">
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition font-bold text-sm shadow-sm hover:shadow-md">
                 <i class="fa-solid fa-power-off"></i> Keluar Akun
             </button>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-full overflow-hidden bg-gray-50/50">
+    <main class="flex-1 flex flex-col h-full overflow-hidden bg-[#F8FAFC]">
         
-        <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 shrink-0 z-30">
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-6 lg:px-10 shrink-0 z-30 sticky top-0">
             <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-100 transition">
+                <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-600 hover:bg-gray-50 transition shadow-sm">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
-                <h1 id="header-title" class="text-xl font-bold text-gray-900">Beranda</h1>
+                <h1 id="header-title" class="text-xl md:text-2xl font-extrabold text-gray-900 tracking-tight">Beranda</h1>
             </div>
             
-            <div class="flex items-center gap-4">
-                <span id="dash-status-badge" class="hidden md:inline-block px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-bold border border-gray-300">
-                    Memuat Status...
+            <div class="flex items-center gap-5">
+                <span id="dash-status-badge" class="hidden md:inline-flex items-center gap-1.5 px-4 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-bold border border-gray-200 shadow-sm transition-all duration-300">
+                    <span class="w-2 h-2 rounded-full bg-gray-400"></span> Memuat Status...
                 </span>
-                <a href="index.html" class="text-sm font-bold text-gray-500 hover:text-ylosPink transition flex items-center gap-2">
+                <a href="index.html" class="text-sm font-bold text-gray-500 hover:text-ylosPink transition flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm hover:shadow-md hover:border-pink-200">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> <span class="hidden sm:inline">Web YLOS</span>
                 </a>
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-4 lg:p-8">
+        <div class="flex-1 overflow-y-auto p-4 lg:p-8 xl:px-12 relative">
             
-            <div id="tab-overview" class="tab-content active max-w-5xl mx-auto space-y-8">
+            <div id="tab-overview" class="tab-content active max-w-6xl mx-auto space-y-8">
                 
-                <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-8 md:p-10 text-white shadow-xl relative overflow-hidden">
+                <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-[2rem] p-8 md:p-12 text-white shadow-2xl relative overflow-hidden border border-gray-700/50">
                     <div class="relative z-10">
-                        <div class="inline-block px-3 py-1 bg-white/10 rounded-full text-xs font-bold uppercase tracking-widest mb-3 backdrop-blur-sm border border-white/10">Member Area</div>
-                        <h2 class="text-2xl md:text-4xl font-bold mb-2">Halo, <span id="dash-name" class="text-transparent bg-clip-text bg-gradient-to-r from-ylosPink to-ylosYellow">Leader!</span> 👋</h2>
-                        <p class="opacity-80 text-sm md:text-base max-w-xl mt-2 leading-relaxed">Persiapkan dirimu untuk rangkaian seleksi YLOS 2026. Pantau status pembayaran dan pengumuman terbaru di halaman ini.</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 rounded-full text-xs font-bold uppercase tracking-widest mb-4 backdrop-blur-md border border-white/20">
+                            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Member Area
+                        </div>
+                        <h2 class="text-3xl md:text-5xl font-extrabold mb-3 tracking-tight">Halo, <span id="dash-name" class="text-transparent bg-clip-text bg-gradient-to-r from-ylosPink to-ylosYellow">Leader!</span> 👋</h2>
+                        <p class="opacity-80 text-sm md:text-base max-w-xl mt-3 leading-relaxed font-medium">Persiapkan dirimu untuk rangkaian seleksi YLOS 2026. Pantau status pembayaran dan info terbaru di halaman ini.</p>
                     </div>
-                    <div class="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-ylosPink/20 to-transparent skew-x-12 transform translate-x-20"></div>
-                    <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-ylosYellow/20 rounded-full blur-3xl"></div>
+                    <div class="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-ylosPink/20 to-transparent skew-x-12 transform translate-x-20 transition-transform duration-700 hover:translate-x-10"></div>
+                    <div class="absolute -bottom-16 -right-16 w-64 h-64 bg-ylosYellow/20 rounded-full blur-3xl"></div>
+                    <div class="absolute top-10 right-20 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl"></div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-1 space-y-6">
-                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300">
-                            <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2"><i class="fa-solid fa-wallet text-gray-400"></i> Status Pendaftaran</h3>
+                        <div class="bg-white p-7 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-lg transition duration-500 relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-gray-50 to-transparent rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+                            
+                            <h3 class="text-lg font-extrabold text-gray-900 mb-6 flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400"><i class="fa-solid fa-wallet"></i></div>
+                                Status Pendaftaran
+                            </h3>
                             
                             <div class="space-y-4">
-                                <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100">
-                                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1">Paket Dipilih</p>
-                                    <p id="dash-package" class="text-lg font-extrabold text-gray-900">Loading...</p>
+                                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+                                    <p class="text-[10px] text-gray-400 uppercase font-extrabold tracking-widest mb-1.5">Paket Dipilih</p>
+                                    <p id="dash-package" class="text-lg font-extrabold text-gray-800">Loading...</p>
                                 </div>
                                 
-                                <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 flex justify-between items-center">
+                                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex justify-between items-center">
                                     <div>
-                                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1">Status</p>
+                                        <p class="text-[10px] text-gray-400 uppercase font-extrabold tracking-widest mb-1.5">Status</p>
                                         <span id="dash-status-text" class="text-sm font-bold text-gray-600">Loading...</span>
                                     </div>
-                                    <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-400 border border-gray-100">
+                                    <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-100">
                                         <i class="fa-solid fa-file-invoice"></i>
                                     </div>
                                 </div>
                                 
-                                <div id="payment-actions">
-                                    <button onclick="openLynkPayment()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-4 rounded-2xl font-bold text-sm shadow-lg shadow-indigo-200 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 animate-pulse mt-2">
+                                <div id="payment-actions" class="pt-2">
+                                    <button onclick="openLynkPayment()" class="btn-press-anim w-full bg-gray-900 hover:bg-black text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-gray-200 flex items-center justify-center gap-2">
                                         💳 Bayar & Finalisasi
                                     </button>
-                                    <p class="text-center text-xs text-gray-400 mt-3 flex justify-center items-center gap-1"><i class="fa-solid fa-lock"></i> Secured by LYNK</p>
-                                    <button onclick="contactAdmin()" class="w-full mt-3 border border-gray-200 text-gray-500 py-3 rounded-xl font-bold text-xs hover:bg-gray-50 hover:text-gray-700 transition">Butuh Bantuan?</button>
+                                    <p class="text-center text-[10px] text-gray-400 mt-3 flex justify-center items-center gap-1 font-bold uppercase tracking-wider"><i class="fa-solid fa-lock"></i> Secured by LYNK</p>
+                                    <button onclick="contactAdmin()" class="w-full mt-4 border border-gray-200 text-gray-500 py-3.5 rounded-xl font-bold text-xs hover:bg-gray-50 hover:text-gray-800 transition">Butuh Bantuan?</button>
                                 </div>
                                 
                                 <div id="wa-group-access" class="hidden space-y-3 pt-2">
-                                    <button onclick="joinWaGroup()" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-2xl font-bold text-sm transition shadow-lg shadow-green-200 flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+                                    <button onclick="joinWaGroup()" class="btn-press-anim w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-2xl font-bold text-sm shadow-lg shadow-green-100 flex items-center justify-center gap-2">
                                         <i class="fa-brands fa-whatsapp text-xl"></i> Gabung Grup WhatsApp
                                     </button>
-                                    <p class="text-xs text-green-600 text-center font-bold bg-green-50 py-2 rounded-lg border border-green-100">Akses Eksklusif Member</p>
+                                    <div class="bg-green-50 border border-green-100 rounded-xl p-3 flex items-start gap-3">
+                                        <i class="fa-solid fa-circle-info text-green-500 mt-0.5"></i>
+                                        <p class="text-xs text-green-700 font-medium leading-relaxed">Akses grup eksklusif ini hanya untuk peserta yang telah menyelesaikan pembayaran.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="lg:col-span-2">
-                        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 min-h-full">
-                            <div class="flex items-center justify-between mb-6">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-lg"><i class="fa-solid fa-bullhorn"></i></div>
-                                    <h3 class="text-xl font-bold text-gray-900">Papan Pengumuman</h3>
+                        <div class="bg-white p-7 md:p-9 rounded-[2rem] shadow-sm border border-gray-100 min-h-full hover:shadow-lg transition duration-500">
+                            <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-50">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 text-xl shadow-inner border border-blue-100"><i class="fa-solid fa-bullhorn"></i></div>
+                                    <div>
+                                        <h3 class="text-xl font-extrabold text-gray-900">Papan Pengumuman</h3>
+                                        <p class="text-xs text-gray-500 mt-1">Informasi dan update terbaru dari panitia.</p>
+                                    </div>
                                 </div>
                             </div>
                             
-                            <div id="announcement-content" class="space-y-4">
-                                <div class="flex flex-col items-center justify-center py-10 text-gray-400">
-                                    <div class="w-12 h-12 border-4 border-gray-200 border-t-ylosPink rounded-full animate-spin mb-3"></div>
-                                    <p class="text-sm font-medium">Memuat pengumuman...</p>
+                            <div id="announcement-content" class="space-y-5">
+                                <div class="flex flex-col items-center justify-center py-12 text-gray-400">
+                                    <div class="w-10 h-10 border-4 border-gray-100 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+                                    <p class="text-sm font-bold">Memuat pengumuman...</p>
                                 </div>
                             </div>
                         </div>
@@ -260,95 +289,193 @@
                 </div>
             </div>
 
-            <div id="tab-materi" class="tab-content max-w-5xl mx-auto">
-                <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100">
-                    <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-100">
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-200">
+            <div id="tab-materi" class="tab-content max-w-6xl mx-auto">
+                <div class="bg-white p-6 md:p-10 rounded-[2rem] shadow-sm border border-gray-100 min-h-[70vh]">
+                    <div class="flex items-center gap-5 mb-10 pb-6 border-b border-gray-100">
+                        <div class="w-16 h-16 rounded-[1.25rem] bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl shadow-xl shadow-blue-200">
                             <i class="fa-solid fa-book-open"></i>
                         </div>
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900">Modul & Materi Pembelajaran</h2>
-                            <p class="text-sm text-gray-500 mt-1">Akses dokumen panduan, *twibbon*, dan materi *bootcamp* di sini.</p>
+                            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">Modul Pembelajaran</h2>
+                            <p class="text-sm text-gray-500 mt-1.5 font-medium">Akses dokumen panduan, *twibbon*, dan materi *bootcamp* secara lengkap.</p>
                         </div>
                     </div>
 
-                    <div id="modules-content" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="col-span-full flex flex-col items-center justify-center py-16 text-gray-400">
-                            <div class="w-12 h-12 border-4 border-gray-200 border-t-indigo-500 rounded-full animate-spin mb-3"></div>
-                            <p class="text-sm font-medium">Memuat materi...</p>
+                    <div id="modules-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
+                            <div class="w-12 h-12 border-4 border-gray-100 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
+                            <p class="text-sm font-bold">Mengambil data materi...</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="tab-video" class="tab-content max-w-5xl mx-auto h-[70vh]">
-                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 h-full relative overflow-hidden flex flex-col items-center justify-center text-center p-8">
+            <div id="tab-video" class="tab-content max-w-6xl mx-auto h-[75vh]">
+                <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 h-full relative overflow-hidden flex flex-col items-center justify-center text-center p-8">
+                    <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#000 2px, transparent 2px); background-size: 30px 30px;"></div>
                     
-                    <div class="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-8 opacity-20 filter blur-sm pointer-events-none">
-                        <div class="bg-gray-300 rounded-xl h-32 md:h-48"></div><div class="bg-gray-300 rounded-xl h-32 md:h-48"></div><div class="bg-gray-300 rounded-xl h-32 md:h-48"></div>
-                        <div class="bg-gray-300 rounded-xl h-32 md:h-48"></div><div class="bg-gray-300 rounded-xl h-32 md:h-48"></div><div class="bg-gray-300 rounded-xl h-32 md:h-48"></div>
+                    <div class="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-6 p-10 opacity-20 filter blur-md pointer-events-none">
+                        <div class="bg-gray-300 rounded-2xl h-32 md:h-48"></div><div class="bg-gray-300 rounded-2xl h-32 md:h-48"></div><div class="bg-gray-300 rounded-2xl h-32 md:h-48"></div>
+                        <div class="bg-gray-300 rounded-2xl h-32 md:h-48"></div><div class="bg-gray-300 rounded-2xl h-32 md:h-48"></div><div class="bg-gray-300 rounded-2xl h-32 md:h-48"></div>
                     </div>
 
-                    <div class="relative z-10 max-w-lg mx-auto bg-white/80 backdrop-blur-md p-10 rounded-3xl border border-white shadow-2xl transform transition hover:scale-105 duration-300">
-                        <div class="w-20 h-20 bg-gradient-to-tr from-ylosPink to-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-pink-200">
-                            <i class="fa-solid fa-lock text-white text-3xl"></i>
+                    <div class="relative z-10 max-w-md mx-auto bg-white/90 backdrop-blur-xl p-10 rounded-[2.5rem] border border-white shadow-2xl transform transition-transform hover:scale-105 duration-500">
+                        <div class="w-24 h-24 bg-gradient-to-tr from-rose-400 to-pink-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-xl shadow-rose-200">
+                            <i class="fa-solid fa-lock text-white text-4xl"></i>
                         </div>
-                        <h2 class="text-3xl font-extrabold text-gray-900 mb-3">Video Upskilling</h2>
-                        <p class="text-gray-500 mb-6 leading-relaxed">
-                            Materi eksklusif seputar kepemimpinan, manajemen waktu, dan *scholarship hack* sedang dalam tahap produksi. 
+                        <h2 class="text-3xl font-extrabold text-gray-900 mb-4 tracking-tight">Video Upskilling</h2>
+                        <p class="text-gray-500 mb-8 leading-relaxed font-medium">
+                            Materi eksklusif tentang kepemimpinan, *time management*, dan *scholarship hack* sedang dalam tahap produksi oleh tim ahli. 
                         </p>
-                        <div class="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-2 rounded-full font-bold text-sm animate-pulse shadow-lg">
-                            <i class="fa-solid fa-hourglass-half"></i> Coming Soon
+                        <div class="inline-flex items-center gap-2.5 bg-gray-900 text-white px-8 py-3.5 rounded-full font-bold text-sm shadow-xl hover:bg-black transition">
+                            <i class="fa-solid fa-hourglass-half animate-pulse"></i> Segera Hadir
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="tab-tugas" class="tab-content max-w-5xl mx-auto">
-                <div class="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center min-h-[50vh]">
-                    <img src="https://cdn3d.iconscout.com/3d/premium/thumb/task-checklist-5374465-4497332.png" alt="Task" class="w-48 h-48 object-contain mb-6 opacity-80 filter drop-shadow-xl">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Papan Penugasan</h2>
-                    <p class="text-gray-500 max-w-md">Belum ada tugas yang diberikan. Selesaikan tahap administrasi dan tunggu instruksi selanjutnya dari panitia.</p>
+            <div id="tab-tugas" class="tab-content max-w-6xl mx-auto relative min-h-[75vh]">
+                <div class="bg-white p-6 md:p-10 rounded-[2rem] shadow-sm border border-gray-100 min-h-full flex flex-col relative overflow-hidden">
+                    
+                    <div class="flex items-center gap-5 mb-8 pb-6 border-b border-gray-50">
+                        <div class="w-16 h-16 rounded-[1.25rem] bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white text-2xl shadow-xl shadow-orange-200">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">Papan Penugasan</h2>
+                            <p class="text-sm text-gray-500 mt-1.5 font-medium">Selesaikan seluruh tugas dari tim mentor tepat pada waktunya.</p>
+                        </div>
+                    </div>
+
+                    <div id="task-list-view" class="space-y-4 flex-1">
+                        <div class="flex flex-col items-center justify-center py-20 h-full text-center">
+                            <div class="w-12 h-12 border-4 border-gray-200 border-t-orange-500 rounded-full animate-spin mb-4"></div>
+                            <p class="text-sm font-medium text-gray-500">Memuat tugas...</p>
+                        </div>
+                    </div>
+
+                    <div id="task-detail-view" class="hidden flex-1 animation-fade-in-up">
+                        <button onclick="closeTaskDetail()" class="mb-6 text-sm text-gray-500 hover:text-gray-900 flex items-center gap-2 font-bold transition bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-xl w-fit border border-gray-200">
+                            <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar
+                        </button>
+                        
+                        <div class="bg-white rounded-3xl p-6 md:p-8 border border-gray-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8 relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-orange-400"></div>
+                            
+                            <div class="flex flex-wrap gap-2 items-center mb-4">
+                                <span id="td-type-badge" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-gray-200">TYPE</span>
+                                <span id="td-date-badge" class="px-3 py-1 bg-gray-50 text-gray-500 rounded-lg text-[10px] font-bold flex items-center gap-1 border border-gray-100"><i class="fa-regular fa-calendar"></i> DATE</span>
+                            </div>
+                            
+                            <h3 id="td-title" class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-4 tracking-tight">Judul Tugas</h3>
+                            
+                            <div class="p-5 bg-orange-50/50 rounded-2xl border border-orange-100 mb-6">
+                                <h4 class="text-xs font-extrabold text-orange-800 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fa-solid fa-circle-info"></i> Deskripsi Tugas</h4>
+                                <div id="td-desc" class="prose text-sm text-gray-700 max-w-none">
+                                    </div>
+                            </div>
+                            
+                            <div id="td-links" class="flex flex-wrap gap-3">
+                                </div>
+                        </div>
+
+                        <div id="submission-area" class="bg-gray-50 border border-gray-200 rounded-3xl p-6 md:p-8">
+                            <h4 class="font-extrabold text-gray-900 mb-6 flex items-center gap-3 text-lg">
+                                <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-ylosPink shadow-sm"><i class="fa-solid fa-paper-plane"></i></div>
+                                Area Pengumpulan
+                            </h4>
+                            
+                            <div id="form-essay" class="hidden space-y-4">
+                                <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden focus-within:border-ylosPink focus-within:ring-4 focus-within:ring-pink-50 transition shadow-sm">
+                                    <div id="user-essay-editor"></div>
+                                </div>
+                                <p class="text-[10px] text-gray-400 font-medium ml-2"><i class="fa-solid fa-circle-info mr-1"></i> Gunakan formatting text untuk merapikan jawabanmu.</p>
+                            </div>
+
+                            <div id="form-file" class="hidden space-y-4">
+                                <div class="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center hover:border-ylosPink hover:bg-pink-50/30 transition duration-300 bg-white relative group cursor-pointer shadow-sm">
+                                    <input type="file" id="user-file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="updateUserFileName(this)">
+                                    <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-pink-100 transition duration-300">
+                                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400 group-hover:text-ylosPink transition transform group-hover:-translate-y-1"></i>
+                                    </div>
+                                    <p class="text-base font-bold text-gray-700" id="user-file-label">Klik untuk Upload File</p>
+                                    <p class="text-xs text-gray-400 mt-2 font-medium">Batas maksimal file: 5MB (PDF/Doc/Image)</p>
+                                </div>
+                            </div>
+
+                            <div id="submitted-alert" class="hidden bg-white border border-green-200 p-6 rounded-2xl flex flex-col sm:flex-row items-start gap-5 shadow-sm relative overflow-hidden">
+                                <div class="absolute left-0 top-0 bottom-0 w-2 bg-green-500"></div>
+                                <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0 border border-green-200">
+                                    <i class="fa-solid fa-check text-xl text-green-600"></i>
+                                </div>
+                                <div class="flex-1 w-full overflow-hidden">
+                                    <h5 class="text-lg font-extrabold text-gray-900">Berhasil Dikumpulkan!</h5>
+                                    <p class="text-xs font-bold text-gray-400 mt-1 flex items-center gap-1" id="submitted-time"></p>
+                                    
+                                    <div class="mt-4 pt-4 border-t border-gray-100 w-full">
+                                        <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2">Jawaban Tersimpan</p>
+                                        <div id="submitted-content-preview" class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-sm max-h-64 overflow-y-auto w-full custom-scrollbar"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button id="btn-submit-task" class="btn-press-anim mt-8 w-full bg-gray-900 hover:bg-black text-white py-4 rounded-2xl font-bold shadow-xl shadow-gray-200 flex items-center justify-center gap-2 text-base">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Kirim Jawaban Sekarang
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="task-locked-overlay" class="absolute inset-0 z-20 bg-white/80 backdrop-blur-md rounded-[2rem] flex flex-col items-center justify-center hidden">
+                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-5 border border-gray-200 shadow-sm">
+                            <i class="fa-solid fa-lock text-gray-400 text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-extrabold text-gray-800 tracking-tight">Fitur Terkunci</h3>
+                        <p class="text-base text-gray-500 mt-2 text-center max-w-md font-medium">Mohon selesaikan administrasi pembayaran kamu terlebih dahulu untuk membuka akses penuh penugasan.</p>
+                        <button onclick="switchTab('overview')" class="mt-6 px-6 py-3 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-black transition">
+                            Cek Status Pembayaran
+                        </button>
+                    </div>
+
                 </div>
             </div>
 
             <div id="tab-pengaturan" class="tab-content max-w-3xl mx-auto">
-                <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-gray-100">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-8 border-b border-gray-100 pb-4">Informasi Akun</h2>
+                <div class="bg-white p-6 md:p-10 rounded-[2rem] shadow-sm border border-gray-100">
+                    <h2 class="text-2xl font-extrabold text-gray-900 mb-8 border-b border-gray-50 pb-4">Pengaturan Akun</h2>
                     
                     <div class="space-y-6">
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nama Lengkap</label>
-                            <div class="px-5 py-4 bg-gray-50 rounded-xl border border-gray-200 font-medium text-gray-900" id="set-name">Memuat...</div>
+                            <label class="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 ml-1">Nama Lengkap</label>
+                            <div class="px-5 py-4 bg-gray-50 rounded-2xl border border-gray-200 font-bold text-gray-900 shadow-inner" id="set-name">Memuat...</div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Asal Sekolah/Instansi</label>
-                            <div class="px-5 py-4 bg-gray-50 rounded-xl border border-gray-200 font-medium text-gray-900" id="set-school">Memuat...</div>
+                            <label class="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 ml-1">Asal Sekolah/Instansi</label>
+                            <div class="px-5 py-4 bg-gray-50 rounded-2xl border border-gray-200 font-bold text-gray-900 shadow-inner" id="set-school">Memuat...</div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email</label>
-                            <div class="px-5 py-4 bg-gray-50 rounded-xl border border-gray-200 font-medium text-gray-500 flex justify-between items-center">
+                            <label class="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 ml-1">Alamat Email</label>
+                            <div class="px-5 py-4 bg-gray-50 rounded-2xl border border-gray-200 font-medium text-gray-500 flex justify-between items-center shadow-inner">
                                 <span id="set-email">Memuat...</span>
                                 <i class="fa-solid fa-lock text-gray-300"></i>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">No. WhatsApp</label>
-                            <div class="px-5 py-4 bg-gray-50 rounded-xl border border-gray-200 font-medium text-gray-900" id="set-phone">Memuat...</div>
+                            <label class="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 ml-1">No. WhatsApp Aktif</label>
+                            <div class="px-5 py-4 bg-gray-50 rounded-2xl border border-gray-200 font-bold text-gray-900 shadow-inner" id="set-phone">Memuat...</div>
                         </div>
                     </div>
                     
-                    <div class="mt-10 pt-6 border-t border-gray-100 text-center">
-                        <p class="text-xs text-gray-400 mb-4">Jika terdapat kesalahan data, silakan hubungi admin.</p>
-                        <button onclick="contactAdmin()" class="bg-white border border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 px-6 py-2.5 rounded-full font-bold text-sm transition">
-                            <i class="fa-solid fa-headset mr-2"></i> Hubungi Bantuan
+                    <div class="mt-10 pt-8 border-t border-gray-50 text-center">
+                        <p class="text-xs text-gray-500 mb-4 font-medium">Terdapat kesalahan data? Silakan hubungi admin untuk revisi.</p>
+                        <button onclick="contactAdmin()" class="bg-white border border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50 hover:shadow-md px-6 py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 mx-auto">
+                            <i class="fa-solid fa-headset text-ylosPink"></i> Pusat Bantuan
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-12 text-center pb-8">
-                <p class="text-xs text-gray-400 font-medium">© 2026 YLOS Dashboard System. All rights reserved.</p>
+            <div class="mt-10 text-center pb-6">
+                <p class="text-xs text-gray-400 font-medium tracking-wide">© 2026 YLOS System. Dibangun untuk kemudahan peserta.</p>
             </div>
 
         </div>
@@ -362,8 +489,8 @@
         
         let CURRENT_PAYMENT_URL = "";
         let CURRENT_WA_LINK = "";
+        let globalIsLunas = false; 
 
-        // Fungsi Navigasi Tab / Sidebar
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + tabId).classList.add('active');
@@ -372,16 +499,21 @@
             document.getElementById('nav-' + tabId).classList.add('active');
             
             const titles = {
-                'overview': 'Beranda', 'materi': 'Modul & Materi',
+                'overview': 'Beranda Utama', 'materi': 'Modul & Materi',
                 'video': 'Video Upskilling', 'tugas': 'Papan Penugasan', 'pengaturan': 'Pengaturan Akun'
             };
             document.getElementById('header-title').innerText = titles[tabId] || 'Dashboard';
             
             if(window.innerWidth < 1024) toggleSidebar();
             document.querySelector('.flex-1.overflow-y-auto').scrollTo({top: 0, behavior: 'smooth'});
+
+            if (tabId === 'tugas' && !globalIsLunas) {
+                document.getElementById('task-locked-overlay').classList.remove('hidden');
+            } else if (tabId === 'tugas' && globalIsLunas) {
+                document.getElementById('task-locked-overlay').classList.add('hidden');
+            }
         }
 
-        // Fungsi Buka Tutup Sidebar Mobile
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
@@ -426,7 +558,8 @@
                 title: 'Pembayaran Dibuka 💳',
                 html: `Anda akan diarahkan ke halaman pembayaran aman via <b>LYNK</b>.`,
                 imageUrl: 'LOGO YLOS 5x5.png', imageWidth: 80, imageHeight: 80,
-                showCancelButton: true, confirmButtonText: 'Lanjut Bayar ➔', cancelButtonText: 'Batal', confirmButtonColor: '#FF85B3', cancelButtonColor: '#d33'
+                showCancelButton: true, confirmButtonText: 'Lanjut Bayar ➔', cancelButtonText: 'Batal', confirmButtonColor: '#FF85B3', cancelButtonColor: '#d33',
+                customClass: { confirmButton: 'rounded-xl', cancelButton: 'rounded-xl' }
             }).then((result) => { if (result.isConfirmed) window.open(CURRENT_PAYMENT_URL, '_blank'); });
         }
 
@@ -448,42 +581,28 @@
                     .eq('id', userId)
                     .single();
                 
-                // ERROR HANDLING TAMBAHAN
                 if (error || !profile) {
                     console.error("Gagal menarik data profile:", error);
-                    Swal.fire('Oops!', 'Sistem gagal mengambil data profil kamu. Pastikan tabel "profiles" di Supabase dan sistem RLS-nya sudah di-setting dengan benar.', 'error');
-                    
-                    // Reset text UI dari "Loading..." jadi info error
-                    document.getElementById('dash-name').innerText = 'User!';
-                    document.getElementById('sidebar-user-name').innerText = 'Data Error';
-                    document.getElementById('dash-package').innerText = 'Tidak Ditemukan';
-                    document.getElementById('dash-status-text').innerText = 'Data Error';
-                    document.getElementById('dash-status-badge').innerText = 'Data Error';
-                    document.getElementById('announcement-content').innerHTML = '<p class="text-red-500 font-bold p-4 text-center">Gagal memuat database.</p>';
-                    document.getElementById('modules-content').innerHTML = '<p class="text-red-500 font-bold col-span-full p-4 text-center">Gagal memuat database.</p>';
+                    Swal.fire('Oops!', 'Sistem gagal mengambil data profil kamu. Pastikan tabel terhubung.', 'error');
                     return;
                 }
 
-                // Jika data profile aman, jalankan UI biasa
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 
                 if (isPreviewMode) {
                     profile.role = 'user'; profile.payment_status = 'Lunas'; profile.full_name = "Tampilan Peserta (Preview)";
                 }
 
-                // Isi Data Nama
                 const firstName = profile.full_name.split(' ')[0];
                 document.getElementById('dash-name').innerText = firstName + '!';
                 document.getElementById('sidebar-user-name').innerText = profile.full_name;
                 document.getElementById('dash-package').innerText = profile.package_type;
                 
-                // Isi Data Tab Pengaturan
                 document.getElementById('set-name').innerText = profile.full_name;
                 document.getElementById('set-school').innerText = profile.school || '-';
                 document.getElementById('set-email').innerText = session?.user?.email || '-';
                 document.getElementById('set-phone').innerText = profile.phone || '-';
                 
-                // Logika Jalur & Link
                 if (profile.package_type && (profile.package_type.includes('Mandiri') || profile.package_type.includes('Self Funded'))) {
                     CURRENT_PAYMENT_URL = LINK_SELF_FUNDED;
                     CURRENT_WA_LINK = WA_LINK_SELF_FUNDED;
@@ -497,31 +616,32 @@
                 const btnPay = document.getElementById('payment-actions');
                 const waGroup = document.getElementById('wa-group-access');
                 
-                const isLunas = profile.payment_status === 'Lunas';
+                globalIsLunas = profile.payment_status === 'Lunas';
 
-                if(isLunas) {
-                    statusBadge.innerText = 'Akun Aktif (Lunas)';
-                    statusBadge.className = 'hidden md:inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200';
+                if(globalIsLunas) {
+                    statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Akun Aktif';
+                    statusBadge.className = 'hidden md:inline-flex items-center gap-1.5 px-4 py-1.5 bg-green-50 text-green-700 rounded-full text-xs font-bold border border-green-200 shadow-sm';
                     statusText.innerText = 'LUNAS (Verified)';
-                    statusText.className = 'text-sm font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded inline-block';
+                    statusText.className = 'text-sm font-extrabold text-green-600 bg-green-100 px-3 py-1 rounded-lg inline-block border border-green-200';
                     btnPay.classList.add('hidden');
                     waGroup.classList.remove('hidden');
+                    document.getElementById('lock-icon-tugas').classList.add('hidden');
                 } else {
-                    statusBadge.innerText = 'Menunggu Pembayaran';
-                    statusBadge.className = 'hidden md:inline-block px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold border border-yellow-200';
+                    statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span> Menunggu Pembayaran';
+                    statusBadge.className = 'hidden md:inline-flex items-center gap-1.5 px-4 py-1.5 bg-yellow-50 text-yellow-700 rounded-full text-xs font-bold border border-yellow-200 shadow-sm';
                     statusText.innerText = 'Menunggu Pembayaran';
-                    statusText.className = 'text-sm font-bold text-yellow-600';
+                    statusText.className = 'text-sm font-extrabold text-yellow-600';
                     btnPay.classList.remove('hidden');
                     waGroup.classList.add('hidden');
+                    document.getElementById('lock-icon-tugas').classList.remove('hidden');
                 }
 
-                // Cek Role Admin
                 if(profile.role === 'admin') {
                     document.getElementById('btn-admin-panel').classList.remove('hidden');
                 } 
                 
-                // Load CMS
-                loadCMSContent(isLunas);
+                loadCMSContent(globalIsLunas);
+                loadTasks(globalIsLunas);
 
             } catch (err) {
                 console.error("Kesalahan sistem utama saat memuat dashboard:", err);
@@ -529,13 +649,12 @@
         }
 
         async function loadCMSContent(isLunas) {
-            // 1. Load Pengumuman
+            // 1. Pengumuman
             const { data: announcements, error: errAnn } = await supabaseClient.from('announcements').select('*').eq('is_active', true).order('order_index', {ascending: true});
             const annContainer = document.getElementById('announcement-content');
             
             if (errAnn) {
-                console.error(errAnn);
-                annContainer.innerHTML = '<p class="text-red-500">Gagal mengambil pengumuman. (Cek tabel announcements/RLS)</p>';
+                annContainer.innerHTML = '<p class="text-red-500">Gagal mengambil pengumuman.</p>';
             } else if(announcements && announcements.length > 0) {
                 annContainer.innerHTML = '';
                 announcements.forEach(ann => {
@@ -543,27 +662,28 @@
 
                     if (isLocked) {
                         annContainer.innerHTML += `
-                            <div class="bg-gray-50 border-l-4 border-gray-300 p-5 rounded-r-2xl border border-y-gray-100 border-r-gray-100 mb-4">
+                            <div class="bg-gray-50 border-l-4 border-gray-300 p-6 rounded-r-2xl border border-y-gray-100 border-r-gray-100 mb-5 relative overflow-hidden">
+                                <div class="absolute -right-4 -bottom-4 opacity-5"><i class="fa-solid fa-lock text-6xl"></i></div>
                                 <div class="flex items-center gap-2 mb-2">
-                                    <h4 class="font-bold text-gray-500 text-base flex items-center gap-2"><i class="fa-solid fa-lock"></i> Pengumuman Terkunci</h4>
-                                    <span class="bg-gradient-to-r from-ylosPink to-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">Eksklusif Member</span>
+                                    <h4 class="font-extrabold text-gray-500 text-base flex items-center gap-2"><i class="fa-solid fa-lock"></i> Pengumuman Terkunci</h4>
+                                    <span class="bg-gradient-to-r from-ylosPink to-rose-500 text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold shadow-sm">Eksklusif Member</span>
                                 </div>
-                                <p class="text-sm text-gray-400 italic">Selesaikan pembayaran administrasi untuk melihat informasi penting ini.</p>
+                                <p class="text-sm text-gray-400 font-medium mt-2">Selesaikan pembayaran administrasi untuk melihat informasi penting ini.</p>
                             </div>
                         `;
                     } else {
                         annContainer.innerHTML += `
-                            <div class="bg-blue-50/40 border-l-4 border-blue-500 p-5 rounded-r-2xl border border-y-blue-100 border-r-blue-100 mb-4 hover:bg-blue-50 transition duration-300">
-                                <h4 class="font-bold text-gray-900 text-base mb-3">${ann.title}</h4>
+                            <div class="bg-white border-l-4 border-blue-500 p-6 rounded-r-2xl border border-y-gray-100 border-r-gray-100 mb-5 hover:shadow-md transition duration-300">
+                                <h4 class="font-extrabold text-gray-900 text-lg mb-3 tracking-tight">${ann.title}</h4>
                                 <div class="prose text-sm text-gray-600">
                                     ${ann.content} 
                                 </div>
-                                <div class="flex items-center justify-between mt-4 text-xs text-gray-400 font-medium pt-3 border-t border-blue-100/50">
+                                <div class="flex items-center justify-between mt-5 text-[10px] uppercase tracking-wider text-gray-400 font-extrabold pt-4 border-t border-gray-100">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-5 h-5 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center"><i class="fa-solid fa-user-shield text-[8px]"></i></div>
+                                        <div class="w-6 h-6 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center"><i class="fa-solid fa-shield-halved text-[10px]"></i></div>
                                         <span>Tim Admin YLOS</span>
                                     </div>
-                                    <div class="flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${new Date(ann.created_at).toLocaleDateString()}</div>
+                                    <div class="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100"><i class="fa-regular fa-calendar text-blue-500"></i> ${new Date(ann.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}</div>
                                 </div>
                             </div>
                         `;
@@ -574,50 +694,51 @@
                     img.onclick = function() {
                         Swal.fire({
                             imageUrl: this.src, width: 'auto', padding: 0, showConfirmButton: false, showCloseButton: true,
-                            background: 'transparent', backdrop: 'rgba(0,0,0,0.85)', customClass: { popup: 'rounded-xl overflow-hidden' }
+                            background: 'transparent', backdrop: 'rgba(0,0,0,0.9)', customClass: { popup: 'rounded-xl overflow-hidden' }
                         });
                     };
                 });
             } else {
                 annContainer.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-10 text-gray-400">
-                        <i class="fa-solid fa-box-open text-4xl mb-3 opacity-30"></i>
-                        <p class="text-sm font-medium">Belum ada pengumuman.</p>
+                    <div class="flex flex-col items-center justify-center py-16 text-center text-gray-400">
+                        <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-inbox text-3xl text-gray-300"></i>
+                        </div>
+                        <p class="text-sm font-bold text-gray-500">Belum ada pengumuman.</p>
                     </div>
                 `;
             }
 
-            // 2. Load Modul
+            // 2. Modul
             const { data: modules, error: errMod } = await supabaseClient.from('modules').select('*').order('order_index', {ascending: true});
             const modContainer = document.getElementById('modules-content');
             
             if (errMod) {
-                 console.error(errMod);
-                 modContainer.innerHTML = '<p class="text-red-500 col-span-full">Gagal mengambil materi. (Cek tabel modules/RLS)</p>';
+                 modContainer.innerHTML = '<p class="text-red-500 col-span-full">Gagal mengambil materi.</p>';
             } else if(modules && modules.length > 0) {
                 modContainer.innerHTML = '';
                 modules.forEach(mod => {
                     let isLocked = mod.is_premium && !isLunas;
                     let icon = mod.category === 'Video' ? 'fa-circle-play' : 'fa-file-lines';
-                    let iconColor = mod.category === 'Video' ? 'text-rose-500 bg-rose-50' : 'text-indigo-500 bg-indigo-50';
+                    let iconColor = mod.category === 'Video' ? 'text-rose-500 bg-rose-50 border-rose-100' : 'text-indigo-500 bg-indigo-50 border-indigo-100';
                     let action = isLocked 
-                        ? `<button disabled class="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-200"><i class="fa-solid fa-lock"></i> Terkunci</button>`
-                        : `<a href="${mod.link_url}" target="_blank" class="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-md shadow-indigo-100 transform hover:-translate-y-0.5">Akses Materi <i class="fa-solid fa-arrow-up-right-from-square"></i></a>`;
+                        ? `<button disabled class="mt-5 w-full flex items-center justify-center gap-2 py-3 bg-gray-50 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-200"><i class="fa-solid fa-lock"></i> Terkunci</button>`
+                        : `<a href="${mod.link_url}" target="_blank" class="mt-5 w-full flex items-center justify-center gap-2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Akses Materi <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>`;
                     
                     let opacity = isLocked ? 'opacity-60 grayscale-[50%]' : '';
                     let titleColor = isLocked ? 'text-gray-500' : 'text-gray-900 group-hover:text-indigo-700';
 
                     modContainer.innerHTML += `
-                        <div class="flex flex-col p-5 border border-gray-100 rounded-2xl bg-white hover:shadow-lg hover:border-indigo-100 transition duration-300 ${opacity} group">
-                            <div class="flex items-start justify-between mb-2">
-                                <div class="${iconColor} w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm ${!isLocked ? 'group-hover:scale-110' : ''} transition-transform duration-300">
+                        <div class="flex flex-col p-6 border border-gray-200 rounded-[1.5rem] bg-white hover:shadow-xl hover:border-indigo-200 transition duration-500 ${opacity} group">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="${iconColor} border w-14 h-14 rounded-[1rem] flex items-center justify-center text-2xl shadow-sm ${!isLocked ? 'group-hover:scale-110' : ''} transition-transform duration-300">
                                     <i class="fa-solid ${icon}"></i>
                                 </div>
-                                ${isLocked ? '<span class="inline-block px-2 py-1 bg-red-50 border border-red-100 text-red-500 text-[10px] font-bold rounded-lg shadow-sm"><i class="fa-solid fa-lock text-[8px] mr-1"></i> Premium</span>' : ''}
+                                ${isLocked ? '<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-[10px] font-bold rounded-lg shadow-sm uppercase tracking-wider"><i class="fa-solid fa-lock text-[8px]"></i> Locked</span>' : ''}
                             </div>
                             
-                            <h4 class="font-bold ${titleColor} text-base transition mt-2 leading-snug h-10 line-clamp-2">${mod.title}</h4>
-                            <span class="inline-block mt-2 px-2 py-1 bg-gray-50 text-gray-500 text-[10px] uppercase font-bold tracking-wider rounded border border-gray-200 w-max">${mod.category}</span>
+                            <h4 class="font-extrabold ${titleColor} text-lg transition mt-2 leading-snug h-14 line-clamp-2 tracking-tight">${mod.title}</h4>
+                            <span class="inline-block mt-3 px-3 py-1 bg-gray-50 text-gray-500 text-[10px] uppercase font-extrabold tracking-widest rounded-lg border border-gray-200 w-max">${mod.category}</span>
                             
                             <div class="mt-auto">
                                 ${action}
@@ -627,13 +748,226 @@
                 });
             } else {
                 modContainer.innerHTML = `
-                    <div class="col-span-full flex flex-col items-center justify-center py-16 text-gray-400">
-                        <i class="fa-solid fa-folder-open text-5xl mb-4 opacity-30"></i>
-                        <p class="text-sm font-medium">Modul pembelajaran masih kosong.</p>
+                    <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400 text-center">
+                        <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                            <i class="fa-solid fa-folder-open text-4xl text-gray-300"></i>
+                        </div>
+                        <p class="text-base font-bold text-gray-600">Modul Kosong</p>
+                        <p class="text-sm font-medium text-gray-400 mt-1">Modul pembelajaran belum ditambahkan.</p>
                     </div>
                 `;
             }
         }
+
+        // ==========================================
+        // FITUR BARU: SISTEM PENUGASAN PESERTA
+        // ==========================================
+
+        let currentTasks = [];
+        let currentSubmissions = [];
+        let activeTask = null;
+        let quillUser = null;
+        let userUploadFileObj = null;
+
+        async function loadTasks(isLunas) {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            
+            const { data: tasks, error: errTasks } = await supabaseClient.from('tasks').select('*').order('created_at', { ascending: false });
+            const { data: subs, error: errSubs } = await supabaseClient.from('task_submissions').select('*').eq('user_id', user.id);
+            
+            currentTasks = tasks || [];
+            currentSubmissions = subs || [];
+            
+            const container = document.getElementById('task-list-view');
+            
+            if (errTasks) {
+                container.innerHTML = '<p class="text-red-500 text-center py-8 font-bold">Gagal memuat tugas. Hubungi admin.</p>';
+                return;
+            }
+
+            if (currentTasks.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-20 h-full text-center">
+                        <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                            <i class="fa-solid fa-inbox text-4xl text-gray-300"></i>
+                        </div>
+                        <h2 class="text-xl font-extrabold text-gray-700 mb-2 tracking-tight">Belum Ada Penugasan</h2>
+                        <p class="text-sm font-medium text-gray-400 max-w-sm">Saat ini belum ada tugas yang diberikan oleh panitia. Silakan bersantai atau pelajari modul yang ada.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = currentTasks.map(task => {
+                const isSubmitted = currentSubmissions.find(s => s.task_id === task.id);
+                const statusBadge = isSubmitted 
+                    ? `<span class="bg-green-50 text-green-700 px-3 py-1.5 rounded-lg text-[10px] font-extrabold border border-green-200 flex items-center gap-1.5 uppercase tracking-widest shadow-sm"><i class="fa-solid fa-check-circle"></i> Selesai</span>`
+                    : `<span class="bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-lg text-[10px] font-extrabold border border-yellow-200 flex items-center gap-1.5 uppercase tracking-widest shadow-sm"><i class="fa-regular fa-clock"></i> Pending</span>`;
+                
+                const icon = task.task_type === 'essay' ? 'fa-align-left' : 'fa-file-arrow-up';
+
+                return `
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between p-5 md:p-6 border border-gray-200 rounded-[1.5rem] bg-white hover:shadow-xl hover:border-orange-200 transition duration-500 gap-4 cursor-pointer group" onclick="openTask('${task.id}')">
+                    <div class="flex items-center gap-5 w-full md:w-auto">
+                        <div class="w-14 h-14 rounded-[1rem] bg-gradient-to-br from-orange-50 to-red-50 text-orange-500 flex items-center justify-center text-2xl flex-shrink-0 border border-orange-100 group-hover:scale-110 transition duration-300">
+                            <i class="fa-solid ${icon}"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-extrabold text-gray-900 text-lg leading-tight truncate tracking-tight group-hover:text-orange-600 transition">${task.title}</h4>
+                            <div class="flex gap-2 mt-2 flex-wrap items-center">
+                                <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded border border-gray-200 font-mono uppercase font-bold tracking-widest">${task.task_type}</span>
+                                <span class="text-[10px] text-gray-400 flex items-center gap-1 font-bold"><i class="fa-regular fa-calendar text-gray-300"></i> ${new Date(task.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end mt-2 md:mt-0 pt-3 border-t border-gray-100 md:border-0 md:pt-0">
+                        ${statusBadge}
+                        <button class="text-orange-500 bg-orange-50 group-hover:bg-orange-500 group-hover:text-white border border-orange-100 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 shrink-0 shadow-sm">
+                            <i class="fa-solid fa-arrow-right text-sm transform group-hover:translate-x-1 transition"></i>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function openTask(id) {
+            if (!globalIsLunas) {
+                Swal.fire('Akses Terkunci', 'Selesaikan pembayaran administrasi untuk membuka detail tugas ini.', 'warning');
+                return;
+            }
+
+            activeTask = currentTasks.find(t => t.id === id);
+            const submission = currentSubmissions.find(s => s.task_id === id);
+
+            document.getElementById('task-list-view').classList.add('hidden');
+            document.getElementById('task-detail-view').classList.remove('hidden');
+
+            document.getElementById('td-type-badge').innerText = activeTask.task_type === 'essay' ? 'Tipe: Teks Essai' : 'Tipe: File Upload';
+            document.getElementById('td-date-badge').innerHTML = `<i class="fa-regular fa-calendar"></i> Diposting: ${new Date(activeTask.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}`;
+
+            document.getElementById('td-title').innerText = activeTask.title;
+            document.getElementById('td-desc').innerHTML = activeTask.description || '<p class="italic text-gray-400 font-medium">Tidak ada deskripsi spesifik untuk tugas ini.</p>';
+
+            // Load Attachment & Link
+            let linksHtml = '';
+            if(activeTask.external_link) {
+                linksHtml += `<a href="${activeTask.external_link}" target="_blank" class="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-4 py-2.5 rounded-xl hover:bg-blue-600 hover:text-white font-bold flex items-center gap-2 transition duration-300 shadow-sm"><i class="fa-solid fa-link"></i> Buka Referensi Link</a>`;
+            }
+            if(activeTask.attachment_url) {
+                linksHtml += `<a href="${activeTask.attachment_url}" target="_blank" class="text-xs bg-purple-50 text-purple-600 border border-purple-200 px-4 py-2.5 rounded-xl hover:bg-purple-600 hover:text-white font-bold flex items-center gap-2 transition duration-300 shadow-sm"><i class="fa-solid fa-download"></i> Unduh File Soal</a>`;
+            }
+            document.getElementById('td-links').innerHTML = linksHtml;
+
+            // Form Visibility
+            const formEssay = document.getElementById('form-essay');
+            const formFile = document.getElementById('form-file');
+            const submittedAlert = document.getElementById('submitted-alert');
+            const btnSubmit = document.getElementById('btn-submit-task');
+            
+            formEssay.classList.add('hidden');
+            formFile.classList.add('hidden');
+            submittedAlert.classList.add('hidden');
+            btnSubmit.classList.remove('hidden');
+
+            if(submission) {
+                // Sudah Dikerjakan
+                btnSubmit.classList.add('hidden');
+                submittedAlert.classList.remove('hidden');
+                document.getElementById('submitted-time').innerText = `Waktu submit: ${new Date(submission.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'})} WIB`;
+                
+                let previewHtml = '';
+                if(activeTask.task_type === 'essay') {
+                    previewHtml = `<div class="prose prose-sm text-gray-600">${submission.essay_content}</div>`;
+                } else {
+                    previewHtml = `<a href="${submission.file_url}" target="_blank" class="flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 py-3.5 rounded-xl hover:border-red-300 hover:bg-red-50 hover:text-red-600 font-bold transition shadow-sm"><i class="fa-solid fa-file-arrow-down text-xl"></i> Buka File Jawaban Saya</a>`;
+                }
+                document.getElementById('submitted-content-preview').innerHTML = previewHtml;
+
+            } else {
+                // Belum Dikerjakan
+                if(activeTask.task_type === 'essay') {
+                    formEssay.classList.remove('hidden');
+                    if(!quillUser) {
+                        const toolbarOpts = [[{ 'font': [] }], [{ 'size': ['small', false, 'large', 'huge'] }], ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['clean']];
+                        quillUser = new Quill('#user-essay-editor', { theme: 'snow', modules: { toolbar: toolbarOpts }, placeholder: 'Ketik jawabanmu di sini dengan format yang rapi...' });
+                    }
+                    quillUser.root.innerHTML = ''; 
+                } else {
+                    formFile.classList.remove('hidden');
+                    document.getElementById('user-file-input').value = '';
+                    document.getElementById('user-file-label').innerText = 'Klik untuk Upload File';
+                    document.getElementById('user-file-label').classList.remove('text-ylosPink');
+                    userUploadFileObj = null;
+                }
+            }
+        }
+
+        function closeTaskDetail() {
+            document.getElementById('task-detail-view').classList.add('hidden');
+            document.getElementById('task-list-view').classList.remove('hidden');
+            activeTask = null;
+        }
+
+        function updateUserFileName(input) {
+            const file = input.files[0];
+            if(file) {
+                if(file.size > 5 * 1024 * 1024) {
+                    Swal.fire('File Terlalu Besar', 'Batas maksimal file adalah 5MB. Silakan kompres file Anda terlebih dahulu.', 'warning');
+                    input.value = '';
+                    userUploadFileObj = null;
+                    document.getElementById('user-file-label').innerText = 'Klik untuk Upload File';
+                    document.getElementById('user-file-label').classList.remove('text-ylosPink');
+                    return;
+                }
+                userUploadFileObj = file;
+                document.getElementById('user-file-label').innerText = file.name;
+                document.getElementById('user-file-label').classList.add('text-ylosPink');
+            }
+        }
+
+        // Logic Submit Penugasan
+        document.getElementById('btn-submit-task').addEventListener('click', async () => {
+            if(!activeTask) return;
+
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            let insertData = {
+                task_id: activeTask.id,
+                user_id: user.id
+            };
+
+            if(activeTask.task_type === 'essay') {
+                const content = quillUser.root.innerHTML;
+                if(quillUser.getText().trim().length === 0) return Swal.fire('Data Kosong', 'Jawaban essai tidak boleh dibiarkan kosong!', 'warning');
+                insertData.essay_content = content;
+            } else {
+                if(!userUploadFileObj) return Swal.fire('Peringatan', 'Anda belum memilih file jawaban untuk diupload!', 'warning');
+                
+                Swal.fire({title: 'Mengupload Jawaban...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+                const fileName = `${Date.now()}_${user.id}_${userUploadFileObj.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                
+                const { error: upErr } = await supabaseClient.storage.from('task-files').upload(`submissions/${fileName}`, userUploadFileObj);
+                if(upErr) return Swal.fire('Gagal Upload', upErr.message, 'error');
+                
+                const { data: { publicUrl } } = supabaseClient.storage.from('task-files').getPublicUrl(`submissions/${fileName}`);
+                insertData.file_url = publicUrl;
+            }
+
+            Swal.fire({title: 'Menyimpan Tugas...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+            
+            const { error: dbErr } = await supabaseClient.from('task_submissions').insert(insertData);
+            if(dbErr) return Swal.fire('Gagal Menyimpan', dbErr.message, 'error');
+
+            await Swal.fire({
+                icon: 'success',
+                title: 'Mantap!',
+                text: 'Tugas Anda telah berhasil dikumpulkan.',
+                confirmButtonText: 'Selesai'
+            });
+            
+            // Auto reload tampilan list & masuk kembali ke detail yang sudah terkunci
+            await loadTasks(true); 
+            openTask(activeTask.id); 
+        });
+
     </script>
 </body>
 </html>
