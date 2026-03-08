@@ -1248,6 +1248,32 @@
             return parsedRecipients;
         }
 
+        // --- EMAIL BLAST LOGIC ---
+        function updateRecipientCount() {
+            const val = document.getElementById('blast-recipients').value;
+            const lines = val.split(/[\n,]+/).map(e => e.trim()).filter(e => e !== "");
+            
+            let parsedRecipients = [];
+            
+            lines.forEach(line => {
+                const match = line.match(/(.*?)<([^>]+)>/);
+                if (match) {
+                    const name = match[1].trim();
+                    const email = match[2].trim();
+                    if (email) parsedRecipients.push({ name: name, email: email });
+                } else {
+                    const emailMatch = line.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+                    if (emailMatch) {
+                        parsedRecipients.push({ name: '', email: emailMatch[1].trim() });
+                    }
+                }
+            });
+            
+            document.getElementById('recipient-count').innerText = `${parsedRecipients.length} Email`;
+            return parsedRecipients;
+        }
+
+        // FUNGSI PROCESSEXCEL YANG SUDAH DIPERBAIKI
         function processExcel(input) {
             const file = input.files[0];
             if (!file) return;
@@ -1257,33 +1283,34 @@
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
                 const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
                 
-                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                // Gunakan header: 1 agar array langsung me-*return* nilai tanpa peduli nama headernya
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName], { header: 1 });
                 let extractedList = [];
                 
                 jsonData.forEach(row => {
+                    // Abaikan baris kosong
+                    if (!row || row.length === 0) return;
+
                     let nama = '';
                     let email = '';
                     
-                    for (const key in row) {
-                        const lowerKey = key.toLowerCase();
-                        if (lowerKey.includes('nama') || lowerKey.includes('name')) {
-                            nama = row[key];
-                        }
-                        if (lowerKey.includes('email') || lowerKey.includes('surel')) {
-                            email = row[key];
-                        }
-                    }
-                    
-                    if (!email) {
-                        for (const key in row) {
-                            if (typeof row[key] === 'string') {
-                                const matches = row[key].match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/i);
-                                if (matches) email = matches[0];
+                    // Looping setiap cell di dalam baris
+                    row.forEach(cell => {
+                        if (typeof cell === 'string') {
+                            // Cek apakah cell ini berisi email
+                            const emailMatch = cell.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/i);
+                            if (emailMatch) {
+                                email = emailMatch[0].trim();
+                            } else if (cell.trim() !== '') {
+                                // Jika bukan email dan bukan string kosong, anggap ini sebagai nama
+                                nama += cell.trim() + ' ';
                             }
                         }
-                    }
+                    });
+
+                    // Bersihkan spasi ekstra di nama
+                    nama = nama.trim();
 
                     if (email) {
                         if (nama) {
@@ -1294,6 +1321,7 @@
                     }
                 });
 
+                // Hapus duplikat
                 extractedList = [...new Set(extractedList)];
 
                 const textArea = document.getElementById('blast-recipients');
@@ -1306,9 +1334,9 @@
                 }
 
                 updateRecipientCount();
-                Toast.fire({ icon: 'success', title: `${extractedList.length} Data (Email & Nama) diimpor` });
+                Toast.fire({ icon: 'success', title: `${extractedList.length} Data diimpor` });
                 
-                input.value = '';
+                input.value = ''; // Reset input file
             };
             reader.readAsArrayBuffer(file);
         }
