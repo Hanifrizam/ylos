@@ -179,6 +179,8 @@
                     <span class="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[9px] px-2 py-0.5 rounded-full ml-auto font-bold shadow-sm">PRO</span>
                 </div>
                  <div onclick="switchTab('tracking')" id="menu-tracking" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-stopwatch w-5 text-center"></i> Progress Update <span class="text-[9px] text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded ml-auto font-bold">NEW</span></div>
+                 
+                 <div onclick="switchTab('tasks')" id="menu-tasks" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-list-check w-5 text-center"></i> Manajemen Tugas <span class="text-[9px] text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded ml-auto font-bold">NEW</span></div>
             </div>
 
             <div>
@@ -343,6 +345,37 @@
                         </div>
                 </div>
 
+            </div>
+
+            <div id="section-tasks" class="content-section space-y-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-list-check text-pink-600"></i> Manajemen Tugas</h2>
+                        <p class="text-gray-500 text-xs mt-1">Berikan tugas ke peserta atau tim. Terhubung dengan dashboard user.</p>
+                    </div>
+                    <button onclick="openTaskModal()" class="btn-press bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:bg-black flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Tambah Tugas
+                    </button>
+                </div>
+
+                <div class="glass-card p-4 md:p-6 mb-6">
+                    <div class="overflow-x-auto">
+                        <table class="modern-table w-full min-w-[600px]">
+                            <thead>
+                                <tr>
+                                    <th>Judul Tugas</th>
+                                    <th>Assignee</th>
+                                    <th>Deadline</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="task-list">
+                                <tr><td colspan="5" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data tugas...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <div id="section-digisign" class="content-section space-y-6">
@@ -606,6 +639,31 @@
         </div>
     </main>
 
+    <div id="submissions-modal" class="fixed inset-0 bg-gray-900/90 z-[9999] hidden flex justify-center items-center p-4 transition-opacity backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl transform transition-all">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <div>
+                    <h3 class="text-lg md:text-xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2" id="sub-modal-title">
+                        Jawaban Tugas
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1 font-medium">Daftar peserta yang sudah mengumpulkan penugasan ini.</p>
+                </div>
+                <button onclick="document.getElementById('submissions-modal').classList.add('hidden')" class="w-10 h-10 bg-white border border-gray-200 rounded-xl text-gray-500 hover:text-red-500 hover:bg-red-50 transition shadow-sm"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 md:p-6 bg-white custom-scrollbar">
+                <div class="overflow-x-auto border border-gray-100 rounded-2xl">
+                    <table class="w-full min-w-[600px]">
+                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase font-extrabold tracking-widest text-left">
+                            <tr><th class="py-4 px-6 rounded-tl-xl">Nama Peserta</th><th class="py-4 px-6">Waktu Kumpul</th><th class="py-4 px-6 text-center rounded-tr-xl">Jawaban</th></tr>
+                        </thead>
+                        <tbody id="submissions-list">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // CONFIG
         const supabaseUrl = 'https://jrslgkxwjvugvgakxwsd.supabase.co';
@@ -630,6 +688,29 @@
         // Variables untuk Email Marketing Attachment
         let blastAttachmentData = null;
         let blastAttachmentName = "";
+        let blastAttachmentType = ""; // NEW: Simpan MIME type file
+
+        // PERBAIKAN MANAJEMEN TUGAS: Global Function untuk Custom Assign Modal
+        window.toggleAssignSelect = function(cb) {
+            const container = document.getElementById('assign-select-container');
+            if(cb.checked) {
+                container.classList.add('hidden');
+                container.classList.remove('flex');
+                document.getElementById('t-assign').value = '';
+            } else {
+                container.classList.remove('hidden');
+                container.classList.add('flex');
+            }
+        };
+
+        window.filterAssignees = function() {
+            const term = document.getElementById('t-assign-search').value.toLowerCase();
+            const options = document.getElementById('t-assign').options;
+            for(let i = 0; i < options.length; i++) {
+                const txt = options[i].text.toLowerCase();
+                options[i].style.display = txt.includes(term) ? '' : 'none';
+            }
+        };
 
         // MOBILE SIDEBAR TOGGLE
         function toggleSidebar() {
@@ -686,6 +767,10 @@
                 // Load Folder Tracking
                 fetchFolders();
                 initTrackingRealtime();
+                
+                // Load Tasks (NEW)
+                fetchTasks();
+                initTasksRealtime();
                 
                 // INIT QUILL EDITORs
                 initQuillEditors();
@@ -906,7 +991,236 @@
         }
 
         /* =========================================================
-            END LOGIC FOLDER BASED TRACKING
+            PERBAIKAN TASKS MANAGEMENT LOGIC & PREVIEW JAWABAN
+        ========================================================= */
+
+        async function fetchTasks() {
+            // Kita menggunakan Flat Query tanpa join (select '*')
+            // untuk MENGHINDARI ERROR 400 (Violates Check Constraint / Relation Failed)
+            // Nama user nantinya akan dicocokkan otomatis dari array allUsers
+            const { data, error } = await supabaseClient
+                .from('tasks')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            const tbody = document.getElementById('task-list');
+            if (error) {
+                console.error("Gagal menarik data tugas:", error);
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-red-400 py-6 text-xs italic">Gagal memuat tugas.</td></tr>';
+                return;
+            }
+            renderTasks(data || []);
+        }
+
+        function renderTasks(data) {
+            const tbody = document.getElementById('task-list');
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-6 text-xs italic">Belum ada tugas.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(task => {
+                let statusBadge = '';
+                if(task.status === 'Completed') statusBadge = '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">Selesai</span>';
+                else if(task.status === 'Ongoing') statusBadge = '<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">Dikerjakan</span>';
+                else statusBadge = '<span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-bold">Pending</span>';
+
+                // Map Assignee menggunakan allUsers agar bebas dari error relasi Database
+                let assigneeName = 'Semua Peserta (Publik)';
+                if (task.assigned_to) {
+                    const foundUser = allUsers.find(u => u.id === task.assigned_to);
+                    assigneeName = foundUser ? foundUser.full_name : 'User ID: ' + task.assigned_to.substring(0,5) + '...';
+                }
+
+                // Perbaiki error syntax quote (') di judul tugas saat masuk ke parameter function
+                const safeTitle = task.title.replace(/'/g, "\\'"); 
+
+                return `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4">
+                        <div class="font-bold text-gray-800 text-sm">${task.title}</div>
+                        <div class="text-xs text-gray-500 truncate max-w-[200px]" title="${task.description || ''}">${task.description || '-'}</div>
+                    </td>
+                    <td class="px-6 py-4 text-xs font-bold text-gray-600"><i class="fa-solid fa-user text-gray-400 mr-1"></i> ${assigneeName}</td>
+                    <td class="px-6 py-4 text-xs text-gray-500"><i class="fa-regular fa-calendar text-pink-400 mr-1"></i> ${task.due_date ? new Date(task.due_date).toLocaleDateString('id-ID') : '-'}</td>
+                    <td class="px-6 py-4">${statusBadge}</td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="viewSubmissions('${task.id}', '${safeTitle}', '${task.task_type}')" class="text-blue-500 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-[10px] font-bold transition shadow-sm whitespace-nowrap"><i class="fa-solid fa-users-viewfinder"></i> Cek Jawaban</button>
+                            <button onclick="deleteTask('${task.id}')" class="text-red-400 hover:text-red-600 p-1.5 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash text-sm"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function openTaskModal() {
+            Swal.showLoading();
+            // Ambil user langsung dari database untuk memastikan daftarnya yang paling update
+            const { data: users } = await supabaseClient.from('profiles').select('id, full_name').order('full_name', {ascending: true});
+            Swal.close();
+
+            let userOpts = '';
+            if(users) {
+                users.forEach(u => {
+                    if(u.full_name) {
+                        userOpts += `<option value="${u.id}" class="py-1 border-b border-gray-100">${u.full_name}</option>`;
+                    }
+                });
+            }
+
+            const { value: formValues } = await Swal.fire({
+                title: 'Tambah Tugas Baru',
+                html: `
+                    <div class="text-left space-y-4 mt-4">
+                        <div>
+                            <label class="text-xs font-bold text-gray-500">Judul Tugas</label>
+                            <input id="t-title" class="swal2-input !m-0 mt-1 w-full text-sm rounded-lg border-gray-200" placeholder="Contoh: Buat desain banner">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-500">Tipe Tugas</label>
+                            <select id="t-type" class="swal2-select !m-0 mt-1 w-full text-sm rounded-lg border-gray-200" style="display:flex;">
+                                <option value="essay">Teks / Essai</option>
+                                <option value="file">Upload File</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-500">Deskripsi (Opsional)</label>
+                            <textarea id="t-desc" class="swal2-textarea !m-0 mt-1 w-full text-sm rounded-lg border-gray-200" style="height: 80px;" placeholder="Detail tugas..."></textarea>
+                        </div>
+                        
+                        <div class="border border-gray-200 p-3 rounded-lg bg-gray-50">
+                            <label class="text-xs font-bold text-gray-800 mb-2 block border-b border-gray-200 pb-1">Penugasan (Assignee)</label>
+                            <div class="flex items-center gap-2 mb-2">
+                                <input type="checkbox" id="t-assign-all" onchange="toggleAssignSelect(this)" class="w-4 h-4 text-pink-600 rounded cursor-pointer" checked>
+                                <label for="t-assign-all" class="text-sm text-gray-700 font-bold cursor-pointer select-none">Berikan ke Semua Peserta</label>
+                            </div>
+                            <div id="assign-select-container" class="hidden flex-col gap-2">
+                                <input type="text" id="t-assign-search" onkeyup="filterAssignees()" placeholder="🔍 Cari nama peserta..." class="swal2-input !m-0 w-full text-sm rounded-lg border-gray-200 p-2 h-10">
+                                <select id="t-assign" size="5" class="swal2-select !m-0 w-full text-sm border-gray-200 rounded-lg p-2 bg-white outline-none" style="display:block;">
+                                    ${userOpts}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-bold text-gray-500">Tenggat Waktu (Opsional)</label>
+                            <input type="date" id="t-due" class="swal2-input !m-0 mt-1 w-full text-sm rounded-lg border-gray-200">
+                        </div>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Simpan Tugas',
+                confirmButtonColor: '#DB2777',
+                width: '32em',
+                preConfirm: () => {
+                    const title = document.getElementById('t-title').value;
+                    const type = document.getElementById('t-type').value;
+                    const isAll = document.getElementById('t-assign-all').checked;
+                    const assignedTo = isAll ? null : document.getElementById('t-assign').value;
+                    
+                    if(!title) { Swal.showValidationMessage('Judul tugas wajib diisi!'); return false; }
+                    if(!isAll && !assignedTo) { Swal.showValidationMessage('Silakan pilih peserta spesifik dari daftar!'); return false; }
+                    
+                    return {
+                        title: title,
+                        task_type: type,
+                        description: document.getElementById('t-desc').value,
+                        assigned_to: assignedTo,
+                        due_date: document.getElementById('t-due').value || null,
+                        status: 'Pending'
+                    }
+                }
+            });
+
+            if(formValues) {
+                Swal.showLoading();
+                const { error } = await supabaseClient.from('tasks').insert([formValues]);
+                
+                // Mencegah dan Memberi Info yang jelas tentang Error Constraint Database
+                if(error) { 
+                    if(error.message.includes('tasks_task_type_check')) {
+                        Swal.fire('Aturan Database Gagal', 'Tipe tugas ("' + formValues.task_type + '") ditolak oleh Database. Harap sesuaikan penulisannya dengan daftar Check Constraint pada tabel Tasks di Supabase Anda.', 'error');
+                    } else {
+                        Swal.fire('Gagal Menyimpan', error.message, 'error');
+                    }
+                } else {
+                    Toast.fire({ icon: 'success', title: 'Tugas Berhasil Ditambahkan' });
+                    fetchTasks();
+                }
+            }
+        }
+
+        // --- FUNGSI ADMIN: MELIHAT JAWABAN PESERTA ---
+        async function viewSubmissions(taskId, taskTitle, taskType) {
+            document.getElementById('sub-modal-title').innerText = `Jawaban: ${taskTitle}`;
+            document.getElementById('submissions-modal').classList.remove('hidden');
+            document.getElementById('submissions-list').innerHTML = `<tr><td colspan="3" class="text-center py-6 text-gray-400 text-sm"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data jawaban...</td></tr>`;
+
+            // Ambil data tanpa join table agar menghindari error Foreign Key
+            const { data, error } = await supabaseClient.from('task_submissions').select('*').eq('task_id', taskId).order('created_at', { ascending: false });
+
+            if(error || !data) {
+                document.getElementById('submissions-list').innerHTML = `<tr><td colspan="3" class="text-center py-6 text-red-500 text-sm">Gagal memuat jawaban.</td></tr>`;
+                return;
+            }
+
+            if(data.length === 0) {
+                document.getElementById('submissions-list').innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-400 text-sm italic">Belum ada peserta yang mengumpulkan tugas ini.</td></tr>`;
+                return;
+            }
+
+            document.getElementById('submissions-list').innerHTML = data.map(sub => {
+                const user = allUsers.find(u => u.id === sub.user_id);
+                const name = user ? user.full_name : 'Unknown User';
+                const date = new Date(sub.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
+
+                let answerHtml = '';
+                if(taskType === 'essay') {
+                    const safeHtml = (sub.essay_content || '').replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+                    answerHtml = `<button onclick="previewEssay('${safeHtml}')" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-100 transition"><i class="fa-solid fa-eye"></i> Baca Essai</button>`;
+                } else {
+                    answerHtml = `<a href="${sub.file_url}" target="_blank" class="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-rose-100 transition whitespace-nowrap"><i class="fa-solid fa-download"></i> Buka File</a>`;
+                }
+
+                return `<tr class="border-b border-gray-50 hover:bg-gray-50 transition">
+                    <td class="py-3 px-4 font-bold text-gray-800 text-sm">${name}</td>
+                    <td class="py-3 px-4 text-xs text-gray-500">${date} WIB</td>
+                    <td class="py-3 px-4 text-center">${answerHtml}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function previewEssay(content) {
+            Swal.fire({
+                title: 'Isi Jawaban',
+                html: `<div class="text-left text-sm text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-200 max-h-96 overflow-y-auto mt-2 prose prose-sm">${content}</div>`,
+                width: '600px',
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#DB2777',
+                customClass: { confirmButton: 'rounded-xl' }
+            });
+        }
+
+        async function deleteTask(id) {
+            if((await Swal.fire({title:'Hapus Tugas?', text:'Tugas akan dihapus permanen dari sistem.', icon:'warning', showCancelButton:true, confirmButtonColor:'#d33', confirmButtonText:'Ya, hapus!'})).isConfirmed) {
+                await supabaseClient.from('tasks').delete().eq('id', id);
+                Toast.fire({ icon: 'success', title: 'Tugas dihapus' });
+                fetchTasks();
+            }
+        }
+
+        function initTasksRealtime() {
+            supabaseClient.channel('tasks-updates')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
+                    fetchTasks();
+                    Toast.fire({ icon: 'info', title: 'Daftar Tugas Diperbarui' });
+                }).subscribe();
+        }
+
+        /* =========================================================
+            END TASKS MANAGEMENT LOGIC
         ========================================================= */
 
         // --- EMAIL BLAST LOGIC ---
@@ -1013,7 +1327,7 @@
                 return;
             }
 
-            document.getElementById('blast-attachment-name').innerText = file.name;
+            document.getElementById('blast-attachment-name').innerText = "Memproses file...";
             document.getElementById('btn-clear-attachment').classList.remove('hidden');
             
             const reader = new FileReader();
@@ -1021,7 +1335,13 @@
                 const base64String = e.target.result.split(',')[1];
                 blastAttachmentData = base64String;
                 blastAttachmentName = file.name;
+                blastAttachmentType = file.type; // Menyimpan MIME Type
+                document.getElementById('blast-attachment-name').innerText = file.name;
             };
+            reader.onerror = function() {
+                Swal.fire('Error', 'Gagal memproses/membaca file.', 'error');
+                clearAttachment();
+            }
             reader.readAsDataURL(file);
         }
 
@@ -1031,6 +1351,7 @@
             document.getElementById('btn-clear-attachment').classList.add('hidden');
             blastAttachmentData = null;
             blastAttachmentName = "";
+            blastAttachmentType = "";
         }
         // --- SELESAI TAMBAHAN LOGIKA LAMPIRAN FILE ---
 
@@ -1076,7 +1397,9 @@
             if (blastAttachmentData && blastAttachmentName) {
                 attachments.push({
                     filename: blastAttachmentName,
-                    content: blastAttachmentData
+                    content: blastAttachmentData,
+                    content_type: blastAttachmentType, // Penting untuk API Resend
+                    contentType: blastAttachmentType   // Format cadangan (tergantung SDK versi Node)
                 });
             }
 
@@ -1101,6 +1424,7 @@
                     recipient_name: nama 
                 };
 
+                // Kirim array attachments ke edge function (Supabase)
                 if (attachments.length > 0) {
                     payloadContent.attachments = attachments;
                 }
@@ -1153,42 +1477,38 @@
             
             const { data: { user } } = await supabaseClient.auth.getUser();
             
-            // PERBAIKAN QUERY: Menggunakan sintaks Supabase yang aman untuk relasi
-            let query = supabaseClient.from('digisign_documents')
-                .select('*, requester:profiles!digisign_documents_requester_id_fkey(full_name), signer:profiles!digisign_documents_signer_id_fkey(full_name)');
+            // GUNAKAN FLAT QUERY UNTUK MENGHINDARI ERROR 400 RELASI
+            let query = supabaseClient.from('digisign_documents').select('*');
             
-            // Filter Data Berdasarkan Tab
             if(filter === 'inbox') query = query.eq('signer_id', user.id).eq('status', 'pending');
             else if(filter === 'sent') query = query.eq('requester_id', user.id);
             else if(filter === 'completed') query = query.eq('status', 'signed');
             
-            let { data, error } = await query.order('created_at', {ascending: false});
-
-            // ==========================================
-            // FALLBACK SYSTEM (Penyelamat Error 400)
-            // ==========================================
-            // Jika relasi FK gagal ditarik (error 400), kita jalankan flat query biasa
-            // sehingga dokumen tetap muncul meski nama tracking-nya fallback ke "System"
-            if (error) {
-                console.warn("Warning: Relasi tabel Profiles gagal (Error 400). Menggunakan flat query sebagai fallback.", error);
-                
-                let fallback = supabaseClient.from('digisign_documents').select('*');
-                if(filter === 'inbox') fallback = fallback.eq('signer_id', user.id).eq('status', 'pending');
-                else if(filter === 'sent') fallback = fallback.eq('requester_id', user.id);
-                else if(filter === 'completed') fallback = fallback.eq('status', 'signed');
-                
-                const res = await fallback.order('created_at', {ascending: false});
-                data = res.data;
-                if(res.error) console.error("Fallback juga gagal:", res.error);
-            }
+            const { data, error } = await query.order('created_at', {ascending: false});
 
             const tbody = document.getElementById('digisign-list'); 
             tbody.innerHTML = '';
             
-            if(!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400 italic">Tidak ada dokumen.</td></tr>`; return; }
+            if(error) {
+                console.error("Gagal menarik data dokumen:", error);
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-400 italic">Gagal memuat dokumen.</td></tr>`; 
+                return; 
+            }
+
+            if(!data || data.length === 0) { 
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400 italic">Tidak ada dokumen.</td></tr>`; 
+                return; 
+            }
             
             data.forEach(doc => {
-                let tracking = `<div class="flex flex-col md:flex-row items-start md:items-center gap-2 text-xs bg-gray-50 w-fit px-3 py-1 rounded-full"><span class="font-bold text-blue-600">${doc.requester?.full_name || 'System'}</span> <i class="fa-solid fa-arrow-right text-gray-400 text-[10px] hidden md:inline"></i> <span class="font-bold text-pink-600">${doc.signer?.full_name || 'User'}</span></div>`;
+                // MANUAL MAPPING NAMA USER DARI allUsers
+                const reqUser = allUsers.find(u => u.id === doc.requester_id);
+                const sigUser = allUsers.find(u => u.id === doc.signer_id);
+                
+                const requesterName = reqUser ? reqUser.full_name : 'System/Admin';
+                const signerName = sigUser ? sigUser.full_name : 'User';
+
+                let tracking = `<div class="flex flex-col md:flex-row items-start md:items-center gap-2 text-xs bg-gray-50 w-fit px-3 py-1 rounded-full"><span class="font-bold text-blue-600">${requesterName}</span> <i class="fa-solid fa-arrow-right text-gray-400 text-[10px] hidden md:inline"></i> <span class="font-bold text-pink-600">${signerName}</span></div>`;
                 let btn = '';
                 let statusHtml = '';
 
@@ -1234,7 +1554,6 @@
             });
         }
 
-        // FITUR BARU: Hapus Request Dokumen
         async function deleteDigiSignDoc(id) {
             if((await Swal.fire({title:'Hapus Dokumen?', text:'Dokumen ini akan dihapus permanen dari sistem.', icon:'warning', showCancelButton:true, confirmButtonColor:'#d33', confirmButtonText:'Ya, hapus!'})).isConfirmed) {
                 Swal.showLoading();
@@ -1245,7 +1564,6 @@
             }
         }
 
-        // FITUR BARU: Penolakan Dokumen dengan Notes
         async function rejectDigiSignDoc(id) {
             const { value: note } = await Swal.fire({
                 title: 'Tolak Dokumen',
