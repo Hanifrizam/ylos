@@ -924,14 +924,19 @@
             }
         }
 
-        // Logic Submit Penugasan
+        // Logic Submit Penugasan (Diperbarui dengan Best Practice Supabase v2)
         document.getElementById('btn-submit-task').addEventListener('click', async () => {
             if(!activeTask) return;
 
-            const { data: { user } } = await supabaseClient.auth.getUser();
+            // Pastikan user masih login dan datanya tersedia
+            const { data: { user }, error: authErr } = await supabaseClient.auth.getUser();
+            if (authErr || !user) {
+                return Swal.fire('Akses Ditolak', 'Gagal memverifikasi akun kamu. Silakan *refresh* atau *login* ulang.', 'error');
+            }
+
             let insertData = {
                 task_id: activeTask.id,
-                user_id: user.id
+                user_id: user.id // Data user_id sudah dipastikan terkirim ke database
             };
 
             if(activeTask.task_type === 'essay') {
@@ -953,8 +958,13 @@
 
             Swal.fire({title: 'Menyimpan Tugas...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
             
-            const { error: dbErr } = await supabaseClient.from('task_submissions').insert(insertData);
-            if(dbErr) return Swal.fire('Gagal Menyimpan', dbErr.message, 'error');
+            // Perbaikan Code: Menggunakan format Array [] (Lebih stabil di Supabase JS v2)
+            const { error: dbErr } = await supabaseClient.from('task_submissions').insert([insertData]);
+            
+            if(dbErr) {
+                console.error("Insert Error Supabase:", dbErr);
+                return Swal.fire('Gagal Menyimpan', dbErr.message + '\n\nSilakan cek Policy di Database Supabase Anda!', 'error');
+            }
 
             await Swal.fire({
                 icon: 'success',
@@ -964,7 +974,7 @@
             });
             
             // Auto reload tampilan list & masuk kembali ke detail yang sudah terkunci
-            await loadTasks(true); 
+            await loadTasks(globalIsLunas); 
             openTask(activeTask.id); 
         });
 
