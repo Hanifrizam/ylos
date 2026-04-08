@@ -107,6 +107,14 @@
             transform: translateY(-40px) scale(1.05) !important;
             pointer-events: none;
         }
+
+        /* Custom File Input Upload Button Styling */
+        input[type=file]::file-selector-button {
+            margin-right: 1rem; padding: 0.5rem 1rem; border-radius: 0.5rem;
+            border: none; background-color: #FEF3C7; color: #D97706;
+            font-weight: 700; cursor: pointer; transition: all 0.2s;
+        }
+        input[type=file]::file-selector-button:hover { background-color: #FDE68A; }
     </style>
 </head>
 <body class="font-sans text-gray-800 bg-gray-50 antialiased overflow-x-hidden selection:bg-ylosPink selection:text-white">
@@ -153,6 +161,10 @@
                         <a href="#speakers" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Pembicara</a>
                         <a href="#trip" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Program</a> 
                         <a href="#pricing" onclick="showPage('home')" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-ylosPink hover:bg-pink-50 rounded-full transition">Daftar</a>
+                        
+                        <a href="#ambassador" onclick="showPage('ambassador')" class="ml-2 px-4 py-2 text-sm font-extrabold text-yellow-600 bg-yellow-50 border border-yellow-200 rounded-full hover:bg-yellow-100 hover:scale-105 transition duration-300 flex items-center gap-1 shadow-sm">
+                            <i class="fa-solid fa-star"></i> Brand Ambassador
+                        </a>
                     </div>
 
                     <div class="hidden md:block">
@@ -176,6 +188,8 @@
                 <a href="#speakers" onclick="mobileLinkClick('home')" class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-700 hover:bg-pink-50 hover:text-ylosPink transition"><i class="fa-solid fa-microphone w-6 text-center"></i> Pembicara</a>
                 <a href="#trip" onclick="mobileLinkClick('home')" class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-700 hover:bg-pink-50 hover:text-ylosPink transition"><i class="fa-solid fa-plane w-6 text-center"></i> Program Highlights</a>
                 <a href="#pricing" onclick="mobileLinkClick('home')" class="block px-4 py-3 rounded-xl text-base font-semibold text-gray-700 hover:bg-pink-50 hover:text-ylosPink transition"><i class="fa-solid fa-ticket w-6 text-center"></i> Pendaftaran</a>
+                
+                <a href="#ambassador" onclick="mobileLinkClick('ambassador')" class="block px-4 py-3 rounded-xl text-base font-extrabold text-yellow-600 bg-yellow-50 hover:bg-yellow-100 transition shadow-sm border border-yellow-100"><i class="fa-solid fa-star w-6 text-center"></i> Daftar Ambassador</a>
                 
                 <div class="h-px bg-gray-100 my-4"></div>
                 
@@ -239,48 +253,35 @@
                 </div>
 
                 <div class="flex flex-wrap justify-center gap-8">
-                    
                     <div class="w-full md:w-[30%] bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-pink-100 transition duration-300 group">
-                        <div class="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <span class="text-3xl">🩺</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 text-gray-900">Bedah Total ‘1-on-1’ menjadi Organisatoris</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">YLOS menghadirkan pendekatan berbasis solusi nyata (solution-oriented). Peserta tidak hanya hadir untuk menyimak materi, melainkan membawa dinamika dan tantangan organisasi mereka untuk diselesaikan melalui sesi konsultasi intensif.
-                        </p>
+                        <div class="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 text-3xl">🩺</div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900">Bedah Total ‘1-on-1’</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">Pendekatan berbasis solusi nyata. Bawa dinamika dan tantangan organisasi sekolahmu untuk diselesaikan melalui sesi konsultasi intensif bersama praktisi.</p>
                     </div>
 
                     <div class="w-full md:w-[30%] bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-yellow-100 transition duration-300 group">
-                        <div class="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <span class="text-3xl">🎓</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 text-gray-900">Organization Case Simulation and Campus Immersion</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">Program ini dirancang secara strategis untuk memberikan pengalaman nyata dunia perkuliahan dan kepemimpinan tingkat lanjut.</p>
+                        <div class="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 text-3xl">🎓</div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900">Organization Case Simulation</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">Program dirancang strategis untuk memberikan pengalaman nyata simulasi manajemen organisasi dan kepemimpinan tingkat lanjut.</p>
                     </div>
 
                     <div class="w-full md:w-[30%] bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-blue-100 transition duration-300 group">
-                        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <span class="text-3xl">🤝</span>
-                        </div>
+                        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 text-3xl">🤝</div>
                         <h3 class="text-xl font-bold mb-3 text-gray-900">The YLOS Community</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">Dampak YLOS dirancang berkelanjutan. Setelah program usai, peserta secara otomatis terintegrasi ke dalam The YLOS Community, sebuah komunitas jejaring alumni nasional yang dikelola secara profesional.</p>
+                        <p class="text-gray-600 text-sm leading-relaxed">Setelah program usai, peserta otomatis terintegrasi ke dalam komunitas jejaring alumni nasional yang dikelola secara profesional.</p>
                     </div>
 
                     <div class="w-full md:w-[30%] bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-green-100 transition duration-300 group">
-                        <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <span class="text-3xl">✈️</span>
-                        </div>
+                        <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 text-3xl">✈️</div>
                         <h3 class="text-xl font-bold mb-3 text-gray-900">Global Pathways</h3>
                         <p class="text-gray-600 text-sm leading-relaxed">Membuka wawasan global dengan kesempatan Student Exchange ke Malaysia bagi delegasi terbaik.</p>
                     </div>
 
                     <div class="w-full md:w-[30%] bg-gray-50 p-8 rounded-[2rem] hover:bg-white hover:shadow-2xl border border-transparent hover:border-purple-100 transition duration-300 group">
-                        <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <span class="text-3xl">🛡️</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 text-gray-900">Character & Leadership Building </h3>
+                        <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 text-3xl">🛡️</div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900">Character & Leadership</h3>
                         <p class="text-gray-600 text-sm leading-relaxed">Leader with Character. Kurikulum ini dirancang untuk membangun kecerdasan emosional (EQ) dan integritas dalam diri peserta.</p>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -301,24 +302,14 @@
                     <div class="md:hidden absolute left-4 top-0 w-1 h-full bg-gray-200 rounded-full"></div>
 
                     <div class="space-y-6 md:space-y-0">
-                        
                         <div class="timeline-item flex flex-col md:flex-row items-center justify-between w-full">
                             <div class="w-full md:w-5/12 order-1 md:order-1 relative pl-12 md:pl-0 md:pr-10 md:text-right">
                                 <div class="bg-white p-4 md:p-6 rounded-xl md:rounded-2xl shadow-lg border border-gray-100 hover:border-ylosPink transition duration-300 group">
                                     <h3 class="text-lg md:text-2xl font-bold text-gray-900 group-hover:text-ylosPink transition">Registration</h3>
                                     <div class="mt-4 space-y-2 text-sm text-gray-600">
-                                        <div class="flex justify-between md:justify-end gap-2 border-b border-gray-100 pb-1">
-                                            <span>Batch 1 Early Bird</span>
-                                            <span class="font-bold">Feb 2 - 28, 2026</span>
-                                        </div>
-                                        <div class="flex justify-between md:justify-end gap-2 border-b border-gray-100 pb-1">
-                                            <span>Batch 2 Regular</span>
-                                            <span class="font-bold">Mar 01 - 31, 2026</span>
-                                        </div>
-                                        <div class="flex justify-between md:justify-end gap-2 border-b border-gray-100 pb-1">
-                                            <span>Batch 3 Last Call</span>
-                                            <span class="font-bold">Apr 01 - 25, 2026</span>
-                                        </div>
+                                        <div class="flex justify-between md:justify-end gap-4 border-b border-gray-100 pb-1"><span>Batch 1 Early Bird</span><span class="font-bold">Feb 2 - 28, 2026</span></div>
+                                        <div class="flex justify-between md:justify-end gap-4 border-b border-gray-100 pb-1"><span>Batch 2 Regular</span><span class="font-bold">Mar 01 - 31, 2026</span></div>
+                                        <div class="flex justify-between md:justify-end gap-4 border-b border-gray-100 pb-1"><span>Batch 3 Last Call</span><span class="font-bold">Apr 01 - 25, 2026</span></div>
                                     </div>
                                 </div>
                                 <div class="absolute left-2 top-6 w-5 h-5 bg-gray-900 rounded-full border-4 border-white shadow md:hidden z-10"></div>
@@ -344,7 +335,7 @@
                             <div class="w-full md:w-5/12 order-1 relative pl-12 md:pl-0 md:pr-10 md:text-right">
                                 <div class="bg-white p-4 md:p-6 rounded-xl md:rounded-2xl shadow-lg border border-gray-100 hover:border-ylosPink transition duration-300 group">
                                     <h3 class="text-lg md:text-2xl font-bold text-gray-900 group-hover:text-ylosPink transition">Announcement</h3>
-                                    <p class="text-sm text-gray-500 mt-2">Potentially Fully Funded and Partially Funded Candidates</p>
+                                    <p class="text-sm text-gray-500 mt-2">Fully Funded and Partially Funded Candidates</p>
                                     <span class="inline-block mt-2 md:mt-3 px-3 py-1 bg-green-100 rounded-full text-xs font-bold text-green-700">May 6 - 8, 2026</span>
                                 </div>
                                 <div class="absolute left-2 top-6 w-5 h-5 bg-gray-900 rounded-full border-4 border-white shadow md:hidden z-10"></div>
@@ -426,7 +417,7 @@
                 </div>
             </div>
         </section>
-        
+
         <section id="speakers" class="py-20 bg-gray-900 text-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -437,7 +428,7 @@
                 <div class="flex flex-wrap justify-center gap-8 md:gap-10">
                     <div class="w-40 md:w-56 text-center group">
                         <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
-                            <img src="Gambar anies baswedan.jpg" alt="Anies Baswedan" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                            <img src="Gambar anies baswedan.jpg" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/e/e3/Anies_Baswedan_Official_Portrait.jpg'" alt="Anies Baswedan" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
                         </div>
                         <h3 class="font-bold text-lg">Anies Rasyid Baswedan*</h3>
                         <p class="text-xs text-gray-400">Ex-Mendikbud RI</p>
@@ -445,7 +436,7 @@
 
                     <div class="w-40 md:w-56 text-center group">
                         <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
-                            <img src="foto ganjar.png" onerror="this.src='https://via.placeholder.com/300?text=Ganjar'" alt="Ganjar Pranowo" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                            <img src="foto ganjar.png" onerror="this.src='https://via.placeholder.com/300?text=Ganjar'" alt="Ganjar Pranowo" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500 bg-gray-800">
                         </div>
                         <h3 class="font-bold text-lg">Ganjar Pranowo*</h3>
                         <p class="text-xs text-gray-400">Ex-Gubernur Jawa Tengah</p>
@@ -453,7 +444,7 @@
 
                     <div class="w-40 md:w-56 text-center group">
                         <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
-                            <img src="Gambar salman subakat.jpg" alt="Salman Subakat" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                            <img src="Gambar salman subakat.jpg" onerror="this.src='https://images.bisnis.com/posts/2021/08/11/1428589/salman-subakat_1.jpeg'" alt="Salman Subakat" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
                         </div>
                         <h3 class="font-bold text-lg">Salman Subakat*</h3>
                         <p class="text-xs text-gray-400">CEO ParagonCorp</p>
@@ -461,7 +452,7 @@
 
                     <div class="w-40 md:w-56 text-center group">
                         <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
-                            <img src="foto vina.jpeg" onerror="this.src='https://via.placeholder.com/300?text=Vina'" alt="Vina Muliana" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                            <img src="foto vina.jpeg" onerror="this.src='https://cdn.antaranews.com/cache/1200x800/2022/02/23/Vina-Muliana-BUMN.jpg'" alt="Vina Muliana" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
                         </div>
                         <h3 class="font-bold text-lg">Vina Muliana*</h3>
                         <p class="text-xs text-gray-400">HR Professional & Content Creator</p>
@@ -469,9 +460,7 @@
 
                     <div class="w-40 md:w-56 text-center group">
                         <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
-                            <div class="w-full h-full bg-gray-800 flex items-center justify-center text-4xl">
-                                <img src="Gambar deris nagara.jpg" alt="Deris Nagara" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
-                            </div>
+                            <img src="Gambar deris nagara.jpg" onerror="this.src='https://static.promediateknologi.id/crop/0x0:0x0/0x0/webp/photo/p2/65/2023/12/05/Deris-Nagara-749666014.jpg'" alt="Deris Nagara" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
                         </div>
                         <h3 class="font-bold text-lg">Deris Nagara*</h3>
                         <p class="text-xs text-gray-400">Ex-Presiden BEM Columbia Univ</p>
@@ -480,7 +469,7 @@
                     <div class="w-40 md:w-56 text-center group">
                         <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
                             <div class="w-full h-full bg-gray-800 flex items-center justify-center text-4xl">
-                                <img src="Foto manik.png" alt="Manik Margahamahendra" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                                <img src="Foto manik.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/e/e3/Anies_Baswedan_Official_Portrait.jpg'" alt="Manik Margahamahendra" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500 opacity-50">
                             </div>
                         </div>
                         <h3 class="font-bold text-lg">Manik Margahamahendra*</h3>
@@ -489,7 +478,7 @@
 
                     <div class="w-40 md:w-56 text-center group">
                         <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
-                            <img src="foto Zensa.png" onerror="this.src='https://via.placeholder.com/300?text=Zensa'" alt="Zensa Rahman" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                            <img src="foto Zensa.png" onerror="this.src='https://via.placeholder.com/300?text=Zensa'" alt="Zensa Rahman" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500 bg-gray-800">
                         </div>
                         <h3 class="font-bold text-lg">Zensa Rahman*</h3>
                         <p class="text-xs text-gray-400">Managing Director Pemimpin.id</p>
@@ -497,7 +486,7 @@
 
                     <div class="w-40 md:w-56 text-center group">
                         <div class="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gray-700 group-hover:border-ylosPink transition duration-300 mx-auto mb-4 relative">
-                            <img src="ferry irwandi.png" onerror="this.src='https://via.placeholder.com/300?text=Zensa'" alt="Zensa Rahman" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                            <img src="ferry irwandi.png" onerror="this.src='https://via.placeholder.com/300?text=Ferry'" alt="Ferry Irwandi" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500 bg-gray-800">
                         </div>
                         <h3 class="font-bold text-lg">Ferry Irwandi*</h3>
                         <p class="text-xs text-gray-400">Founder Malaka Project</p>
@@ -541,126 +530,126 @@
                     </div>
                 </div>
 
-<div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
-    <div class="w-full md:w-1/2 order-1 md:order-1">
-        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
-            <img src="bang ojan foto.jpg" alt="Mentoring" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-        </div>
-    </div>
-    <div class="w-full md:w-1/2 order-2 md:order-2">
-        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
-            Personal Growth
-        </span>
-        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
-            Bedah 1-on-1 Menjadi Organizator
-        </h3>
-        <p class="text-gray-600 mb-6 leading-relaxed">
-            Sesi mentoring eksklusif dan privat. Kamu akan dibedah potensi kepemimpinannya, review CV organisasi, hingga simulasi interview untuk persiapan karir organisasi yang lebih strategis.
-        </p>
-        <ul class="space-y-3">
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-user-doctor text-blue-500 w-6"></i> Diagnosis Potensi Diri
-            </li>
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-file-contract text-blue-500 w-6"></i> CV & Portfolio Review
-            </li>
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-handshake text-blue-500 w-6"></i> Simulasi Wawancara Pimpinan
-            </li>
-        </ul>
-    </div>
-</div>
+                <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
+                    <div class="w-full md:w-1/2 order-1 md:order-1">
+                        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
+                            <img src="bang ojan foto.jpg" alt="Mentoring" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 order-2 md:order-2">
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+                            Personal Growth
+                        </span>
+                        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
+                            Bedah 1-on-1 Menjadi Organizator
+                        </h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            Sesi mentoring eksklusif dan privat. Kamu akan dibedah potensi kepemimpinannya, review CV organisasi, hingga simulasi interview untuk persiapan karir organisasi yang lebih strategis.
+                        </p>
+                        <ul class="space-y-3">
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-user-doctor text-blue-500 w-6"></i> Diagnosis Potensi Diri
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-file-contract text-blue-500 w-6"></i> CV & Portfolio Review
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-handshake text-blue-500 w-6"></i> Simulasi Wawancara Pimpinan
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
-<div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
-    <div class="w-full md:w-1/2 order-2 md:order-1">
-        <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
-            Real World Challenge
-        </span>
-        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
-            Organization Case Simulation & Campus Immersion
-        </h3>
-        <p class="text-gray-600 mb-6 leading-relaxed">
-            Rasakan atmosfer nyata penyelesaian masalah organisasi. Kamu akan diterjunkan langsung ke dalam simulasi krisis organisasi dan menjelajahi ekosistem kampus terbaik.
-        </p>
-        <ul class="space-y-3">
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-chess-knight text-purple-500 w-6"></i> Crisis Management Simulation
-            </li>
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-building-columns text-purple-500 w-6"></i> Campus Ecosystem Tour
-            </li>
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-users-gear text-purple-500 w-6"></i> Strategic Decision Making
-            </li>
-        </ul>
-    </div>
-    <div class="w-full md:w-1/2 order-1 md:order-2">
-        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
-            <img src="foto tia.JPG" alt="Simulation" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-        </div>
-    </div>
-</div>
+                <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
+                    <div class="w-full md:w-1/2 order-2 md:order-1">
+                        <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+                            Real World Challenge
+                        </span>
+                        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
+                            Organization Case Simulation & Campus Immersion
+                        </h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            Rasakan atmosfer nyata penyelesaian masalah organisasi. Kamu akan diterjunkan langsung ke dalam simulasi krisis organisasi dan menjelajahi ekosistem kampus terbaik.
+                        </p>
+                        <ul class="space-y-3">
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-chess-knight text-purple-500 w-6"></i> Crisis Management Simulation
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-building-columns text-purple-500 w-6"></i> Campus Ecosystem Tour
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-users-gear text-purple-500 w-6"></i> Strategic Decision Making
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="w-full md:w-1/2 order-1 md:order-2">
+                        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
+                            <img src="foto tia.JPG" alt="Simulation" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                        </div>
+                    </div>
+                </div>
 
-<div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
-    <div class="w-full md:w-1/2 order-1 md:order-1">
-        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
-            <img src="foto comunity.jpg" alt="Community" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-        </div>
-    </div>
-    <div class="w-full md:w-1/2 order-2 md:order-2">
-        <span class="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
-            Networking
-        </span>
-        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
-            The YLOS Community
-        </h3>
-        <p class="text-gray-600 mb-6 leading-relaxed">
-            Bukan sekadar acara 3 hari. Bergabunglah dengan jejaring eksklusif para pemimpin muda dari seluruh Indonesia untuk kolaborasi jangka panjang.
-        </p>
-        <ul class="space-y-3">
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-infinity text-pink-500 w-6"></i> Lifetime Alumni Access
-            </li>
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-circle-nodes text-pink-500 w-6"></i> National Networking
-            </li>
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-hand-holding-heart text-pink-500 w-6"></i> Support System & Collaboration
-            </li>
-        </ul>
-    </div>
-</div>
+                <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24">
+                    <div class="w-full md:w-1/2 order-1 md:order-1">
+                        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
+                            <img src="foto comunity.jpg" alt="Community" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 order-2 md:order-2">
+                        <span class="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+                            Networking
+                        </span>
+                        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
+                            The YLOS Community
+                        </h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            Bukan sekadar acara 3 hari. Bergabunglah dengan jejaring eksklusif para pemimpin muda dari seluruh Indonesia untuk kolaborasi jangka panjang.
+                        </p>
+                        <ul class="space-y-3">
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-infinity text-pink-500 w-6"></i> Lifetime Alumni Access
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-circle-nodes text-pink-500 w-6"></i> National Networking
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-hand-holding-heart text-pink-500 w-6"></i> Support System & Collaboration
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
-<div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24 mb-12">
-    <div class="w-full md:w-1/2 order-2 md:order-1">
-        <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
-            Core Foundation
-        </span>
-        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
-            Character & Leadership Building Bootcamp
-        </h3>
-        <p class="text-gray-600 mb-6 leading-relaxed">
-            Pondasi utama seorang pemimpin. Bootcamp intensif yang dirancang untuk menguji ketahanan mental, kerja sama tim, dan kemampuan memimpin di bawah tekanan.
-        </p>
-        <ul class="space-y-3">
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-dumbbell text-orange-500 w-6"></i> Mental Agility Training
-            </li>
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-people-group text-orange-500 w-6"></i> Team Dynamics Challenge
-            </li>
-            <li class="flex items-center gap-3 text-gray-700 font-medium">
-                <i class="fa-solid fa-microphone-lines text-orange-500 w-6"></i> Public Speaking & Influence
-            </li>
-        </ul>
-    </div>
-    <div class="w-full md:w-1/2 order-1 md:order-2">
-        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
-            <img src="foto bootcamp.jpeg" alt="Leadership" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
-        </div>
-    </div>
-</div>
+                <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mt-16 md:mt-24 mb-12">
+                    <div class="w-full md:w-1/2 order-2 md:order-1">
+                        <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+                            Core Foundation
+                        </span>
+                        <h3 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4">
+                            Character & Leadership Building Bootcamp
+                        </h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            Pondasi utama seorang pemimpin. Bootcamp intensif yang dirancang untuk menguji ketahanan mental, kerja sama tim, dan kemampuan memimpin di bawah tekanan.
+                        </p>
+                        <ul class="space-y-3">
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-dumbbell text-orange-500 w-6"></i> Mental Agility Training
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-people-group text-orange-500 w-6"></i> Team Dynamics Challenge
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <i class="fa-solid fa-microphone-lines text-orange-500 w-6"></i> Public Speaking & Influence
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="w-full md:w-1/2 order-1 md:order-2">
+                        <div class="rounded-3xl overflow-hidden shadow-2xl h-64 md:h-80 w-full relative group">
+                            <img src="foto bootcamp.jpeg" alt="Leadership" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20">
                     <div class="lg:w-1/2 w-full">
@@ -690,13 +679,14 @@
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch max-w-6xl mx-auto">
                     
-                    <div class="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 flex flex-col h-full">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Commitment Fee (Biaya Seleksi)</h3>
-                        <p class="text-gray-500 text-sm mb-8">Biaya ini digunakan untuk mengakses Selection Bootcamp, Webinar, dan Sertifikat Seleksi Nasional.</p>
+                    <div class="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 flex flex-col h-full hover:border-pink-200 transition">
+                        <div class="mb-4 text-left"><span class="bg-pink-50 text-pink-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase">Tahap 1: Seleksi Nasional</span></div>
+                        <h3 class="text-2xl font-bold text-gray-900 text-left mb-2">Commitment Fee</h3>
+                        <p class="text-gray-500 text-sm mb-8 text-left">Biaya ini digunakan untuk mengakses Selection Bootcamp, Webinar, dan Sertifikat Seleksi Nasional.</p>
 
                         <div class="grid grid-cols-1 gap-4 mb-8">
                             <div class="border border-red-200 p-4 rounded-2xl flex justify-between items-center">
-                               
+                                
                                 <div class="text-left">
                                     <h4 class="font-bold text-gray-900 line-through">Early Bird</h4>
                                     <p class="text-xs text-gray-500 line-through">s.d 28 Feb 2026</p>
@@ -737,11 +727,12 @@
                         </button>
                     </div>
 
-                    <div class="bg-white p-8 rounded-3xl shadow-lg border border-purple-100 relative overflow-hidden flex flex-col h-full transform lg:scale-105 z-10">
-                        <div class="absolute top-0 right-0 bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl z-10">FAST TRACK</div>
+                    <div class="bg-white p-8 rounded-3xl shadow-xl border-2 border-purple-200 relative overflow-hidden flex flex-col h-full transform lg:scale-105 z-10">
+                        <div class="absolute top-0 right-0 bg-purple-600 text-white text-[10px] font-bold px-6 py-2 rounded-bl-2xl z-10">FAST TRACK</div>
 
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Self Funded (Jalur Mandiri)</h3>
-                        <p class="text-gray-500 text-sm mb-6">Jalur khusus tanpa seleksi. Langsung amankan kuota delegasi Anda tanpa harus bersaing di tahap seleksi.</p>
+                        <div class="mb-4 text-left"><span class="bg-purple-50 text-purple-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase">Tahap 2: Program Utama</span></div>
+                        <h3 class="text-2xl font-bold text-gray-900 text-left mb-2">Self Funded (Jalur Mandiri)</h3>
+                        <p class="text-gray-500 text-sm mb-6 text-left">Jalur khusus tanpa seleksi. Langsung amankan kuota delegasi Anda tanpa harus bersaing di tahap seleksi.</p>
 
                         <div class="bg-purple-50 p-8 rounded-2xl border border-purple-100 text-center mb-8">
                             <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Special Promo</p>
@@ -795,11 +786,8 @@
         <a href="https://wa.me/6281290774332?text=Halo%20Admin%20YLOS,%20saya%20ingin%20bertanya%20seputar%20pendaftaran." 
            target="_blank"
            class="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[60] flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 group border-2 border-white/20">
-            
             <i class="fa-brands fa-whatsapp text-3xl md:text-4xl"></i>
-            
             <span class="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-20 animate-ping"></span>
-            
             <div class="absolute right-full mr-4 bg-white text-gray-800 px-4 py-2 rounded-xl text-xs font-bold shadow-xl opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none whitespace-nowrap hidden md:block border border-gray-100">
                 Hubungi Admin 💬
                 <div class="absolute top-1/2 -right-1 -mt-1 w-2 h-2 bg-white transform rotate-45 border-r border-t border-gray-100"></div>
@@ -807,36 +795,139 @@
         </a>
     </div>
 
-    <div id="page-login" class="hidden-section pt-32 pb-20 min-h-screen px-4 bg-gray-50 flex items-center justify-center">
+    <div id="page-ambassador" class="hidden-section pt-32 pb-20 min-h-screen px-4 bg-gray-50 flex items-center justify-center">
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-            <div class="blob bg-ylosPink/10 w-[40rem] h-[40rem] rounded-full top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
+            <div class="blob bg-yellow-200/30 w-[40rem] h-[40rem] rounded-full top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
         </div>
 
-        <div class="w-full max-w-md bg-white p-8 md:p-10 rounded-3xl shadow-2xl border border-white/50 backdrop-blur-lg">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">👋</div>
-                <h2 class="text-3xl font-bold text-gray-900">Welcome Back!</h2>
-                <p class="text-gray-500 text-sm mt-2">Masuk untuk mengakses dashboard seleksi.</p>
+        <div class="w-full max-w-3xl bg-white p-8 md:p-10 rounded-3xl shadow-2xl border border-white/50 backdrop-blur-lg mt-10">
+            <div class="text-center mb-10">
+                <div class="w-16 h-16 bg-yellow-50 text-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm border border-yellow-100"><i class="fa-solid fa-star"></i></div>
+                <h2 class="text-3xl font-bold text-gray-900">YLOS School Ambassador (YSA)</h2>
+                <p class="text-gray-500 mt-2">Jadilah wajah perubahan dan raih benefit eksklusif dari YLOS 2026.</p>
             </div>
-
-            <form onsubmit="handleLogin(event)" class="space-y-5">
-                <div>
-                    <label class="block text-sm font-bold mb-2 text-gray-700">Email Address</label>
-                    <input type="email" id="login-email" required class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition font-medium" placeholder="nama@email.com">
-                </div>
-                <div>
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="block text-sm font-bold text-gray-700">Password</label>
-                        <a href="reset.html" class="text-xs font-bold text-ylosPink hover:underline">Lupa Password?</a>
-                    </div>
-                    <input type="password" id="login-password" required class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition font-medium" placeholder="••••••••">
-                </div>
-                <button type="submit" class="w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-black transition shadow-lg hover:-translate-y-0.5 transform duration-200">Masuk Sekarang</button>
-            </form>
             
-            <p class="text-center mt-8 text-sm text-gray-500">Belum punya akun? <button onclick="showPage('register')" class="text-ylosPink font-bold hover:underline">Daftar Seleksi</button></p>
+            <form onsubmit="handleAmbassadorSubmit(event)" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Nama Lengkap</label>
+                        <input type="text" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="Nama Lengkap">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Asal Sekolah</label>
+                        <input type="text" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="Nama Sekolah">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Kelas</label>
+                        <input type="text" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="Contoh: XI IPA 1">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Tempat, Tanggal Lahir</label>
+                        <input type="text" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="Jakarta, 17 Agustus 2008">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Jenis Kelamin</label>
+                        <select required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium text-gray-600">
+                            <option value="">Pilih Jenis Kelamin</option>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">No. WhatsApp</label>
+                        <input type="tel" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="0812...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Akun Instagram</label>
+                        <input type="text" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="@username">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Akun TikTok</label>
+                        <input type="text" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="@username">
+                    </div>
+                </div>
+
+                <div class="space-y-5 mt-4 border-t border-gray-100 pt-6">
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Pengalaman Organisasi & Kepanitiaan</label>
+                        <textarea required rows="3" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="Sebutkan organisasi dan peranmu..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Prestasi yang pernah diraih</label>
+                        <textarea required rows="3" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="Sebutkan tingkat dan tahun perolehannya..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Alasan mendaftar YLOS School Ambassador</label>
+                        <textarea required rows="3" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="Ceritakan motivasimu..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Menurutmu, apa yang membuat organisasi jadi tempat yang cocok untuk belajar kepemimpinan?</label>
+                        <textarea required rows="3" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="Tuliskan pandanganmu..."></textarea>
+                    </div>
+                </div>
+
+                <div class="space-y-5 mt-4 border-t border-gray-100 pt-6">
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Upload SK Organisasi (PDF/IMG)</label>
+                        <input type="file" required accept="image/*,.pdf" class="w-full text-sm text-gray-500 bg-gray-50 p-2 rounded-xl border border-gray-200">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Link Video Perkenalan (TikTok/IG/Drive)</label>
+                        <input type="url" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="https://...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Upload Foto Terbaik (Untuk Konten)</label>
+                        <input type="file" required accept="image/*" class="w-full text-sm text-gray-500 bg-gray-50 p-2 rounded-xl border border-gray-200">
+                    </div>
+                    
+                    <div class="mt-8">
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Upload Sertifikat Prestasi & Dokumentasi (Optional)</label>
+                        <div class="border-2 border-dashed border-gray-300 bg-gray-50 p-8 rounded-2xl text-center hover:border-yellow-400 hover:bg-yellow-50 transition cursor-pointer" onclick="document.getElementById('amb-cert').click()">
+                            <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-300 mb-3"></i>
+                            <p class="text-sm font-bold text-gray-600 mb-1">Klik untuk Upload Banyak File</p>
+                            <p class="text-xs text-gray-400 mb-4">Maksimal 10 File (Gambar/PDF)</p>
+                            <input type="file" id="amb-cert" multiple accept="image/*,.pdf" class="hidden" onchange="document.getElementById('cert-label').innerText = this.files.length + ' file terpilih'">
+                            <span id="cert-label" class="inline-block bg-white px-3 py-1 rounded-lg text-xs font-bold text-yellow-600 border border-yellow-200 shadow-sm">0 file terpilih</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 items-center bg-gray-50 p-4 rounded-xl border border-gray-200 mt-6">
+                    <span id="captcha-question-ambassador" class="font-mono text-lg font-bold text-gray-800 bg-white px-3 py-1 rounded shadow-sm border">?</span>
+                    <input type="number" id="captcha-input-ambassador" required class="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-yellow-400 transition" placeholder="Hitung penjumlahan di atas">
+                </div>
+
+                <button type="submit" id="btn-ambassador" class="btn-hover w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-4 rounded-xl shadow-xl mt-6 text-lg">Kirim Pendaftaran YSA</button>
+            </form>
+            <div class="mt-8 text-center">
+                <button onclick="showPage('home')" class="text-xs font-bold text-gray-400 hover:text-gray-600 transition">← Kembali ke Beranda</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-login" class="hidden-section pt-32 pb-20 min-h-screen px-4 bg-white flex items-center justify-center">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-extrabold text-gray-900">Welcome Back!</h2>
+                <p class="text-gray-500 mt-2">Masuk untuk mengakses dashboard peserta.</p>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-900 uppercase">Email Address</label>
+                    <input type="email" id="login-email" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 focus:ring-0 transition font-medium" placeholder="nama@email.com">
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <label class="text-xs font-bold text-gray-900 uppercase">Password</label>
+                        <a href="#" class="text-xs text-ylosPink hover:underline">Lupa Password?</a>
+                    </div>
+                    <input type="password" id="login-password" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 focus:ring-0 transition font-medium" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-hover w-full bg-gray-900 text-white font-bold py-4 rounded-xl shadow-xl">Masuk Sekarang</button>
+            </form>
+            <p class="text-center mt-8 text-sm text-gray-500">Belum daftar seleksi? <button onclick="showPage('register')" class="text-ylosPink font-bold hover:underline">Daftar disini</button></p>
             <div class="mt-6 text-center">
-                <button onclick="showPage('home')" class="text-xs text-gray-400 hover:text-gray-600 transition">← Kembali ke Beranda</button>
+                <button onclick="showPage('home')" class="text-xs font-bold text-gray-400 hover:text-gray-600 transition">← Kembali ke Beranda</button>
             </div>
         </div>
     </div>
@@ -844,67 +935,48 @@
     <div id="page-register" class="hidden-section pt-32 pb-20 min-h-screen px-4 bg-gray-50 flex items-center justify-center">
         <div class="w-full max-w-lg bg-white p-8 md:p-10 rounded-3xl shadow-2xl border border-white/50 backdrop-blur-lg">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-gray-900">Daftar YLOS 2026 🚀</h2>
+                <h2 class="text-3xl font-bold text-gray-900">Buat Akun YLOS</h2>
                 <p class="text-gray-500 text-sm mt-2">Langkah awal menuju Fully Funded Delegate.</p>
             </div>
             
             <form onsubmit="handleRegister(event)" class="space-y-5">
-                <div>
-                    <label class="block text-sm font-bold mb-2 text-gray-700">Nama Lengkap</label>
-                    <input type="text" id="reg-name" required class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition" placeholder="Sesuai KTP/Kartu Pelajar">
+                <div class="grid grid-cols-1 gap-5">
+                    <input type="text" id="reg-name" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition" placeholder="Nama Lengkap">
+                    <input type="text" id="reg-school" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition" placeholder="Asal Sekolah/Universitas">
+                    <input type="tel" id="reg-phone" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition" placeholder="Nomor WhatsApp">
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-sm font-bold mb-2 text-gray-700">Asal Sekolah</label>
-                        <input type="text" id="reg-school" required class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition" placeholder="SMA/SMK...">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-2 text-gray-700">No. WhatsApp</label>
-                        <input type="tel" id="reg-phone" required class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition" placeholder="0812...">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-2 text-gray-700">Email Aktif</label>
-                    <input type="email" id="reg-email" required class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition" placeholder="email@sekolah.com">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-2 text-gray-700">Password</label>
-                    <input type="password" id="reg-password" required class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition" placeholder="Minimal 6 karakter">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-2 text-gray-700">Jalur Pendaftaran</label>
-                    <div class="relative">
-                        <select id="reg-package" class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-ylosPink focus:ring-4 focus:ring-pink-50 outline-none transition appearance-none">
-                            <option value="Jalur Seleksi (Commitment Fee)">Jalur Seleksi - Commitment Fee</option>
-                            <option value="Self Funded (Jalur Mandiri)">Self Funded - Jalur Mandiri</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500"><i class="fa-solid fa-chevron-down"></i></div>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-1">*Pilih "Jalur Seleksi" untuk kesempatan Fully Funded.</p>
+                <input type="email" id="reg-email" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition" placeholder="Email Aktif">
+                <input type="password" id="reg-password" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition" placeholder="Buat Password (Min. 6 Karakter)">
+                
+                <div class="relative">
+                    <select id="reg-package" class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition appearance-none cursor-pointer text-gray-600 font-medium">
+                        <option value="Jalur Seleksi (Commitment Fee)">Jalur Seleksi - Commitment Fee</option>
+                        <option value="Self Funded (Jalur Mandiri)">Self Funded - Jalur Mandiri VIP</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-5 pointer-events-none text-gray-400"><i class="fa-solid fa-chevron-down"></i></div>
                 </div>
 
-                <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-100 flex flex-col gap-2">
-                    <label class="block text-xs font-bold text-yellow-800 uppercase tracking-wide">Verifikasi Keamanan</label>
-                    <div class="flex items-center gap-3">
-                        <div id="captcha-question" class="bg-white text-gray-800 px-4 py-3 rounded-lg font-mono font-bold text-lg border border-yellow-200 min-w-[100px] text-center shadow-sm">...</div>
-                        <input type="number" id="captcha-input" required class="w-full px-4 py-3 rounded-lg border border-yellow-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 outline-none transition" placeholder="Hasil?">
-                    </div>
+                <div class="flex gap-4 items-center bg-yellow-50 p-4 rounded-xl border border-yellow-100">
+                    <span id="captcha-question" class="font-mono text-lg font-bold text-yellow-800 bg-white px-3 py-1 rounded shadow-sm border">?</span>
+                    <input type="number" id="captcha-input" required class="flex-1 px-4 py-2 rounded-lg border-none focus:ring-2 focus:ring-yellow-400 transition" placeholder="Jawaban?">
                 </div>
 
-                <button type="submit" id="btn-reg" class="w-full bg-gradient-to-r from-ylosPink to-rose-500 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition duration-300">Daftar Sekarang</button>
+                <button type="submit" id="btn-reg" class="btn-hover w-full bg-gradient-to-r from-ylosPink to-rose-600 text-white font-bold py-4 rounded-xl shadow-xl">Daftar Sekarang</button>
             </form>
-            <p class="text-center mt-6 text-sm text-gray-500">Sudah punya akun? <button onclick="showPage('login')" class="text-ylosPink font-bold hover:underline">Login disini</button></p>
+            <p class="text-center mt-8 text-sm text-gray-500">Sudah punya akun? <button onclick="showPage('login')" class="text-ylosPink font-bold hover:underline">Login</button></p>
+            <div class="mt-6 text-center">
+                <button onclick="showPage('home')" class="text-xs font-bold text-gray-400 hover:text-gray-600 transition">← Kembali ke Beranda</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const supabaseClient = supabase.createClient(
-            'https://jrslgkxwjvugvgakxwsd.supabase.co', 
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk'
-        );
+        const supabaseClient = supabase.createClient('https://jrslgkxwjvugvgakxwsd.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impyc2xna3h3anZ1Z3ZnYWt4d3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MTYyNDYsImV4cCI6MjA4NTM5MjI0Nn0.q2GGd0kdKt7KGWt7QpfeP0UUBOStmuUH51caPoCrmMk');
         
+        let userSession = null;
         let captchaCorrectAnswer = 0;
 
+        // WELCOME OVERLAY LOGIC
         document.addEventListener("DOMContentLoaded", () => {
             const welcomeOverlay = document.getElementById('welcome-overlay');
             if (welcomeOverlay) {
@@ -918,17 +990,54 @@
                     welcomeOverlay.remove();
                 }
             }
+
+            // INTERSECTION OBSERVER FOR TIMELINE
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.timeline-item').forEach(item => observer.observe(item));
         });
 
+        // CAPTCHA GENERATOR
         function generateCaptcha() {
             const n1 = Math.floor(Math.random()*10)+1, n2 = Math.floor(Math.random()*10)+1;
             captchaCorrectAnswer = n1 + n2;
-            document.getElementById('captcha-question').innerText = `${n1} + ${n2} = ?`;
-            document.getElementById('captcha-input').value = '';
+            
+            const q1 = document.getElementById('captcha-question');
+            if(q1) q1.innerText = `${n1} + ${n2} =`;
+            const i1 = document.getElementById('captcha-input');
+            if(i1) i1.value = '';
+
+            const q2 = document.getElementById('captcha-question-ambassador');
+            if(q2) q2.innerText = `${n1} + ${n2} =`;
+            const i2 = document.getElementById('captcha-input-ambassador');
+            if(i2) i2.value = '';
         }
 
+        // NAVIGATION LOGIC WITH STRICT BUG FIX
         function showPage(pageId) {
-            if (pageId === 'register') generateCaptcha();
+            // BUG FIX: Prevent logged in users from visiting auth pages or register again
+            if (userSession && (pageId === 'login' || pageId === 'register' || pageId === 'ambassador')) {
+                if(userSession.user.email.includes('admin')) {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+                return;
+            }
+
+            if (pageId === 'register' || pageId === 'ambassador') generateCaptcha();
+            
+            // Redirect admin/user directly if they hit dashboard
+            if (pageId === 'dashboard') {
+                if(userSession && userSession.user.email.includes('admin')) window.location.href = 'admin.html';
+                else window.location.href = 'dashboard.html'; 
+                return;
+            }
 
             const currentActive = document.querySelector('.active-section');
             const targetPage = document.getElementById('page-' + pageId);
@@ -939,7 +1048,7 @@
                 currentActive.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
 
                 setTimeout(() => {
-                    ['page-home', 'page-login', 'page-register'].forEach(id => {
+                    ['page-home', 'page-login', 'page-register', 'page-ambassador'].forEach(id => {
                         const el = document.getElementById(id);
                         if(el){
                             el.classList.remove('active-section');
@@ -959,7 +1068,7 @@
                     }
                 }, 300);
             } else {
-                ['page-home', 'page-login', 'page-register'].forEach(id => {
+                ['page-home', 'page-login', 'page-register', 'page-ambassador'].forEach(id => {
                     const el = document.getElementById(id);
                     if(el){
                         el.classList.remove('active-section');
@@ -976,7 +1085,7 @@
                 menu.classList.remove('mobile-menu-visible');
             }
         }
-        
+
         function toggleMobileMenu() { 
             const menu = document.getElementById('mobile-menu');
             if (menu.classList.contains('mobile-menu-hidden')) {
@@ -987,128 +1096,123 @@
                 menu.classList.remove('mobile-menu-visible');
             }
         }
+        function mobileLinkClick(id) { showPage(id); }
 
-        function mobileLinkClick(id) { 
-            showPage(id); 
-        }
-
-        async function handleRegister(e) {
+        // --- AMBASSADOR SUBMIT LOGIC ---
+        async function handleAmbassadorSubmit(e) {
             e.preventDefault();
-            
-            if(parseInt(document.getElementById('captcha-input').value) !== captchaCorrectAnswer) {
+            if(parseInt(document.getElementById('captcha-input-ambassador').value) !== captchaCorrectAnswer) {
                 Swal.fire({ icon: 'error', title: 'Captcha Salah!', text: 'Silakan hitung ulang penjumlahan.' });
                 generateCaptcha(); return;
             }
 
-            const btn = document.getElementById('btn-reg'); 
-            btn.innerText='Memproses...'; btn.disabled=true;
-            
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-password').value;
-            
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerText = 'Memproses Data...';
+            btn.disabled = true;
+
             try {
-                const { data: isEmailExist } = await supabaseClient.rpc('check_email_exists', { email_input: email });
-                if (isEmailExist === true) {
-                    Swal.fire({ 
-                        icon: 'warning', 
-                        title: 'Email Sudah Terdaftar! ⚠️', 
-                        html: `Email <b>${email}</b> sudah ada di sistem.<br>Silakan langsung login saja.`,
-                        showCancelButton: true, confirmButtonText: 'Login Sekarang', cancelButtonText: 'Coba Email Lain', confirmButtonColor: '#FF85B3'
-                    }).then((result) => { if (result.isConfirmed) showPage('login'); });
-                    btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); return;
+                // Placeholder simulasi loading saat integrasi data. 
+                // Di masa mendatang ini akan diganti dengan supabaseClient insert.
+                await new Promise(resolve => setTimeout(resolve, 2000)); 
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pendaftaran YSA Berhasil! 🎉',
+                    html: `Terima kasih telah mendaftar sebagai YLOS School Ambassador.<br><br><b>Langkah Selanjutnya:</b><br>Silakan bergabung ke grup WhatsApp kami untuk arahan tugas dan pengambilan benefit.`,
+                    confirmButtonText: 'Gabung Grup WhatsApp <i class="fa-brands fa-whatsapp ml-1"></i>',
+                    confirmButtonColor: '#25D366',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.open('https://chat.whatsapp.com/GANTIDENGANLINKGRUPMU', '_blank');
+                        e.target.reset();
+                        showPage('home');
+                    }
+                });
+            } catch (err) {
+                Swal.fire('Gagal', 'Terjadi kesalahan sistem: ' + err.message, 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                generateCaptcha();
+            }
+        }
+
+        // --- AUTH SUBMIT LOGIC ---
+        async function handleRegister(e) {
+            e.preventDefault();
+            if(parseInt(document.getElementById('captcha-input').value) !== captchaCorrectAnswer) {
+                Swal.fire({ icon: 'error', title: 'Captcha Salah', text: 'Silakan periksa kembali hitungan Anda.'});
+                generateCaptcha(); return;
+            }
+            
+            const btn = document.getElementById('btn-reg'); btn.innerText = 'Memproses...'; btn.disabled = true;
+            const email = document.getElementById('reg-email').value;
+            
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email, password: document.getElementById('reg-password').value,
+                options: { 
+                    emailRedirectTo: window.location.origin + '/dashboard.html',
+                    data: {
+                        full_name: document.getElementById('reg-name').value,
+                        school: document.getElementById('reg-school').value,
+                        phone: document.getElementById('reg-phone').value,
+                        package_type: document.getElementById('reg-package').value
+                    }
                 }
-            } catch (err) { console.log("Gagal cek email:", err); }
-
-            const metadata = {
-                full_name: document.getElementById('reg-name').value,
-                school: document.getElementById('reg-school').value,
-                phone: document.getElementById('reg-phone').value,
-                package_type: document.getElementById('reg-package').value
-            };
-
-            const { data, error } = await supabaseClient.auth.signUp({ 
-                email: email, password: password,
-                options: { emailRedirectTo: window.location.origin + '/dashboard.html', data: metadata }
             });
 
-            if(error) { 
-                Swal.fire({ icon: 'error', title: 'Gagal Daftar', text: error.message });
-                btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); return; 
-            }
-
-            if(data.user) {
-                Swal.fire({ 
-                    icon: 'success', title: 'Berhasil Mendaftar!', 
-                    html: `Link verifikasi telah dikirim ke <b>${email}</b>.<br>Cek Inbox/Spam, klik linknya, lalu login.`,
-                    confirmButtonText: 'Siap!'
-                }).then(() => showPage('login'));
-            }
-            btn.innerText='Daftar Sekarang'; btn.disabled=false;
+            if(error) { Swal.fire('Gagal', error.message, 'error'); btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); }
+            else { Swal.fire({ icon: 'success', title: 'Berhasil!', html: `Link verifikasi telah dikirim ke <b>${email}</b>.<br>Cek kotak masuk/spam Anda.`, confirmButtonText: 'Login', confirmButtonColor: '#DB2777' }).then(() => showPage('login')); btn.innerText='Daftar Sekarang'; btn.disabled=false;}
         }
 
         async function handleLogin(e) {
             e.preventDefault();
-            const btn = e.target.querySelector('button'); 
-            const originalText = btn.innerText;
-            btn.innerText = "Loading...";
-            
+            const btn = e.target.querySelector('button'); const orig = btn.innerText; btn.innerText = "Loading..."; btn.disabled=true;
             const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: document.getElementById('login-email').value,
                 password: document.getElementById('login-password').value
             });
-            
-            if(error) {
-                let msg = error.message;
-                if (msg.includes("Email not confirmed")) msg = "Email belum diverifikasi. Cek inbox/spam email kamu.";
-                Swal.fire({ icon: 'error', title: 'Login Gagal', text: msg });
-                btn.innerText = originalText;
-            } else {
-                btn.innerText = "Sukses!";
-                window.location.href = 'dashboard.html';
+            if(error) { Swal.fire({ icon: 'error', title: 'Gagal Login', text: error.message }); btn.innerText=orig; btn.disabled=false; }
+            else { 
+                Swal.fire({ icon: 'success', title: 'Login Berhasil', showConfirmButton: false, timer: 1000 });
+                if(data.user.email.includes('admin')) window.location.href = 'admin.html';
+                else window.location.href = 'dashboard.html';
             }
         }
 
+        async function logout() { await supabaseClient.auth.signOut(); window.location.reload(); }
+
+        // --- AUTH STATE LISTENER NULL FIX ---
         supabaseClient.auth.onAuthStateChange((event, session) => {
+            userSession = session;
             if(event === 'PASSWORD_RECOVERY') { window.location.href = 'reset.html'; return; }
             
             const dp = document.getElementById('nav-public');
             const dm = document.getElementById('nav-member');
             const mp = document.getElementById('mobile-nav-public');
             const mm = document.getElementById('mobile-nav-member');
+            const usrDisplay = document.getElementById('user-display-name');
+            const btnAdmin = document.getElementById('nav-desktop-admin');
 
             if(session) {
-                dp.classList.add('hidden'); mp.classList.add('hidden');
-                dm.classList.remove('hidden'); mm.classList.remove('hidden');
+                if(dp) dp.classList.add('hidden'); 
+                if(mp) mp.classList.add('hidden');
+                if(dm) dm.classList.remove('hidden'); 
+                if(mm) mm.classList.remove('hidden');
+                if(usrDisplay) usrDisplay.innerText = session.user.email;
                 
-                const currentHash = window.location.hash;
-                if(currentHash === '#login' || currentHash === '#register') {
-                    window.location.href = 'dashboard.html';
+                if(btnAdmin && session.user.email.includes('admin')) {
+                    btnAdmin.classList.remove('hidden');
                 }
             } else {
-                dp.classList.remove('hidden'); mp.classList.remove('hidden');
-                dm.classList.add('hidden'); mm.classList.add('hidden');
+                if(dp) dp.classList.remove('hidden'); 
+                if(mp) mp.classList.remove('hidden');
+                if(dm) dm.classList.add('hidden'); 
+                if(mm) mm.classList.add('hidden');
+                if(btnAdmin) btnAdmin.classList.add('hidden');
             }
-        });
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.2
-            };
-
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, observerOptions);
-
-            const timelineItems = document.querySelectorAll('.timeline-item');
-            timelineItems.forEach(item => {
-                observer.observe(item);
-            });
         });
     </script>
 </body>
