@@ -194,6 +194,7 @@
                 <p class="px-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 opacity-70">Database</p>
                 <div onclick="switchTab('users')" id="menu-users" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-users w-5 text-center"></i> Peserta</div>
                 <div onclick="switchTab('verification')" id="menu-verification" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-envelope-open-text w-5 text-center"></i> Verifikasi</div>
+                <div onclick="switchTab('ambassadors')" id="menu-ambassadors" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-user-tie w-5 text-center"></i> Ambassador</div>
             </div>
 
             <div>
@@ -436,7 +437,7 @@
                                 </div>
                                 <p class="text-[10px] text-gray-400 mt-1.5 italic">*Maksimal ukuran file 5MB. Pastikan Edge Function mendukung array attachments.</p>
                             </div>
-                            </div>
+                        </div>
                     </div>
 
                     <div class="flex flex-col gap-6">
@@ -484,45 +485,45 @@
             </div>
 
             <div id="signing-modal" class="fixed inset-0 bg-gray-900/95 z-[100] hidden flex flex-col transition-opacity duration-300">
-    <div class="bg-white h-auto py-3 px-4 md:h-16 md:px-6 flex flex-col md:flex-row justify-between items-center border-b border-gray-200 shadow-sm z-50 gap-2 md:gap-0">
-        <div class="flex items-center gap-3 w-full md:w-auto">
-            <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 flex-shrink-0"><i class="fa-solid fa-pen-nib"></i></div>
-            <div class="flex-1 min-w-0"><h3 class="font-bold text-gray-900 leading-tight text-sm">Signing Room</h3><p class="text-[10px] text-gray-500 truncate" id="doc-name-display">Loading...</p></div>
-        </div>
+                <div class="bg-white h-auto py-3 px-4 md:h-16 md:px-6 flex flex-col md:flex-row justify-between items-center border-b border-gray-200 shadow-sm z-50 gap-2 md:gap-0">
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 flex-shrink-0"><i class="fa-solid fa-pen-nib"></i></div>
+                        <div class="flex-1 min-w-0"><h3 class="font-bold text-gray-900 leading-tight text-sm">Signing Room</h3><p class="text-[10px] text-gray-500 truncate" id="doc-name-display">Loading...</p></div>
+                    </div>
 
-        <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1 order-3 md:order-2 w-full md:w-auto justify-center md:justify-start mt-2 md:mt-0">
-            <button onclick="changePdfPage(-1)" id="btn-prev-page" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-gray-600 shadow-sm hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition"><i class="fa-solid fa-chevron-left"></i></button>
-            <span id="page-indicator" class="text-xs font-bold text-gray-700 min-w-[60px] text-center">Page 1/1</span>
-            <button onclick="changePdfPage(1)" id="btn-next-page" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-gray-600 shadow-sm hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition"><i class="fa-solid fa-chevron-right"></i></button>
-        </div>
+                    <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1 order-3 md:order-2 w-full md:w-auto justify-center md:justify-start mt-2 md:mt-0">
+                        <button onclick="changePdfPage(-1)" id="btn-prev-page" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-gray-600 shadow-sm hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span id="page-indicator" class="text-xs font-bold text-gray-700 min-w-[60px] text-center">Page 1/1</span>
+                        <button onclick="changePdfPage(1)" id="btn-next-page" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-gray-600 shadow-sm hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
 
-        <div class="flex gap-3 w-full md:w-auto justify-end order-2 md:order-3">
-            <button onclick="closeSigningModal()" class="flex-1 md:flex-none px-4 py-2 text-xs md:text-sm font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition border border-gray-200 md:border-none">Batal</button>
-            <button onclick="saveSignedDocument()" class="flex-1 md:flex-none btn-press px-5 py-2 text-xs md:text-sm font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 rounded-lg shadow-md flex items-center justify-center gap-2"><i class="fa-solid fa-check"></i> Kirim</button>
-        </div>
-    </div>
-    
-    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
-        <div class="w-full md:w-72 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col z-40 shadow-xl flex-shrink-0 order-1 md:order-1 h-auto max-h-[40vh] md:max-h-full overflow-y-auto">
-            <div class="p-4 md:p-6 border-b border-gray-100">
-                <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Area Tanda Tangan</h4>
-                <div class="border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 relative overflow-hidden group hover:border-pink-400 transition h-24 md:h-32 mb-3 touch-none">
-                    <canvas id="signature-pad" class="w-full h-full cursor-crosshair touch-none"></canvas>
-                    <div class="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"><button onclick="clearPad()" class="bg-white p-1.5 rounded shadow text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button></div>
+                    <div class="flex gap-3 w-full md:w-auto justify-end order-2 md:order-3">
+                        <button onclick="closeSigningModal()" class="flex-1 md:flex-none px-4 py-2 text-xs md:text-sm font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition border border-gray-200 md:border-none">Batal</button>
+                        <button onclick="saveSignedDocument()" class="flex-1 md:flex-none btn-press px-5 py-2 text-xs md:text-sm font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 rounded-lg shadow-md flex items-center justify-center gap-2"><i class="fa-solid fa-check"></i> Kirim</button>
+                    </div>
                 </div>
-                <button onclick="useSignature()" class="btn-press w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 shadow-lg">GUNAKAN</button>
+                
+                <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+                    <div class="w-full md:w-72 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col z-40 shadow-xl flex-shrink-0 order-1 md:order-1 h-auto max-h-[40vh] md:max-h-full overflow-y-auto">
+                        <div class="p-4 md:p-6 border-b border-gray-100">
+                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Area Tanda Tangan</h4>
+                            <div class="border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 relative overflow-hidden group hover:border-pink-400 transition h-24 md:h-32 mb-3 touch-none">
+                                <canvas id="signature-pad" class="w-full h-full cursor-crosshair touch-none"></canvas>
+                                <div class="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"><button onclick="clearPad()" class="bg-white p-1.5 rounded shadow text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button></div>
+                            </div>
+                            <button onclick="useSignature()" class="btn-press w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 shadow-lg">GUNAKAN</button>
+                        </div>
+                        <div class="p-4 md:p-6 flex-1 overflow-y-auto hidden md:block">
+                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Disimpan</h4>
+                            <div id="saved-sig-container" class="space-y-3"></div>
+                        </div>
+                        <div class="p-2 text-[10px] text-gray-400 border-t border-gray-100 text-center bg-gray-50 md:block hidden">💡 Drag pojok kanan bawah box untuk resize.</div>
+                    </div>
+                    <div id="pdf-scroll-container" class="order-2 md:order-2">
+                        <div id="pdf-wrapper"><canvas id="the-canvas"></canvas><div id="drag-signature" class="signature-box hidden"><img id="drag-sig-img" src="" alt="TTD"></div></div>
+                    </div>
+                </div>
             </div>
-            <div class="p-4 md:p-6 flex-1 overflow-y-auto hidden md:block">
-                <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Disimpan</h4>
-                <div id="saved-sig-container" class="space-y-3"></div>
-            </div>
-            <div class="p-2 text-[10px] text-gray-400 border-t border-gray-100 text-center bg-gray-50 md:block hidden">💡 Drag pojok kanan bawah box untuk resize.</div>
-        </div>
-        <div id="pdf-scroll-container" class="order-2 md:order-2">
-            <div id="pdf-wrapper"><canvas id="the-canvas"></canvas><div id="drag-signature" class="signature-box hidden"><img id="drag-sig-img" src="" alt="TTD"></div></div>
-        </div>
-    </div>
-</div>
 
             <div id="section-users" class="content-section space-y-6">
                  <div class="glass-card p-4 md:p-6">
@@ -577,6 +578,42 @@
                         </div>
                     </div>
                     <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama</th><th>Email</th><th>WhatsApp</th><th>Status Pendaftaran</th><th>Status Login</th><th class="text-center">Aksi</th></tr></thead><tbody id="verification-list"></tbody></table></div>
+                </div>
+            </div>
+
+            <div id="section-ambassadors" class="content-section space-y-6">
+                 <div class="glass-card p-4 md:p-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                        <div class="flex items-center gap-3">
+                            <h2 class="font-bold text-gray-800 text-lg md:text-xl">Data Ambassador</h2>
+                            <span class="text-xs bg-indigo-100 text-indigo-600 px-2 py-1 rounded font-bold">Total: <span id="ambassador-total">0</span></span>
+                        </div>
+                        
+                        <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                             <div class="relative w-full md:w-auto">
+                                <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
+                                <input type="text" id="searchAmbassadorInput" onkeyup="searchAmbassador()" placeholder="Cari pendaftar..." class="pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-indigo-500 transition shadow-sm w-full md:w-64">
+                             </div>
+                             <button onclick="fetchAmbassadors()" class="btn-press text-xs bg-white border border-gray-200 text-gray-600 px-4 py-2.5 rounded-xl font-bold hover:bg-gray-50 flex items-center justify-center gap-2 w-full md:w-auto"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                             <button onclick="exportAmbassadors()" class="btn-press text-xs bg-indigo-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm hover:bg-indigo-700 flex items-center justify-center gap-2 w-full md:w-auto"><i class="fa-solid fa-file-excel"></i> Export Data</button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama Lengkap</th>
+                                    <th>Email</th>
+                                    <th>Institusi/Sekolah</th>
+                                    <th>Kontak (WA)</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ambassador-list">
+                                <tr><td colspan="5" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data ambassador...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -672,7 +709,7 @@
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        let allUsers=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
+        let allUsers=[], ambassadorData=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
         let onlineEmails = new Set(); 
         
         // Global var untuk Quill Editor
@@ -754,6 +791,7 @@
 
                 // Load Data Utama
                 fetchUsers(); 
+                fetchAmbassadors(); // Panggil fungsi fetch ambassador saat admin lolos verifikasi
                 fetchAnnouncements(); 
                 fetchModules(); 
                 initChart(); 
@@ -1222,31 +1260,6 @@
         /* =========================================================
             END TASKS MANAGEMENT LOGIC
         ========================================================= */
-
-        // --- EMAIL BLAST LOGIC ---
-        function updateRecipientCount() {
-            const val = document.getElementById('blast-recipients').value;
-            const lines = val.split(/[\n,]+/).map(e => e.trim()).filter(e => e !== "");
-            
-            let parsedRecipients = [];
-            
-            lines.forEach(line => {
-                const match = line.match(/(.*?)<([^>]+)>/);
-                if (match) {
-                    const name = match[1].trim();
-                    const email = match[2].trim();
-                    if (email) parsedRecipients.push({ name: name, email: email });
-                } else {
-                    const emailMatch = line.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
-                    if (emailMatch) {
-                        parsedRecipients.push({ name: '', email: emailMatch[1].trim() });
-                    }
-                }
-            });
-            
-            document.getElementById('recipient-count').innerText = `${parsedRecipients.length} Email`;
-            return parsedRecipients;
-        }
 
         // --- EMAIL BLAST LOGIC ---
         function updateRecipientCount() {
@@ -2244,6 +2257,141 @@
         function reloadPreview() { document.getElementById('preview-frame').contentWindow.location.reload(); Toast.fire({ icon: 'success', title: 'Preview Direfresh' }); }
         function exportToExcel() { const ws = XLSX.utils.json_to_sheet(allUsers); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, "Data_Peserta.xlsx"); Toast.fire({ icon: 'success', title: 'Download Excel dimulai' }); }
         async function logout() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
+
+        // ==========================================
+        // FITUR BARU: MANAJEMEN DATA AMBASSADOR
+        // ==========================================
+        
+        // Memanggil data dari tabel "ambassadors" di Supabase
+        async function fetchAmbassadors() {
+            const { data, error } = await supabaseClient
+                .from('ambassadors')
+                .select('*')
+                .order('created_at', { ascending: false });
+                
+            if (error) {
+                console.error("Gagal menarik data ambassador:", error);
+                document.getElementById('ambassador-list').innerHTML = `<tr><td colspan="5" class="text-center text-red-500 py-6 text-sm">Gagal memuat data: ${error.message} (Cek Policy RLS di Supabase!)</td></tr>`;
+                return;
+            }
+            
+            ambassadorData = data || [];
+            
+            // Tambahan log untuk debug ke console
+            console.log("Data Ambassador dari Supabase:", ambassadorData);
+            
+            renderAmbassadors(ambassadorData);
+            document.getElementById('ambassador-total').innerText = ambassadorData.length;
+        }
+
+        function renderAmbassadors(data) {
+            const tbody = document.getElementById('ambassador-list');
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-500 py-6 text-sm italic leading-relaxed">Data kosong atau akses ditolak oleh RLS Supabase. <br><span class="text-xs text-pink-500 font-bold">Pastikan Anda telah mengizinkan akses (Add RLS Policy -> Enable read access) untuk tabel 'ambassadors' di dashboard Supabase!</span></td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = data.map(a => `
+                <tr class="hover:bg-gray-50 transition duration-200">
+                    <td class="p-4 font-bold text-gray-800">${a.full_name || '-'}</td>
+                    <td class="p-4 text-xs font-mono text-blue-600">${a.email || '-'}</td>
+                    <td class="p-4 text-gray-500">${a.institution || a.school || '-'}</td>
+                    <td class="p-4 text-xs font-mono text-gray-500">${a.phone || '-'}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="previewAmbassador('${a.id}')" class="text-xs bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg border border-indigo-200 hover:bg-indigo-100 transition font-bold shadow-sm whitespace-nowrap"><i class="fa-solid fa-eye"></i> Detail Lengkap</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function previewAmbassador(id) {
+            const a = ambassadorData.find(x => x.id === id);
+            if (!a) return;
+            
+            let portfolioHtml = '-';
+            if (a.portfolio_link || a.cv_link) {
+                const link = a.portfolio_link || a.cv_link;
+                portfolioHtml = `<a href="${link}" target="_blank" class="text-indigo-600 bg-indigo-50 px-3 py-1 rounded border border-indigo-200 font-bold hover:underline inline-block mt-1">Buka Portfolio / CV</a>`;
+            }
+            
+            Swal.fire({
+                title: 'Informasi Ambassador',
+                html: `
+                    <div class="text-left text-sm space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200 mt-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Nama Lengkap</p>
+                                <p class="font-bold text-gray-800">${a.full_name || '-'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Email</p>
+                                <p class="text-blue-600 font-mono">${a.email || '-'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Institusi / Asal Kampus</p>
+                                <p class="text-gray-700 font-medium">${a.institution || a.school || '-'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Nomor WhatsApp</p>
+                                <p class="text-gray-700 font-mono">${a.phone || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-200 pt-3 mt-3">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Alasan / Motivasi</p>
+                            <div class="bg-white p-3 rounded border border-gray-100 mt-1 max-h-32 overflow-y-auto text-gray-600 text-xs leading-relaxed custom-scrollbar">
+                                ${a.motivation || a.reason || '-'}
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-200 pt-3 mt-3">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Berkas Pendukung</p>
+                            ${portfolioHtml}
+                        </div>
+                        <p class="text-[10px] text-gray-400 text-right mt-4 italic">Mendaftar pada: ${new Date(a.created_at).toLocaleString('id-ID')}</p>
+                    </div>
+                `,
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#DB2777',
+                width: '600px',
+                customClass: { confirmButton: 'rounded-xl px-6 py-2' }
+            });
+        }
+
+        function searchAmbassador() {
+            const term = document.getElementById('searchAmbassadorInput').value.toLowerCase();
+            const filtered = ambassadorData.filter(a =>
+                (a.full_name && a.full_name.toLowerCase().includes(term)) ||
+                (a.email && a.email.toLowerCase().includes(term)) ||
+                (a.institution && a.institution.toLowerCase().includes(term)) ||
+                (a.school && a.school.toLowerCase().includes(term)) ||
+                (a.phone && a.phone.toLowerCase().includes(term))
+            );
+            renderAmbassadors(filtered);
+        }
+
+        function exportAmbassadors() {
+            if(ambassadorData.length === 0) return Toast.fire({ icon: 'warning', title: 'Data Ambassador kosong' });
+            
+            // Format data agar lebih rapih di excel
+            const excelData = ambassadorData.map((a, index) => ({
+                "No": index + 1,
+                "Waktu Daftar": new Date(a.created_at).toLocaleString('id-ID'),
+                "Nama Lengkap": a.full_name || '',
+                "Email": a.email || '',
+                "Nomor WhatsApp": a.phone || '',
+                "Institusi / Sekolah": a.institution || a.school || '',
+                "Motivasi / Alasan": a.motivation || a.reason || '',
+                "Link Portfolio/CV": a.portfolio_link || a.cv_link || ''
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Data Ambassador");
+            XLSX.writeFile(wb, "Data_Ambassador_YLOS.xlsx");
+            Toast.fire({ icon: 'success', title: 'Download Excel dimulai' });
+        }
+        // ==========================================
+        // END FITUR BARU: MANAJEMEN DATA AMBASSADOR
+        // ==========================================
 
         // Start Security Check Immediately
         checkAdmin();
