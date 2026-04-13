@@ -194,7 +194,8 @@
                 <p class="px-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 opacity-70">Database</p>
                 <div onclick="switchTab('users')" id="menu-users" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-users w-5 text-center"></i> Peserta</div>
                 <div onclick="switchTab('verification')" id="menu-verification" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-envelope-open-text w-5 text-center"></i> Verifikasi</div>
-                <div onclick="switchTab('ambassadors')" id="menu-ambassadors" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-user-tie w-5 text-center"></i> Ambassador</div>
+                
+                <div onclick="switchTab('ambassadors')" id="menu-ambassadors" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-star w-5 text-center text-yellow-500"></i> YSA Ambassador</div>
             </div>
 
             <div>
@@ -484,43 +485,30 @@
                 </div>
             </div>
 
-            <div id="signing-modal" class="fixed inset-0 bg-gray-900/95 z-[100] hidden flex flex-col transition-opacity duration-300">
-                <div class="bg-white h-auto py-3 px-4 md:h-16 md:px-6 flex flex-col md:flex-row justify-between items-center border-b border-gray-200 shadow-sm z-50 gap-2 md:gap-0">
-                    <div class="flex items-center gap-3 w-full md:w-auto">
-                        <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 flex-shrink-0"><i class="fa-solid fa-pen-nib"></i></div>
-                        <div class="flex-1 min-w-0"><h3 class="font-bold text-gray-900 leading-tight text-sm">Signing Room</h3><p class="text-[10px] text-gray-500 truncate" id="doc-name-display">Loading...</p></div>
-                    </div>
-
-                    <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1 order-3 md:order-2 w-full md:w-auto justify-center md:justify-start mt-2 md:mt-0">
-                        <button onclick="changePdfPage(-1)" id="btn-prev-page" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-gray-600 shadow-sm hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition"><i class="fa-solid fa-chevron-left"></i></button>
-                        <span id="page-indicator" class="text-xs font-bold text-gray-700 min-w-[60px] text-center">Page 1/1</span>
-                        <button onclick="changePdfPage(1)" id="btn-next-page" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-gray-600 shadow-sm hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition"><i class="fa-solid fa-chevron-right"></i></button>
-                    </div>
-
-                    <div class="flex gap-3 w-full md:w-auto justify-end order-2 md:order-3">
-                        <button onclick="closeSigningModal()" class="flex-1 md:flex-none px-4 py-2 text-xs md:text-sm font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition border border-gray-200 md:border-none">Batal</button>
-                        <button onclick="saveSignedDocument()" class="flex-1 md:flex-none btn-press px-5 py-2 text-xs md:text-sm font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 rounded-lg shadow-md flex items-center justify-center gap-2"><i class="fa-solid fa-check"></i> Kirim</button>
-                    </div>
-                </div>
-                
-                <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
-                    <div class="w-full md:w-72 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col z-40 shadow-xl flex-shrink-0 order-1 md:order-1 h-auto max-h-[40vh] md:max-h-full overflow-y-auto">
-                        <div class="p-4 md:p-6 border-b border-gray-100">
-                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Area Tanda Tangan</h4>
-                            <div class="border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 relative overflow-hidden group hover:border-pink-400 transition h-24 md:h-32 mb-3 touch-none">
-                                <canvas id="signature-pad" class="w-full h-full cursor-crosshair touch-none"></canvas>
-                                <div class="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"><button onclick="clearPad()" class="bg-white p-1.5 rounded shadow text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button></div>
-                            </div>
-                            <button onclick="useSignature()" class="btn-press w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 shadow-lg">GUNAKAN</button>
+            <div id="section-ambassadors" class="content-section space-y-6">
+                <div class="glass-card p-4 md:p-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                        <div>
+                            <h2 class="font-bold text-gray-800 text-lg md:text-xl">Pendaftar Ambassador (YSA)</h2>
+                            <p class="text-xs text-gray-500 mt-1">Review data dan berkas calon ambassador.</p>
                         </div>
-                        <div class="p-4 md:p-6 flex-1 overflow-y-auto hidden md:block">
-                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Disimpan</h4>
-                            <div id="saved-sig-container" class="space-y-3"></div>
-                        </div>
-                        <div class="p-2 text-[10px] text-gray-400 border-t border-gray-100 text-center bg-gray-50 md:block hidden">💡 Drag pojok kanan bawah box untuk resize.</div>
+                        <button onclick="fetchAmbassadors()" class="btn-press text-xs bg-white border border-gray-200 text-gray-600 px-3 py-2.5 rounded-xl font-bold hover:bg-gray-50 flex items-center justify-center gap-2"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
                     </div>
-                    <div id="pdf-scroll-container" class="order-2 md:order-2">
-                        <div id="pdf-wrapper"><canvas id="the-canvas"></canvas><div id="drag-signature" class="signature-box hidden"><img id="drag-sig-img" src="" alt="TTD"></div></div>
+                    <div class="overflow-x-auto">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama Lengkap</th>
+                                    <th>Asal Sekolah</th>
+                                    <th>Kontak WA</th>
+                                    <th>Waktu Daftar</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ambassador-list">
+                                <tr><td colspan="5" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data pendaftar...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -578,42 +566,6 @@
                         </div>
                     </div>
                     <div class="overflow-x-auto"><table class="modern-table"><thead><tr><th>Nama</th><th>Email</th><th>WhatsApp</th><th>Status Pendaftaran</th><th>Status Login</th><th class="text-center">Aksi</th></tr></thead><tbody id="verification-list"></tbody></table></div>
-                </div>
-            </div>
-
-            <div id="section-ambassadors" class="content-section space-y-6">
-                 <div class="glass-card p-4 md:p-6">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                        <div class="flex items-center gap-3">
-                            <h2 class="font-bold text-gray-800 text-lg md:text-xl">Data Ambassador</h2>
-                            <span class="text-xs bg-indigo-100 text-indigo-600 px-2 py-1 rounded font-bold">Total: <span id="ambassador-total">0</span></span>
-                        </div>
-                        
-                        <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                             <div class="relative w-full md:w-auto">
-                                <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
-                                <input type="text" id="searchAmbassadorInput" onkeyup="searchAmbassador()" placeholder="Cari pendaftar..." class="pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-indigo-500 transition shadow-sm w-full md:w-64">
-                             </div>
-                             <button onclick="fetchAmbassadors()" class="btn-press text-xs bg-white border border-gray-200 text-gray-600 px-4 py-2.5 rounded-xl font-bold hover:bg-gray-50 flex items-center justify-center gap-2 w-full md:w-auto"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
-                             <button onclick="exportAmbassadors()" class="btn-press text-xs bg-indigo-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm hover:bg-indigo-700 flex items-center justify-center gap-2 w-full md:w-auto"><i class="fa-solid fa-file-excel"></i> Export Data</button>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="modern-table">
-                            <thead>
-                                <tr>
-                                    <th>Nama Lengkap</th>
-                                    <th>Email</th>
-                                    <th>Institusi/Sekolah</th>
-                                    <th>Kontak (WA)</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ambassador-list">
-                                <tr><td colspan="5" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data ambassador...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
 
@@ -676,6 +628,21 @@
         </div>
     </main>
 
+    <div id="ambassador-modal" class="fixed inset-0 bg-gray-900/90 z-[9999] hidden flex justify-center items-center p-4 transition-opacity backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl transform transition-all">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <div>
+                    <h3 class="text-lg md:text-xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2" id="amb-modal-title">
+                        Review Ambassador
+                    </h3>
+                </div>
+                <button onclick="document.getElementById('ambassador-modal').classList.add('hidden')" class="w-10 h-10 bg-white border border-gray-200 rounded-xl text-gray-500 hover:text-red-500 hover:bg-red-50 transition shadow-sm"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 bg-white custom-scrollbar" id="amb-modal-content">
+                </div>
+        </div>
+    </div>
+
     <div id="submissions-modal" class="fixed inset-0 bg-gray-900/90 z-[9999] hidden flex justify-center items-center p-4 transition-opacity backdrop-blur-sm">
         <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl transform transition-all">
             <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
@@ -701,6 +668,47 @@
         </div>
     </div>
 
+    <div id="signing-modal" class="fixed inset-0 bg-gray-900/95 z-[100] hidden flex flex-col transition-opacity duration-300">
+        <div class="bg-white h-auto py-3 px-4 md:h-16 md:px-6 flex flex-col md:flex-row justify-between items-center border-b border-gray-200 shadow-sm z-50 gap-2 md:gap-0">
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 flex-shrink-0"><i class="fa-solid fa-pen-nib"></i></div>
+                <div class="flex-1 min-w-0"><h3 class="font-bold text-gray-900 leading-tight text-sm">Signing Room</h3><p class="text-[10px] text-gray-500 truncate" id="doc-name-display">Loading...</p></div>
+            </div>
+
+            <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1 order-3 md:order-2 w-full md:w-auto justify-center md:justify-start mt-2 md:mt-0">
+                <button onclick="changePdfPage(-1)" id="btn-prev-page" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-gray-600 shadow-sm hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition"><i class="fa-solid fa-chevron-left"></i></button>
+                <span id="page-indicator" class="text-xs font-bold text-gray-700 min-w-[60px] text-center">Page 1/1</span>
+                <button onclick="changePdfPage(1)" id="btn-next-page" class="w-8 h-8 flex items-center justify-center rounded-md bg-white text-gray-600 shadow-sm hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+
+            <div class="flex gap-3 w-full md:w-auto justify-end order-2 md:order-3">
+                <button onclick="closeSigningModal()" class="flex-1 md:flex-none px-4 py-2 text-xs md:text-sm font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition border border-gray-200 md:border-none">Batal</button>
+                <button onclick="saveSignedDocument()" class="flex-1 md:flex-none btn-press px-5 py-2 text-xs md:text-sm font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 rounded-lg shadow-md flex items-center justify-center gap-2"><i class="fa-solid fa-check"></i> Kirim</button>
+            </div>
+        </div>
+        
+        <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+            <div class="w-full md:w-72 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col z-40 shadow-xl flex-shrink-0 order-1 md:order-1 h-auto max-h-[40vh] md:max-h-full overflow-y-auto">
+                <div class="p-4 md:p-6 border-b border-gray-100">
+                    <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Area Tanda Tangan</h4>
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 relative overflow-hidden group hover:border-pink-400 transition h-24 md:h-32 mb-3 touch-none">
+                        <canvas id="signature-pad" class="w-full h-full cursor-crosshair touch-none"></canvas>
+                        <div class="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"><button onclick="clearPad()" class="bg-white p-1.5 rounded shadow text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button></div>
+                    </div>
+                    <button onclick="useSignature()" class="btn-press w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 shadow-lg">GUNAKAN</button>
+                </div>
+                <div class="p-4 md:p-6 flex-1 overflow-y-auto hidden md:block">
+                    <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Disimpan</h4>
+                    <div id="saved-sig-container" class="space-y-3"></div>
+                </div>
+                <div class="p-2 text-[10px] text-gray-400 border-t border-gray-100 text-center bg-gray-50 md:block hidden">💡 Drag pojok kanan bawah box untuk resize.</div>
+            </div>
+            <div id="pdf-scroll-container" class="order-2 md:order-2">
+                <div id="pdf-wrapper"><canvas id="the-canvas"></canvas><div id="drag-signature" class="signature-box hidden"><img id="drag-sig-img" src="" alt="TTD"></div></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // CONFIG
         const supabaseUrl = 'https://jrslgkxwjvugvgakxwsd.supabase.co';
@@ -709,7 +717,7 @@
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        let allUsers=[], ambassadorData=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
+        let allUsers=[], allAmbassadors=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
         let onlineEmails = new Set(); 
         
         // Global var untuk Quill Editor
@@ -725,7 +733,7 @@
         // Variables untuk Email Marketing Attachment
         let blastAttachmentData = null;
         let blastAttachmentName = "";
-        let blastAttachmentType = ""; // NEW: Simpan MIME type file
+        let blastAttachmentType = "";
 
         // PERBAIKAN MANAJEMEN TUGAS: Global Function untuk Custom Assign Modal
         window.toggleAssignSelect = function(cb) {
@@ -791,9 +799,9 @@
 
                 // Load Data Utama
                 fetchUsers(); 
-                fetchAmbassadors(); // Panggil fungsi fetch ambassador saat admin lolos verifikasi
                 fetchAnnouncements(); 
                 fetchModules(); 
+                fetchAmbassadors(); // Memanggil data Ambassador
                 initChart(); 
                 initRealtimeDashboard(); 
                 initCalendarRealtime(); 
@@ -806,7 +814,7 @@
                 fetchFolders();
                 initTrackingRealtime();
                 
-                // Load Tasks (NEW)
+                // Load Tasks
                 fetchTasks();
                 initTasksRealtime();
                 
@@ -826,7 +834,7 @@
                 // Render ulang tabel setiap menit agar teks waktu berjalan otomatis
                 setInterval(() => {
                     if (allUsers.length > 0) {
-                        filterTable(); // Memanggil filterTable agar sorting & filter tidak reset
+                        filterTable(); 
                         renderVerificationList(allUsers);
                     }
                 }, 60000);
@@ -851,6 +859,146 @@
                 window.location.href = 'index.html';
             }
         }
+
+        /* =========================================================
+            FUNGSI AMBASSADOR (YSA) LOGIC
+        ========================================================= */
+        async function fetchAmbassadors() {
+            const tbody = document.getElementById('ambassador-list');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data pendaftar...</td></tr>';
+            
+            const { data, error } = await supabaseClient.from('ambassadors').select('*').order('created_at', { ascending: false });
+            
+            if (error) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-red-500 py-6 text-xs">Gagal memuat data ambassador.</td></tr>';
+                return;
+            }
+            
+            allAmbassadors = data || [];
+            
+            if (allAmbassadors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-6 text-xs italic">Belum ada pendaftar.</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = allAmbassadors.map(amb => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4 font-bold text-gray-800">${amb.full_name}</td>
+                    <td class="p-4 text-gray-500 text-sm">${amb.school}</td>
+                    <td class="p-4 text-xs font-mono text-gray-500">${amb.phone}</td>
+                    <td class="p-4 text-xs text-gray-400">${new Date(amb.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'})} WIB</td>
+                    <td class="p-4 text-center">
+                        <button onclick="reviewAmbassador('${amb.id}')" class="text-xs bg-pink-50 text-pink-600 px-4 py-2 rounded-lg font-bold hover:bg-pink-100 transition shadow-sm"><i class="fa-solid fa-eye"></i> Review</button>
+                        <button onclick="deleteAmbassador('${amb.id}')" class="text-xs text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition ml-1"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function reviewAmbassador(id) {
+            const amb = allAmbassadors.find(a => a.id === id);
+            if(!amb) return;
+            
+            document.getElementById('amb-modal-title').innerText = `Review YSA: ${amb.full_name}`;
+            
+            // Logic untuk Parse URL Certificates yang dipisahkan koma
+            let certsHtml = '<p class="text-xs text-gray-400 italic">Tidak ada sertifikat yang dilampirkan</p>';
+            if(amb.certificates_url) {
+                const urls = amb.certificates_url.split(',').map(u => u.trim()).filter(u => u);
+                if(urls.length > 0) {
+                    certsHtml = `<div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">` + urls.map(url => {
+                        if(url.toLowerCase().endsWith('.pdf')) {
+                            return `<a href="${url}" target="_blank" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-xl hover:border-pink-500 transition bg-white shadow-sm h-32 group">
+                                        <i class="fa-solid fa-file-pdf text-4xl text-red-500 mb-2 group-hover:scale-110 transition duration-300"></i>
+                                        <span class="text-[10px] text-center font-bold text-gray-600">Buka PDF</span>
+                                    </a>`;
+                        } else {
+                            return `<a href="${url}" target="_blank" class="block overflow-hidden rounded-xl border border-gray-200 hover:border-pink-500 transition shadow-sm">
+                                        <img src="${url}" class="w-full h-32 object-cover hover:scale-105 transition duration-500">
+                                    </a>`;
+                        }
+                    }).join('') + `</div>`;
+                }
+            }
+
+            // Logic untuk Photo
+            let photoHtml = '<p class="text-xs text-gray-400 italic">Tidak ada foto</p>';
+            if(amb.photo_url) {
+                photoHtml = `<a href="${amb.photo_url}" target="_blank" class="block overflow-hidden rounded-xl border border-gray-200 shadow-sm mt-2 max-w-sm hover:border-pink-500 transition">
+                                <img src="${amb.photo_url}" class="w-full h-auto object-cover hover:scale-105 transition duration-500">
+                             </a>`;
+            }
+
+            const contentHtml = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2 mb-3">Biodata Diri</h4>
+                            <div class="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <div><span class="text-gray-500 block text-xs mb-1">Sekolah</span><span class="font-bold text-gray-800">${amb.school} <br><span class="text-xs font-normal text-gray-500">(Kelas ${amb.grade_class})</span></span></div>
+                                <div><span class="text-gray-500 block text-xs mb-1">TTL</span><span class="font-bold text-gray-800">${amb.birth_info}</span></div>
+                                <div><span class="text-gray-500 block text-xs mb-1">Gender</span><span class="font-bold text-gray-800">${amb.gender}</span></div>
+                                <div><span class="text-gray-500 block text-xs mb-1">No WA</span><span class="font-mono text-gray-800 bg-white px-2 py-1 rounded shadow-sm border border-gray-100">${amb.phone}</span></div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2 mb-3">Sosial Media & Link</h4>
+                            <div class="space-y-3 text-sm bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <div class="flex items-center gap-3"><i class="fa-brands fa-instagram text-pink-600 text-lg w-5 text-center"></i> <a href="${amb.instagram}" target="_blank" class="text-blue-500 hover:underline font-medium break-all">${amb.instagram}</a></div>
+                                <div class="flex items-center gap-3"><i class="fa-brands fa-tiktok text-black text-lg w-5 text-center"></i> <a href="${amb.tiktok}" target="_blank" class="text-blue-500 hover:underline font-medium break-all">${amb.tiktok}</a></div>
+                                <div class="flex items-center gap-3 pt-2 border-t border-gray-200"><i class="fa-solid fa-video text-red-500 text-lg w-5 text-center"></i> <a href="${amb.video_link}" target="_blank" class="text-blue-600 hover:underline font-bold break-all">Tonton Video Perkenalan</a></div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2 mb-3">Dokumen Visual</h4>
+                            <p class="text-xs font-bold text-gray-700 mb-2">Foto Diri Terbaik (Untuk Konten):</p>
+                            ${photoHtml}
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2 mb-3">Esai & Jawaban</h4>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm">
+                                    <span class="text-xs font-bold text-gray-500 block mb-2 uppercase tracking-wide"><i class="fa-solid fa-users-gear text-pink-400 mr-1"></i> Pengalaman Organisasi:</span>
+                                    <p class="text-sm text-gray-800 whitespace-pre-line leading-relaxed">${amb.org_experience || '-'}</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm">
+                                    <span class="text-xs font-bold text-gray-500 block mb-2 uppercase tracking-wide"><i class="fa-solid fa-trophy text-yellow-500 mr-1"></i> Prestasi yang Diraih:</span>
+                                    <p class="text-sm text-gray-800 whitespace-pre-line leading-relaxed">${amb.achievements || '-'}</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm">
+                                    <span class="text-xs font-bold text-gray-500 block mb-2 uppercase tracking-wide"><i class="fa-solid fa-lightbulb text-orange-400 mr-1"></i> Alasan Mendaftar:</span>
+                                    <p class="text-sm text-gray-800 whitespace-pre-line leading-relaxed">${amb.reason || '-'}</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm">
+                                    <span class="text-xs font-bold text-gray-500 block mb-2 uppercase tracking-wide"><i class="fa-solid fa-brain text-blue-400 mr-1"></i> Pandangan Kepemimpinan:</span>
+                                    <p class="text-sm text-gray-800 whitespace-pre-line leading-relaxed">${amb.leadership_view || '-'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2 mb-3">Sertifikat & Dokumen Tambahan</h4>
+                            ${certsHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('amb-modal-content').innerHTML = contentHtml;
+            document.getElementById('ambassador-modal').classList.remove('hidden');
+        }
+
+        async function deleteAmbassador(id) {
+            if((await Swal.fire({title:'Hapus Data Ambassador?', text:'Data dan berkas pelamar ini akan dihapus permanen.', icon:'warning', showCancelButton:true, confirmButtonColor:'#d33'})).isConfirmed) {
+                Swal.showLoading();
+                await supabaseClient.from('ambassadors').delete().eq('id', id);
+                fetchAmbassadors();
+                Toast.fire({ icon: 'success', title: 'Data Ambassador dihapus' });
+            }
+        }
+        /* =========================================================
+            END AMBASSADOR LOGIC
+        ========================================================= */
 
         function initQuillEditors() {
             const toolbarOptions = [
@@ -1033,9 +1181,6 @@
         ========================================================= */
 
         async function fetchTasks() {
-            // Kita menggunakan Flat Query tanpa join (select '*')
-            // untuk MENGHINDARI ERROR 400 (Violates Check Constraint / Relation Failed)
-            // Nama user nantinya akan dicocokkan otomatis dari array allUsers
             const { data, error } = await supabaseClient
                 .from('tasks')
                 .select('*')
@@ -1063,14 +1208,12 @@
                 else if(task.status === 'Ongoing') statusBadge = '<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">Dikerjakan</span>';
                 else statusBadge = '<span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-bold">Pending</span>';
 
-                // Map Assignee menggunakan allUsers agar bebas dari error relasi Database
                 let assigneeName = 'Semua Peserta (Publik)';
                 if (task.assigned_to) {
                     const foundUser = allUsers.find(u => u.id === task.assigned_to);
                     assigneeName = foundUser ? foundUser.full_name : 'User ID: ' + task.assigned_to.substring(0,5) + '...';
                 }
 
-                // Perbaiki error syntax quote (') di judul tugas saat masuk ke parameter function
                 const safeTitle = task.title.replace(/'/g, "\\'"); 
 
                 return `
@@ -1094,7 +1237,6 @@
 
         async function openTaskModal() {
             Swal.showLoading();
-            // Ambil user langsung dari database untuk memastikan daftarnya yang paling update
             const { data: users } = await supabaseClient.from('profiles').select('id, full_name').order('full_name', {ascending: true});
             Swal.close();
 
@@ -1176,7 +1318,6 @@
                 Swal.showLoading();
                 const { error } = await supabaseClient.from('tasks').insert([formValues]);
                 
-                // Mencegah dan Memberi Info yang jelas tentang Error Constraint Database
                 if(error) { 
                     if(error.message.includes('tasks_task_type_check')) {
                         Swal.fire('Aturan Database Gagal', 'Tipe tugas ("' + formValues.task_type + '") ditolak oleh Database. Harap sesuaikan penulisannya dengan daftar Check Constraint pada tabel Tasks di Supabase Anda.', 'error');
@@ -1196,7 +1337,6 @@
             document.getElementById('submissions-modal').classList.remove('hidden');
             document.getElementById('submissions-list').innerHTML = `<tr><td colspan="3" class="text-center py-6 text-gray-400 text-sm"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data jawaban...</td></tr>`;
 
-            // Ambil data tanpa join table agar menghindari error Foreign Key
             const { data, error } = await supabaseClient.from('task_submissions').select('*').eq('task_id', taskId).order('created_at', { ascending: false });
 
             if(error || !data) {
@@ -1286,7 +1426,6 @@
             return parsedRecipients;
         }
 
-        // FUNGSI PROCESSEXCEL YANG SUDAH DIPERBAIKI
         function processExcel(input) {
             const file = input.files[0];
             if (!file) return;
@@ -1297,32 +1436,26 @@
                 const workbook = XLSX.read(data, {type: 'array'});
                 const firstSheetName = workbook.SheetNames[0];
                 
-                // Gunakan header: 1 agar array langsung me-*return* nilai tanpa peduli nama headernya
                 const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName], { header: 1 });
                 let extractedList = [];
                 
                 jsonData.forEach(row => {
-                    // Abaikan baris kosong
                     if (!row || row.length === 0) return;
 
                     let nama = '';
                     let email = '';
                     
-                    // Looping setiap cell di dalam baris
                     row.forEach(cell => {
                         if (typeof cell === 'string') {
-                            // Cek apakah cell ini berisi email
                             const emailMatch = cell.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/i);
                             if (emailMatch) {
                                 email = emailMatch[0].trim();
                             } else if (cell.trim() !== '') {
-                                // Jika bukan email dan bukan string kosong, anggap ini sebagai nama
                                 nama += cell.trim() + ' ';
                             }
                         }
                     });
 
-                    // Bersihkan spasi ekstra di nama
                     nama = nama.trim();
 
                     if (email) {
@@ -1334,7 +1467,6 @@
                     }
                 });
 
-                // Hapus duplikat
                 extractedList = [...new Set(extractedList)];
 
                 const textArea = document.getElementById('blast-recipients');
@@ -1349,12 +1481,11 @@
                 updateRecipientCount();
                 Toast.fire({ icon: 'success', title: `${extractedList.length} Data diimpor` });
                 
-                input.value = ''; // Reset input file
+                input.value = ''; 
             };
             reader.readAsArrayBuffer(file);
         }
 
-        // --- TAMBAHAN LOGIKA LAMPIRAN FILE ---
         function updateAttachmentName(input) {
             const file = input.files[0];
             if (!file) {
@@ -1376,7 +1507,7 @@
                 const base64String = e.target.result.split(',')[1];
                 blastAttachmentData = base64String;
                 blastAttachmentName = file.name;
-                blastAttachmentType = file.type; // Menyimpan MIME Type
+                blastAttachmentType = file.type; 
                 document.getElementById('blast-attachment-name').innerText = file.name;
             };
             reader.onerror = function() {
@@ -1394,7 +1525,6 @@
             blastAttachmentName = "";
             blastAttachmentType = "";
         }
-        // --- SELESAI TAMBAHAN LOGIKA LAMPIRAN FILE ---
 
         async function startBlast() {
             const subject = document.getElementById('blast-subject').value;
@@ -1439,8 +1569,8 @@
                 attachments.push({
                     filename: blastAttachmentName,
                     content: blastAttachmentData,
-                    content_type: blastAttachmentType, // Penting untuk API Resend
-                    contentType: blastAttachmentType   // Format cadangan (tergantung SDK versi Node)
+                    content_type: blastAttachmentType, 
+                    contentType: blastAttachmentType   
                 });
             }
 
@@ -1465,7 +1595,6 @@
                     recipient_name: nama 
                 };
 
-                // Kirim array attachments ke edge function (Supabase)
                 if (attachments.length > 0) {
                     payloadContent.attachments = attachments;
                 }
@@ -1518,7 +1647,6 @@
             
             const { data: { user } } = await supabaseClient.auth.getUser();
             
-            // GUNAKAN FLAT QUERY UNTUK MENGHINDARI ERROR 400 RELASI
             let query = supabaseClient.from('digisign_documents').select('*');
             
             if(filter === 'inbox') query = query.eq('signer_id', user.id).eq('status', 'pending');
@@ -1542,7 +1670,6 @@
             }
             
             data.forEach(doc => {
-                // MANUAL MAPPING NAMA USER DARI allUsers
                 const reqUser = allUsers.find(u => u.id === doc.requester_id);
                 const sigUser = allUsers.find(u => u.id === doc.signer_id);
                 
@@ -1818,7 +1945,6 @@
             const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); 
             allUsers = data||[]; 
             
-            // Memanggil filterTable agar aturan filter & urutan langsung teraplikasi
             filterTable(); 
             renderVerificationList(allUsers); 
             
@@ -1848,9 +1974,8 @@
         function filterTable() { 
             const term = document.getElementById('searchInput').value.toLowerCase(); 
             const paymentFilter = document.getElementById('filterPayment').value; 
-            const sortFilter = document.getElementById('sortUser').value; // Ambil nilai sorting
+            const sortFilter = document.getElementById('sortUser').value; 
             
-            // 1. Lakukan Filter berdasarkan Pencarian & Status
             let filteredUsers = allUsers.filter(u => {
                 const name = (u.full_name || '').toLowerCase();
                 const school = (u.school || '').toLowerCase();
@@ -1861,21 +1986,16 @@
                 return matchTerm && matchPayment;
             });
 
-            // 2. Lakukan Sorting Data
             filteredUsers.sort((a, b) => {
                 if (sortFilter === 'terbaru') {
-                    // Pendaftar Terbaru (created_at terbesar ke terkecil)
                     return new Date(b.created_at || 0) - new Date(a.created_at || 0);
                 } else if (sortFilter === 'terlama') {
-                    // Pendaftar Terlama (created_at terkecil ke terbesar)
                     return new Date(a.created_at || 0) - new Date(b.created_at || 0);
                 } else if (sortFilter === 'last_seen_new') {
-                    // Aktivitas Terakhir / Terbaru (Waktu tertinggi berada di atas)
                     const dateA = a.last_seen ? new Date(a.last_seen).getTime() : 0;
                     const dateB = b.last_seen ? new Date(b.last_seen).getTime() : 0;
                     return dateB - dateA;
                 } else if (sortFilter === 'last_seen_old') {
-                    // Aktivitas Terlama (Waktu terendah berada di atas)
                     const dateA = a.last_seen ? new Date(a.last_seen).getTime() : 0;
                     const dateB = b.last_seen ? new Date(b.last_seen).getTime() : 0;
                     return dateA - dateB;
@@ -2219,13 +2339,12 @@
                 } 
 
                 if (allUsers.length > 0) {
-                    filterTable(); // Mempertahankan filter/sorting saat user login/logout
+                    filterTable(); 
                 }
 
             }).subscribe(); 
         }
 
-        // --- TAMBAHAN BARU: Fetch Visitor Anonim ---
         async function fetchVisitors() {
             try {
                 const { count } = await supabaseClient.from('visitor_logs').select('*', { count: 'exact', head: true });
@@ -2257,237 +2376,6 @@
         function reloadPreview() { document.getElementById('preview-frame').contentWindow.location.reload(); Toast.fire({ icon: 'success', title: 'Preview Direfresh' }); }
         function exportToExcel() { const ws = XLSX.utils.json_to_sheet(allUsers); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, "Data_Peserta.xlsx"); Toast.fire({ icon: 'success', title: 'Download Excel dimulai' }); }
         async function logout() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
-
-        // ==========================================
-        // FITUR BARU: MANAJEMEN DATA AMBASSADOR
-        // ==========================================
-        
-        // Memanggil data dari tabel "ambassadors" di Supabase
-        async function fetchAmbassadors() {
-            const { data, error } = await supabaseClient
-                .from('ambassadors')
-                .select('*')
-                .order('created_at', { ascending: false });
-                
-            if (error) {
-                console.error("Gagal menarik data ambassador:", error);
-                document.getElementById('ambassador-list').innerHTML = `<tr><td colspan="5" class="text-center text-red-500 py-6 text-sm">Gagal memuat data: ${error.message} (Cek Policy RLS di Supabase!)</td></tr>`;
-                return;
-            }
-            
-            ambassadorData = data || [];
-            renderAmbassadors(ambassadorData);
-            document.getElementById('ambassador-total').innerText = ambassadorData.length;
-        }
-
-        function renderAmbassadors(data) {
-            const tbody = document.getElementById('ambassador-list');
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-500 py-6 text-sm italic leading-relaxed">Data kosong.</td></tr>`;
-                return;
-            }
-            
-            tbody.innerHTML = data.map(a => {
-                const school = a.school || a.institution || a.asal_sekolah || '-';
-                const phone = a.phone || a.no_whatsapp || a.whatsapp || '-';
-                return `
-                <tr class="hover:bg-gray-50 transition duration-200">
-                    <td class="p-4 font-bold text-gray-800">${a.full_name || '-'}</td>
-                    <td class="p-4 text-xs font-mono text-blue-600">${a.email || '-'}</td>
-                    <td class="p-4 text-gray-500">${school}</td>
-                    <td class="p-4 text-xs font-mono text-gray-500">${phone}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="previewAmbassador('${a.id}')" class="text-xs bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg border border-indigo-200 hover:bg-indigo-100 transition font-bold shadow-sm whitespace-nowrap"><i class="fa-solid fa-eye"></i> Detail Lengkap</button>
-                    </td>
-                </tr>
-            `}).join('');
-        }
-
-        // Helper function to build Supabase Storage URL
-        function getAmbassadorFileUrl(path) {
-            if (!path) return null;
-            // Jika sudah berupa link lengkap HTTP/HTTPS
-            if (path.startsWith('http://') || path.startsWith('https://')) return path;
-            // Jika hanya path (misal: "sk/12345.pdf"), gabungkan dengan public URL supabase
-            return `${supabaseUrl}/storage/v1/object/public/ambassador_uploads/${path}`;
-        }
-
-        function previewAmbassador(id) {
-            const a = ambassadorData.find(x => x.id === id);
-            if (!a) return;
-            
-            // --- Normalisasi Field DB (jaga-jaga penamaan DB Anda sedikit berbeda) ---
-            const school = a.school || a.institution || a.asal_sekolah || '-';
-            const phone = a.phone || a.no_whatsapp || a.whatsapp || '-';
-            const grade = a.grade_class || a.kelas || '-';
-            const birthInfo = a.birth_info || a.tempat_tanggal_lahir || '-';
-            const gender = a.gender || a.jenis_kelamin || '-';
-            const ig = a.ig_account || a.akun_ig || a.instagram || '-';
-            const tiktok = a.tiktok_account || a.akun_tiktok || a.tiktok || '-';
-            const orgExp = a.organization_exp || a.pengalaman_organisasi || a.organisasi || '-';
-            const achExp = a.achievement_exp || a.prestasi || a.pengalaman_prestasi || '-';
-            const motivation = a.motivation || a.reason || a.alasan_mendaftar || '-';
-            const leadView = a.leadership_view || a.pandangan_kepemimpinan || a.pendapat_kepemimpinan || '-';
-
-            const skFile = a.sk_file || a.upload_sk;
-            const photoFile = a.photo_file || a.upload_foto || a.foto_file;
-            const videoLink = a.video_link || a.link_video;
-            const certFiles = a.certificate_files || a.upload_sertifikat || a.sertifikat_files;
-
-            // --- Menyiapkan Tombol Link / File ---
-            let filesHtml = '';
-            
-            if (skFile) {
-                filesHtml += `<a href="${getAmbassadorFileUrl(skFile)}" target="_blank" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg border border-red-200 font-bold hover:bg-red-100 transition text-xs flex items-center gap-2 w-fit mb-2"><i class="fa-solid fa-file-pdf"></i> Lihat SK Organisasi</a>`;
-            }
-            if (photoFile) {
-                filesHtml += `<a href="${getAmbassadorFileUrl(photoFile)}" target="_blank" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg border border-blue-200 font-bold hover:bg-blue-100 transition text-xs flex items-center gap-2 w-fit mb-2"><i class="fa-solid fa-image"></i> Lihat Foto Terbaik</a>`;
-            }
-            if (videoLink) {
-                filesHtml += `<a href="${videoLink}" target="_blank" class="bg-purple-50 text-purple-600 px-3 py-1.5 rounded-lg border border-purple-200 font-bold hover:bg-purple-100 transition text-xs flex items-center gap-2 w-fit mb-2"><i class="fa-solid fa-play"></i> Buka Link Video</a>`;
-            }
-            
-            if (certFiles) {
-                let certs = [];
-                try {
-                    certs = JSON.parse(certFiles); // Jika array string JSON
-                } catch(e) {
-                    certs = Array.isArray(certFiles) ? certFiles : certFiles.split(','); // Jika string pisah koma
-                }
-                
-                certs.forEach((cert, idx) => {
-                    if(cert && cert.trim()) {
-                        filesHtml += `<a href="${getAmbassadorFileUrl(cert.trim())}" target="_blank" class="bg-yellow-50 text-yellow-600 px-3 py-1.5 rounded-lg border border-yellow-200 font-bold hover:bg-yellow-100 transition text-xs flex items-center gap-2 w-fit mb-2"><i class="fa-solid fa-award"></i> Sertifikat ${idx + 1}</a>`;
-                    }
-                });
-            }
-
-            if (filesHtml === '') {
-                filesHtml = '<p class="text-xs text-gray-500 italic">Tidak ada file yang diunggah peserta.</p>';
-            }
-            
-            Swal.fire({
-                title: 'Data Lengkap Ambassador',
-                html: `
-                    <div class="text-left text-sm space-y-4 p-1 mt-2 max-h-[70vh] overflow-y-auto custom-scrollbar pr-2">
-                        
-                        <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-                            <h4 class="font-extrabold text-pink-600 border-b border-pink-50 pb-2 mb-3 text-xs tracking-wider uppercase"><i class="fa-solid fa-user mr-1"></i> Data Diri</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div><p class="text-[10px] font-bold text-gray-400 uppercase">Nama Lengkap</p><p class="font-bold text-gray-800">${a.full_name || '-'}</p></div>
-                                <div><p class="text-[10px] font-bold text-gray-400 uppercase">Tempat, Tgl Lahir</p><p class="text-gray-800">${birthInfo}</p></div>
-                                <div><p class="text-[10px] font-bold text-gray-400 uppercase">Jenis Kelamin</p><p class="text-gray-800">${gender}</p></div>
-                                <div><p class="text-[10px] font-bold text-gray-400 uppercase">Asal Sekolah</p><p class="text-gray-800 font-medium">${school}</p></div>
-                                <div><p class="text-[10px] font-bold text-gray-400 uppercase">Kelas</p><p class="text-gray-800">${grade}</p></div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-                            <h4 class="font-extrabold text-blue-600 border-b border-blue-50 pb-2 mb-3 text-xs tracking-wider uppercase"><i class="fa-solid fa-address-book mr-1"></i> Kontak & Sosmed</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div><p class="text-[10px] font-bold text-gray-400 uppercase">Email</p><p class="text-blue-600 font-mono">${a.email || '-'}</p></div>
-                                <div><p class="text-[10px] font-bold text-gray-400 uppercase">No. WhatsApp</p><p class="text-gray-800 font-mono">${phone}</p></div>
-                                <div><p class="text-[10px] font-bold text-gray-400 uppercase">Instagram</p><p class="text-gray-800 font-medium">${ig}</p></div>
-                                <div><p class="text-[10px] font-bold text-gray-400 uppercase">TikTok</p><p class="text-gray-800 font-medium">${tiktok}</p></div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm space-y-4">
-                            <h4 class="font-extrabold text-indigo-600 border-b border-indigo-50 pb-2 mb-1 text-xs tracking-wider uppercase"><i class="fa-solid fa-brain mr-1"></i> Pengalaman & Essay</h4>
-                            
-                            <div>
-                                <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Pengalaman Organisasi & Kepanitiaan</p>
-                                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 text-gray-700 text-xs leading-relaxed whitespace-pre-wrap">${orgExp}</div>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Prestasi yang Pernah Diraih</p>
-                                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 text-gray-700 text-xs leading-relaxed whitespace-pre-wrap">${achExp}</div>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Alasan Mendaftar Ambassador</p>
-                                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 text-gray-700 text-xs leading-relaxed whitespace-pre-wrap">${motivation}</div>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Alasan Organisasi Cocok Untuk Kepemimpinan</p>
-                                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 text-gray-700 text-xs leading-relaxed whitespace-pre-wrap">${leadView}</div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-                            <h4 class="font-extrabold text-orange-600 border-b border-orange-50 pb-2 mb-3 text-xs tracking-wider uppercase"><i class="fa-solid fa-folder-open mr-1"></i> Berkas Lampiran</h4>
-                            <div class="flex flex-wrap gap-2">
-                                ${filesHtml}
-                            </div>
-                        </div>
-                        
-                        <p class="text-[10px] text-gray-400 text-right italic pt-2">Dikirim pada: ${new Date(a.created_at).toLocaleString('id-ID')}</p>
-                    </div>
-                `,
-                confirmButtonText: 'Tutup Detail',
-                confirmButtonColor: '#334155',
-                width: '750px',
-                customClass: { confirmButton: 'rounded-xl px-8 py-2.5 font-bold shadow-sm' }
-            });
-        }
-
-        function searchAmbassador() {
-            const term = document.getElementById('searchAmbassadorInput').value.toLowerCase();
-            const filtered = ambassadorData.filter(a =>
-                (a.full_name && a.full_name.toLowerCase().includes(term)) ||
-                (a.email && a.email.toLowerCase().includes(term)) ||
-                (a.institution && a.institution.toLowerCase().includes(term)) ||
-                (a.school && a.school.toLowerCase().includes(term)) ||
-                (a.phone && a.phone.toLowerCase().includes(term))
-            );
-            renderAmbassadors(filtered);
-        }
-
-        function exportAmbassadors() {
-            if(ambassadorData.length === 0) return Toast.fire({ icon: 'warning', title: 'Data Ambassador kosong' });
-            
-            // Format data agar lebih rapih di excel dan mencakup semua detail
-            const excelData = ambassadorData.map((a, index) => {
-                const skFile = a.sk_file || a.upload_sk;
-                const photoFile = a.photo_file || a.upload_foto || a.foto_file;
-                const videoLink = a.video_link || a.link_video;
-                let certFiles = a.certificate_files || a.upload_sertifikat || a.sertifikat_files;
-                if(certFiles) {
-                    try { certFiles = JSON.parse(certFiles).map(c => getAmbassadorFileUrl(c)).join(' , '); }
-                    catch(e) { certFiles = certFiles; }
-                }
-
-                return {
-                    "No": index + 1,
-                    "Waktu Daftar": new Date(a.created_at).toLocaleString('id-ID'),
-                    "Nama Lengkap": a.full_name || '',
-                    "Email": a.email || '',
-                    "No. WhatsApp": a.phone || a.no_whatsapp || a.whatsapp || '',
-                    "Tempat Tanggal Lahir": a.birth_info || a.tempat_tanggal_lahir || '',
-                    "Jenis Kelamin": a.gender || a.jenis_kelamin || '',
-                    "Asal Sekolah": a.school || a.institution || a.asal_sekolah || '',
-                    "Kelas": a.grade_class || a.kelas || '',
-                    "Akun Instagram": a.ig_account || a.akun_ig || a.instagram || '',
-                    "Akun TikTok": a.tiktok_account || a.akun_tiktok || a.tiktok || '',
-                    "Pengalaman Organisasi": a.organization_exp || a.pengalaman_organisasi || a.organisasi || '',
-                    "Prestasi": a.achievement_exp || a.prestasi || a.pengalaman_prestasi || '',
-                    "Motivasi / Alasan": a.motivation || a.reason || a.alasan_mendaftar || '',
-                    "Pandangan Organisasi": a.leadership_view || a.pandangan_kepemimpinan || a.pendapat_kepemimpinan || '',
-                    "Link SK Organisasi": getAmbassadorFileUrl(skFile) || '',
-                    "Link Foto Terbaik": getAmbassadorFileUrl(photoFile) || '',
-                    "Link Video": videoLink || '',
-                    "Link Sertifikat": certFiles || ''
-                };
-            });
-
-            const ws = XLSX.utils.json_to_sheet(excelData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Data Ambassador");
-            XLSX.writeFile(wb, "Data_Ambassador_YLOS.xlsx");
-            Toast.fire({ icon: 'success', title: 'Download Excel dimulai' });
-        }
-        // ==========================================
-        // END FITUR BARU: MANAJEMEN DATA AMBASSADOR
-        // ==========================================
 
         // Start Security Check Immediately
         checkAdmin();
