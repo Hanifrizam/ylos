@@ -838,12 +838,12 @@
                         <input type="tel" id="amb-phone" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="0812...">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Akun Instagram</label>
-                        <input type="text" id="amb-ig" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="@username">
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Link Akun Instagram</label>
+                        <input type="url" id="amb-ig" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="https://instagram.com/username">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Akun TikTok</label>
-                        <input type="text" id="amb-tiktok" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="@username">
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Link Akun TikTok</label>
+                        <input type="url" id="amb-tiktok" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="https://tiktok.com/@username">
                     </div>
                 </div>
 
@@ -853,8 +853,8 @@
                         <textarea id="amb-org" required rows="3" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="Sebutkan organisasi dan peranmu..."></textarea>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Prestasi yang pernah diraih</label>
-                        <textarea id="amb-achieve" required rows="3" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="Sebutkan tingkat dan tahun perolehannya..."></textarea>
+                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Prestasi yang pernah diraih (Optional)</label>
+                        <textarea id="amb-achieve" rows="3" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="Sebutkan tingkat dan tahun perolehannya..."></textarea>
                     </div>
                     <div>
                         <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Alasan mendaftar YLOS School Ambassador</label>
@@ -871,10 +871,6 @@
                         <p class="text-sm text-blue-700 font-semibold"><i class="fa-solid fa-circle-info mr-1"></i> Perhatian: Maksimal ukuran file masing-masing adalah 10MB.</p>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Upload SK Organisasi (PDF/IMG)</label>
-                        <input type="file" id="amb-sk" required accept="image/*,.pdf" class="w-full text-sm text-gray-500 bg-gray-50 p-2 rounded-xl border border-gray-200">
-                    </div>
                     <div>
                         <label class="block text-xs font-bold mb-2 text-gray-700 uppercase">Link Video Perkenalan (TikTok/IG/Drive)</label>
                         <input type="url" id="amb-video" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-yellow-400 outline-none transition font-medium" placeholder="https://...">
@@ -1130,7 +1126,6 @@
                 const videoLink = document.getElementById('amb-video').value;
 
                 // 2. Dapatkan file objects
-                const skFile = document.getElementById('amb-sk').files[0];
                 const photoFile = document.getElementById('amb-photo').files[0];
                 const certFiles = document.getElementById('amb-cert').files;
 
@@ -1140,7 +1135,6 @@
                     if (file && file.size > MAX_SIZE) throw new Error(`Ukuran file ${label} melebihi 10MB!`);
                 };
                 
-                checkSize(skFile, "SK Organisasi");
                 checkSize(photoFile, "Foto Terbaik");
                 for(let i=0; i<certFiles.length; i++) {
                     checkSize(certFiles[i], `Sertifikat ke-${i+1}`);
@@ -1168,7 +1162,6 @@
                 Swal.fire({ title: 'Mengunggah File...', text: 'Mohon tunggu sebentar, jangan tutup halaman ini.', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
                 // 4. Upload file-file
-                const skUrl = await uploadFile(skFile, 'sk');
                 const photoUrl = await uploadFile(photoFile, 'photos');
                 
                 let certUrls = [];
@@ -1195,7 +1188,6 @@
                     reason: reason,
                     leadership_view: leadershipView,
                     video_link: videoLink,
-                    sk_url: skUrl,
                     photo_url: photoUrl,
                     certificates_url: certUrlsString
                 }]);
