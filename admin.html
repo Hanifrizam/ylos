@@ -189,6 +189,16 @@
                     <i class="fa-solid fa-paper-plane w-5 text-center group-hover:text-pink-500 transition"></i> Email Blast
                 </div>
             </div>
+
+            <div>
+    <p class="px-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 opacity-70">Marketing</p>
+    <div onclick="switchTab('blast')" id="menu-blast" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer group">
+        <i class="fa-solid fa-paper-plane w-5 text-center group-hover:text-pink-500 transition"></i> Email Blast
+    </div>
+    <div onclick="switchTab('referral')" id="menu-referral" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer group">
+        <i class="fa-solid fa-ticket w-5 text-center group-hover:text-pink-500 transition"></i> Kode Referral
+    </div>
+</div>
             
             <div>
                 <p class="px-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 opacity-70">Database</p>
@@ -409,6 +419,54 @@
                         <p class="text-gray-500 text-xs mt-1">Kirim email massal ke peserta atau database.</p>
                     </div>
                 </div>
+
+                <div id="section-referral" class="content-section space-y-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 glass-card p-6">
+        <div>
+            <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-ticket text-pink-600"></i> Manajemen Referral</h2>
+            <p class="text-gray-600 text-xs mt-1">Generate kode 1-100 dan lacak peserta yang menggunakannya.</p>
+        </div>
+        <div class="flex gap-2 w-full md:w-auto">
+            <button onclick="fetchReferrals()" class="btn-press bg-white border border-gray-200 text-gray-600 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 flex items-center justify-center gap-2"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+            <button onclick="generateReferrals()" class="btn-press w-full md:w-auto bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:bg-black flex items-center justify-center gap-2">
+                <i class="fa-solid fa-plus"></i> Generate 100 Kode
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="glass-card p-5 flex flex-col justify-center h-24 relative overflow-hidden">
+            <span class="text-xs font-bold text-gray-500 uppercase z-10">Total Kode</span>
+            <span class="text-2xl md:text-3xl font-extrabold text-gray-900 z-10" id="ref-total">0</span>
+            <i class="fa-solid fa-ticket absolute -right-4 -bottom-4 text-6xl text-gray-50 opacity-50"></i>
+        </div>
+        <div class="glass-card p-5 flex flex-col justify-center h-24 relative overflow-hidden">
+            <span class="text-xs font-bold text-gray-500 uppercase z-10">Kode Terpakai</span>
+            <span class="text-2xl md:text-3xl font-extrabold text-green-600 z-10" id="ref-used">0</span>
+            <i class="fa-solid fa-check-circle absolute -right-4 -bottom-4 text-6xl text-green-50 opacity-50"></i>
+        </div>
+    </div>
+
+    <div class="glass-card p-4 md:p-6">
+        <div class="overflow-x-auto">
+            <table class="modern-table w-full min-w-[700px]">
+                <thead>
+                    <tr>
+                        <th>Kode Referral</th>
+                        <th>Status</th>
+                        <th>Digunakan Oleh</th>
+                        <th>Email Peserta</th>
+                        <th>Tanggal Pendaftaran</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="referral-list">
+                    <tr><td colspan="6" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="glass-card p-6 flex flex-col gap-4">
@@ -1942,17 +2000,22 @@
         }
 
         async function fetchUsers() { 
-            const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); 
-            allUsers = data||[]; 
-            
-            filterTable(); 
-            renderVerificationList(allUsers); 
-            
-            document.getElementById('stat-total').innerText = allUsers.length; 
-            document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; 
-            document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; 
-            document.getElementById('table-total').innerText = allUsers.length; 
-        }
+    const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); 
+    allUsers = data||[]; 
+    
+    filterTable(); 
+    renderVerificationList(allUsers); 
+    
+    document.getElementById('stat-total').innerText = allUsers.length; 
+    document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; 
+    document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; 
+    document.getElementById('table-total').innerText = allUsers.length; 
+
+    // KODE BARU: Panggil data referral agar tabelnya langsung terupdate
+    if(document.getElementById('section-referral')) {
+        fetchReferrals();
+    }
+}
         
         function timeAgo(dateString) {
             if(!dateString) return '<span class="text-gray-400 text-xs italic">-</span>';
@@ -2377,6 +2440,114 @@
         function exportToExcel() { const ws = XLSX.utils.json_to_sheet(allUsers); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, "Data_Peserta.xlsx"); Toast.fire({ icon: 'success', title: 'Download Excel dimulai' }); }
         async function logout() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
 
+        /* =========================================================
+    LOGIKA REFERRAL CODE (GENERATE & TRACKING)
+========================================================= */
+async function fetchReferrals() {
+    const tbody = document.getElementById('referral-list');
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data referral...</td></tr>';
+
+    // Ambil semua kode referral dari database
+    const { data: codes, error: errCodes } = await supabaseClient.from('referral_codes').select('*').order('id', { ascending: true });
+    
+    if (errCodes) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-red-500 py-6 text-xs">Gagal memuat kode referral. Pastikan tabel referral_codes sudah ada.</td></tr>';
+        return;
+    }
+
+    if (!codes || codes.length === 0) {
+        document.getElementById('ref-total').innerText = '0';
+        document.getElementById('ref-used').innerText = '0';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-6 text-xs italic">Belum ada kode referral. Silakan klik Generate.</td></tr>';
+        return;
+    }
+
+    let usedCount = 0;
+    
+    // Looping setiap kode dan cross-check dengan data allUsers (yang diambil dari fetchUsers)
+    const html = codes.map(c => {
+        // Cari apakah ada peserta di tabel profiles yang menggunakan kode ini
+        const usersWithCode = allUsers.filter(u => u.referral_code && u.referral_code.toUpperCase() === c.code.toUpperCase());
+        
+        if(usersWithCode.length > 0) {
+            usedCount += usersWithCode.length;
+            // Jika terpakai, tampilkan nama pesertanya
+            return usersWithCode.map(user => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 font-bold text-gray-800 font-mono">${c.code}</td>
+                    <td class="px-6 py-4"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase border border-green-200">Terpakai</span></td>
+                    <td class="px-6 py-4 text-sm font-bold text-gray-800">${user.full_name || '-'}</td>
+                    <td class="px-6 py-4 text-xs text-blue-600 font-mono">${user.email || '-'}</td>
+                    <td class="px-6 py-4 text-xs text-gray-500">${new Date(user.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}</td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="deleteReferral('${c.id}')" class="text-gray-400 hover:text-red-500 p-2 rounded hover:bg-red-50 transition" title="Hapus Kode"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            // Jika belum terpakai
+            return `
+                <tr class="hover:bg-gray-50 transition opacity-80">
+                    <td class="px-6 py-4 font-bold text-gray-800 font-mono">${c.code}</td>
+                    <td class="px-6 py-4"><span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase border border-gray-200">Tersedia</span></td>
+                    <td class="px-6 py-4 text-center text-gray-400">-</td>
+                    <td class="px-6 py-4 text-center text-gray-400">-</td>
+                    <td class="px-6 py-4 text-center text-gray-400">-</td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="deleteReferral('${c.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        }
+    }).join('');
+
+    document.getElementById('ref-total').innerText = codes.length;
+    document.getElementById('ref-used').innerText = usedCount;
+    tbody.innerHTML = html;
+}
+
+async function generateReferrals() {
+    Swal.fire({
+        title: 'Generate 100 Kode?',
+        text: "Sistem akan otomatis membuat kode YLOSFON1 sampai YLOSFON100.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#DB2777',
+        cancelButtonText: 'Batal',
+        confirmButtonText: 'Ya, Generate!'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            Swal.showLoading();
+            
+            let codesToInsert = [];
+            for(let i = 1; i <= 100; i++) {
+                codesToInsert.push({ code: `YLOSFON${i}` });
+            }
+            
+            const { error } = await supabaseClient.from('referral_codes').insert(codesToInsert);
+            
+            if (error) {
+                if (error.code === '23505') { 
+                    Swal.fire('Peringatan', 'Kode (YLOSFON1 - 100) sudah pernah dibuat sebelumnya.', 'warning');
+                } else {
+                    Swal.fire('Error', error.message, 'error');
+                }
+            } else {
+                Toast.fire({ icon: 'success', title: '100 Kode berhasil dibuat!' });
+            }
+            fetchReferrals();
+        }
+    });
+}
+
+async function deleteReferral(id) {
+    if((await Swal.fire({title:'Hapus Kode?', text: 'Kode yang dihapus tidak bisa digunakan lagi oleh peserta.', icon:'warning', showCancelButton:true, confirmButtonColor: '#d33'})).isConfirmed) {
+        await supabaseClient.from('referral_codes').delete().eq('id', id);
+        fetchReferrals();
+        Toast.fire({ icon: 'success', title: 'Kode dihapus' });
+    }
+}
+        
         // Start Security Check Immediately
         checkAdmin();
     </script>
