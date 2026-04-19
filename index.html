@@ -1224,6 +1224,60 @@
             }
         }
 
+        // --- AUTH LOGIN LOGIC ---
+        async function handleLogin(e) {
+            // 1. Mencegah form me-refresh halaman (INI KUNCI UTAMANYA)
+            e.preventDefault();
+
+            // 2. Ubah tombol jadi loading
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = 'Memeriksa...';
+            btn.disabled = true;
+
+            // 3. Ambil data dari form HTML
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                // 4. Kirim permintaan login ke Supabase
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+
+                if (error) throw error;
+
+                // 5. Jika sukses, arahkan ke halaman yang sesuai
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil Masuk!',
+                    text: 'Mengarahkan ke dashboard...',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    // Cek apakah yang login adalah admin
+                    if (email.includes('admin')) {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                });
+
+            } catch (err) {
+                // 6. Jika gagal (password salah, dll), tampilkan pesan
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Gagal',
+                    text: err.message || 'Email atau password yang Anda masukkan salah.'
+                });
+            } finally {
+                // 7. Kembalikan tombol seperti semula jika gagal
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
         // --- AUTH SUBMIT LOGIC ---
         async function handleRegister(e) {
     e.preventDefault();
