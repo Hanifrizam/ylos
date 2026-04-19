@@ -950,12 +950,14 @@
                 <input type="password" id="reg-password" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition" placeholder="Buat Password (Min. 6 Karakter)">
                 
                 <div class="relative">
-                    <select id="reg-package" class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition appearance-none cursor-pointer text-gray-600 font-medium">
-                        <option value="Jalur Seleksi (Commitment Fee)">Jalur Seleksi - Commitment Fee</option>
-                        <option value="Self Funded (Jalur Mandiri)">Self Funded - Jalur Mandiri VIP</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center px-5 pointer-events-none text-gray-400"><i class="fa-solid fa-chevron-down"></i></div>
-                </div>
+    <select id="reg-package" class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition appearance-none cursor-pointer text-gray-600 font-medium">
+        <option value="Jalur Seleksi (Commitment Fee)">Jalur Seleksi - Commitment Fee</option>
+        <option value="Self Funded (Jalur Mandiri)">Self Funded - Jalur Mandiri VIP</option>
+    </select>
+    <div class="absolute inset-y-0 right-0 flex items-center px-5 pointer-events-none text-gray-400"><i class="fa-solid fa-chevron-down"></i></div>
+</div>
+
+<input type="text" id="reg-referral" class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 focus:ring-2 focus:ring-ylosYellow outline-none transition uppercase" placeholder="Kode Referral (Opsional)">
 
                 <div class="flex gap-4 items-center bg-yellow-50 p-4 rounded-xl border border-yellow-100">
                     <span id="captcha-question" class="font-mono text-lg font-bold text-yellow-800 bg-white px-3 py-1 rounded shadow-sm border">?</span>
@@ -1223,54 +1225,64 @@
 
         // --- AUTH SUBMIT LOGIC ---
         async function handleRegister(e) {
-            e.preventDefault();
-            if(parseInt(document.getElementById('captcha-input').value) !== captchaCorrectAnswer) {
-                Swal.fire({ icon: 'error', title: 'Captcha Salah', text: 'Silakan periksa kembali hitungan Anda.'});
-                generateCaptcha(); return;
-            }
-            
-            const btn = document.getElementById('btn-reg'); btn.innerText = 'Memproses...'; btn.disabled = true;
-            const email = document.getElementById('reg-email').value;
-            
-            const { data, error } = await supabaseClient.auth.signUp({
-                email: email, password: document.getElementById('reg-password').value,
-                options: { 
-                    emailRedirectTo: window.location.origin + '/dashboard.html',
-                    data: {
-                        full_name: document.getElementById('reg-name').value,
-                        school: document.getElementById('reg-school').value,
-                        phone: document.getElementById('reg-phone').value,
-                        package_type: document.getElementById('reg-package').value
-                    }
-                }
-            });
+    e.preventDefault();
+    if(parseInt(document.getElementById('captcha-input').value) !== captchaCorrectAnswer) {
+        Swal.fire({ icon: 'error', title: 'Captcha Salah', text: 'Silakan periksa kembali hitungan Anda.'});
+        generateCaptcha(); return;
+    }
+    
+    const btn = document.getElementById('btn-reg'); btn.innerText = 'Memproses...'; btn.disabled = true;
+    const email = document.getElementById('reg-email').value;
+    const referralInput = document.getElementById('reg-referral').value.trim().toUpperCase();
 
-            if(error) { Swal.fire('Gagal', error.message, 'error'); btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); }
-            else { Swal.fire({ icon: 'success', title: 'Berhasil!', html: `Link verifikasi telah dikirim ke <b>${email}</b>.<br>Cek kotak masuk/spam Anda.`, confirmButtonText: 'Login', confirmButtonColor: '#DB2777' }).then(() => showPage('login')); btn.innerText='Daftar Sekarang'; btn.disabled=false;}
+    // 1. VALIDASI REFERRAL CODE JIKA DIISI
+    if (referralInput !== "") {
+        // Cek ke tabel referral_codes di Supabase
+        const { data: refData, error: refError } = await supabaseClient
+            .from('referral_codes')
+            .select('code')
+            .eq('code', referralInput)
+            .single();
+
+        // Jika error atau data tidak ditemukan, berarti kode tidak valid
+        if (refError || !refData) {
+            Swal.fire('Kode Tidak Valid', 'Kode referral yang Anda masukkan tidak terdaftar.', 'error');
+            btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha();
+            return; // Hentikan proses pendaftaran
         }
+    }
 
-        async function handleLogin(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('button'); const orig = btn.innerText; btn.innerText = "Loading..."; btn.disabled=true;
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: document.getElementById('login-email').value,
-                password: document.getElementById('login-password').value
-            });
-            if(error) { 
-                let errorText = error.message;
-                // BUG FIX: Penanganan "Email not confirmed"
-                if(errorText.toLowerCase().includes('email not confirmed')) {
-                    errorText = "Email Anda belum diverifikasi. Silakan cek kotak masuk/spam email Anda dan klik link konfirmasi.";
-                }
-                Swal.fire({ icon: 'error', title: 'Gagal Login', text: errorText }); 
-                btn.innerText=orig; btn.disabled=false; 
-            }
-            else { 
-                Swal.fire({ icon: 'success', title: 'Login Berhasil', showConfirmButton: false, timer: 1000 });
-                if(data.user.email.includes('admin')) window.location.href = 'admin.html';
-                else window.location.href = 'dashboard.html';
+    // 2. PROSES SIGNUP JIKA KODE VALID ATAU KOSONG
+    const { data, error } = await supabaseClient.auth.signUp({
+        email: email, password: document.getElementById('reg-password').value,
+        options: { 
+            emailRedirectTo: window.location.origin + '/dashboard.html',
+            data: {
+                full_name: document.getElementById('reg-name').value,
+                school: document.getElementById('reg-school').value,
+                phone: document.getElementById('reg-phone').value,
+                package_type: document.getElementById('reg-package').value,
+                referral_code: referralInput // Simpan kode referral ke metadata user
             }
         }
+    });
+
+    if(error) { 
+        Swal.fire('Gagal', error.message, 'error'); 
+        btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); 
+    } else { 
+        Swal.fire({ 
+            icon: 'success', 
+            title: 'Berhasil!', 
+            html: `Link verifikasi telah dikirim ke <b>${email}</b>.<br>Cek kotak masuk/spam Anda.`, 
+            confirmButtonText: 'Login', 
+            confirmButtonColor: '#DB2777' 
+        }).then(() => showPage('login')); 
+        
+        btn.innerText='Daftar Sekarang'; btn.disabled=false;
+        e.target.reset(); // Reset form
+    }
+}
 
         async function logout() { await supabaseClient.auth.signOut(); window.location.reload(); }
 
