@@ -125,13 +125,27 @@
         .ql-editor { min-height: 250px; }
 
         /* --- DRAG & DROP ENHANCEMENTS --- */
-        .sortable-ghost { opacity: 0.4; background-color: #FFF1F2; border: 2px dashed #DB2777; transform: scale(0.98); }
-        .sortable-drag { cursor: grabbing; opacity: 1; background: white; transform: scale(1.02); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); z-index: 9999; }
-        .draggable-item { touch-action: none; }
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: #FFF1F2; /* Pink Muda */
+            border: 2px dashed #DB2777;
+            transform: scale(0.98);
+        }
+        .sortable-drag {
+            cursor: grabbing;
+            opacity: 1;
+            background: white;
+            transform: scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            z-index: 9999;
+        }
+        .draggable-item {
+            touch-action: none; /* Penting untuk mobile agar tidak scroll saat drag */
+        }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-sm md:text-base">
-
+    
     <div id="security-overlay">
         <div class="loader-spinner mb-4"></div>
         <h2 class="text-xl font-extrabold text-gray-800 tracking-tight">YLOS <span class="text-pink-600">Secure</span></h2>
@@ -181,6 +195,7 @@
                 <p class="px-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-3 opacity-70">Database</p>
                 <div onclick="switchTab('users')" id="menu-users" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-users w-5 text-center"></i> Peserta</div>
                 <div onclick="switchTab('verification')" id="menu-verification" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-envelope-open-text w-5 text-center"></i> Verifikasi</div>
+                
                 <div onclick="switchTab('ambassadors')" id="menu-ambassadors" class="sidebar-item px-4 py-3.5 flex items-center gap-3 text-sm cursor-pointer"><i class="fa-solid fa-star w-5 text-center text-yellow-500"></i> YSA Ambassador</div>
             </div>
 
@@ -205,6 +220,7 @@
     <main class="flex-1 flex flex-col h-screen overflow-hidden relative w-full">
         
         <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 md:px-8 flex-shrink-0 z-30">
+            
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="md:hidden w-10 h-10 flex items-center justify-center bg-gray-50 rounded-xl text-gray-600 active:bg-gray-100">
                     <i class="fa-solid fa-bars text-lg"></i>
@@ -288,6 +304,7 @@
                         </table>
                     </div>
                 </div>
+
             </div>
 
             <div id="section-calendar" class="content-section space-y-6">
@@ -298,6 +315,7 @@
             </div>
             
             <div id="section-tracking" class="content-section space-y-6">
+                
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 glass-card p-6">
                     <div>
                         <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-folder-open text-pink-500"></i> Progress Update</h2>
@@ -310,7 +328,8 @@
                     </div>
                 </div>
 
-                <div id="view-folders" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"></div>
+                <div id="view-folders" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                    </div>
 
                 <div id="view-folder-detail" class="hidden glass-card p-6 flex flex-col gap-4">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-100 pb-4 gap-4">
@@ -324,8 +343,11 @@
                             <i class="fa-solid fa-pen"></i> Tambah Progress
                         </button>
                     </div>
-                    <div id="progress-list" class="space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2"></div>
+                    
+                    <div id="progress-list" class="space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
+                        </div>
                 </div>
+
             </div>
 
             <div id="section-tasks" class="content-section space-y-6">
@@ -468,12 +490,12 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 glass-card p-6">
                     <div>
                         <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-ticket text-pink-600"></i> Manajemen Referral</h2>
-                        <p class="text-gray-600 text-xs mt-1">Generate kode custom dan lacak peserta yang menggunakannya.</p>
+                        <p class="text-gray-600 text-xs mt-1">Generate kode 1-100 dan lacak peserta yang menggunakannya.</p>
                     </div>
                     <div class="flex gap-2 w-full md:w-auto">
                         <button onclick="fetchReferrals()" class="btn-press bg-white border border-gray-200 text-gray-600 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 flex items-center justify-center gap-2"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
                         <button onclick="generateReferrals()" class="btn-press w-full md:w-auto bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:bg-black flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-plus"></i> Generate Kode
+                            <i class="fa-solid fa-plus"></i> Generate 100 Kode
                         </button>
                     </div>
                 </div>
@@ -511,7 +533,6 @@
                     </div>
                 </div>
             </div>
-
             <div id="section-ambassadors" class="content-section space-y-6">
                 <div class="glass-card p-4 md:p-6">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -576,8 +597,7 @@
 
             <div id="section-verification" class="content-section space-y-6">
                  <div class="glass-card p-4 md:p-6">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4"> 
-                        <div><h2 class="font-bold text-gray-800 text-lg md:text-xl">Bantuan Verifikasi</h2><p class="text-xs text-gray-500 mt-1">Kirim ulang link login.</p></div>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4"> <div><h2 class="font-bold text-gray-800 text-lg md:text-xl">Bantuan Verifikasi</h2><p class="text-xs text-gray-500 mt-1">Kirim ulang link login.</p></div>
                         
                         <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
                             <div class="relative w-full md:w-64">
@@ -763,6 +783,7 @@
         let blastAttachmentName = "";
         let blastAttachmentType = "";
 
+        // PERBAIKAN MANAJEMEN TUGAS: Global Function untuk Custom Assign Modal
         window.toggleAssignSelect = function(cb) {
             const container = document.getElementById('assign-select-container');
             if(cb.checked) {
@@ -784,6 +805,7 @@
             }
         };
 
+        // MOBILE SIDEBAR TOGGLE
         function toggleSidebar() {
             const sidebar = document.getElementById('main-sidebar');
             const backdrop = document.getElementById('mobile-backdrop');
@@ -797,6 +819,7 @@
             }
         }
 
+        // --- SECURITY: HARDENED ADMIN CHECK ---
         async function checkAdmin() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
@@ -822,6 +845,7 @@
                 overlay.style.opacity = '0';
                 setTimeout(() => { overlay.style.display = 'none'; }, 500);
 
+                // Load Data Utama
                 fetchUsers(); 
                 fetchAnnouncements(); 
                 fetchModules(); 
@@ -833,21 +857,29 @@
                 initDigiSignRealtime(); 
                 fetchDigiSignDocs(); 
                 loadMySignature();
+                
+                // Load Folder Tracking
                 fetchFolders();
                 initTrackingRealtime();
+                
+                // Load Tasks
                 fetchTasks();
                 initTasksRealtime();
+                
+                // INIT QUILL EDITORs
                 initQuillEditors();
 
                 setInterval(updatePresence, 60000); 
                 updatePresence();
 
+                // Tambahan: Update last seen admin saat tab/browser ditutup
                 document.addEventListener("visibilitychange", async function() {
                     if (document.visibilityState === 'hidden') {
                         await supabaseClient.rpc('update_user_presence');
                     }
                 });
 
+                // Render ulang tabel setiap menit agar teks waktu berjalan otomatis
                 setInterval(() => {
                     if (allUsers.length > 0) {
                         filterTable(); 
@@ -855,6 +887,7 @@
                     }
                 }, 60000);
 
+            // Fetch visitor anonim
             fetchVisitors();
 
             } catch (err) {
@@ -875,6 +908,9 @@
             }
         }
 
+        /* =========================================================
+            FUNGSI AMBASSADOR (YSA) LOGIC
+        ========================================================= */
         async function fetchAmbassadors() {
             const tbody = document.getElementById('ambassador-list');
             tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data pendaftar...</td></tr>';
@@ -913,6 +949,7 @@
             
             document.getElementById('amb-modal-title').innerText = `Review YSA: ${amb.full_name}`;
             
+            // Logic untuk Parse URL Certificates yang dipisahkan koma
             let certsHtml = '<p class="text-xs text-gray-400 italic">Tidak ada sertifikat yang dilampirkan</p>';
             if(amb.certificates_url) {
                 const urls = amb.certificates_url.split(',').map(u => u.trim()).filter(u => u);
@@ -932,6 +969,7 @@
                 }
             }
 
+            // Logic untuk Photo
             let photoHtml = '<p class="text-xs text-gray-400 italic">Tidak ada foto</p>';
             if(amb.photo_url) {
                 photoHtml = `<a href="${amb.photo_url}" target="_blank" class="block overflow-hidden rounded-xl border border-gray-200 shadow-sm mt-2 max-w-sm hover:border-pink-500 transition">
@@ -1006,6 +1044,9 @@
                 Toast.fire({ icon: 'success', title: 'Data Ambassador dihapus' });
             }
         }
+        /* =========================================================
+            END AMBASSADOR LOGIC
+        ========================================================= */
 
         function initQuillEditors() {
             const toolbarOptions = [
@@ -1032,6 +1073,10 @@
 
         function initDatabaseRealtime() { supabaseClient.channel('db-changes').on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => { fetchUsers(); Toast.fire({ icon: 'info', title: 'Data Peserta Diperbarui' }); }).subscribe(); }
         function initDigiSignRealtime() { supabaseClient.channel('digisign-updates').on('postgres_changes', { event: '*', schema: 'public', table: 'digisign_documents' }, () => { fetchDigiSignDocs(); Toast.fire({ icon: 'info', title: 'Dokumen DigiSign Diperbarui' }); }).subscribe(); }
+
+        /* =========================================================
+            FOLDER BASED DAILY TRACKING LOGIC 
+        ========================================================= */
 
         async function fetchFolders() {
             const { data, error } = await supabaseClient.from('tracking_folders').select('*').order('created_at', { ascending: true });
@@ -1178,6 +1223,10 @@
                 }
             }).subscribe();
         }
+
+        /* =========================================================
+            PERBAIKAN TASKS MANAGEMENT LOGIC & PREVIEW JAWABAN
+        ========================================================= */
 
         async function fetchTasks() {
             const { data, error } = await supabaseClient
@@ -1330,6 +1379,7 @@
             }
         }
 
+        // --- FUNGSI ADMIN: MELIHAT JAWABAN PESERTA ---
         async function viewSubmissions(taskId, taskTitle, taskType) {
             document.getElementById('sub-modal-title').innerText = `Jawaban: ${taskTitle}`;
             document.getElementById('submissions-modal').classList.remove('hidden');
@@ -1395,10 +1445,17 @@
                 }).subscribe();
         }
 
+        /* =========================================================
+            END TASKS MANAGEMENT LOGIC
+        ========================================================= */
+
+        // --- EMAIL BLAST LOGIC ---
         function updateRecipientCount() {
             const val = document.getElementById('blast-recipients').value;
             const lines = val.split(/[\n,]+/).map(e => e.trim()).filter(e => e !== "");
+            
             let parsedRecipients = [];
+            
             lines.forEach(line => {
                 const match = line.match(/(.*?)<([^>]+)>/);
                 if (match) {
@@ -1412,6 +1469,7 @@
                     }
                 }
             });
+            
             document.getElementById('recipient-count').innerText = `${parsedRecipients.length} Email`;
             return parsedRecipients;
         }
@@ -1470,6 +1528,7 @@
 
                 updateRecipientCount();
                 Toast.fire({ icon: 'success', title: `${extractedList.length} Data diimpor` });
+                
                 input.value = ''; 
             };
             reader.readAsArrayBuffer(file);
@@ -1481,6 +1540,7 @@
                 clearAttachment();
                 return;
             }
+            
             if (file.size > 5 * 1024 * 1024) {
                 Swal.fire('File Terlalu Besar', 'Maksimal ukuran file adalah 5MB untuk menghemat resource.', 'warning');
                 clearAttachment();
@@ -1618,6 +1678,7 @@
             btn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
 
+        // --- DIGISIGN LOGIC ---
         async function updateDigiSignStats() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             const { count: inbox } = await supabaseClient.from('digisign_documents').select('*', {count:'exact', head:true}).eq('signer_id', user.id).eq('status', 'pending');
@@ -1774,6 +1835,7 @@
             }
         }
 
+        // --- SIGNING ROOM ---
         function cloneBuffer(buffer) { const dst = new ArrayBuffer(buffer.byteLength); new Uint8Array(dst).set(new Uint8Array(buffer)); return dst; }
         async function openSigningRoom(docId, fileName) {
             currentDocId = docId;
@@ -1892,178 +1954,636 @@
         async function deleteMySignature() { const { data: { user } } = await supabaseClient.auth.getUser(); await supabaseClient.from('admin_signatures').delete().eq('admin_id', user.id); loadMySignature(); }
         function useSavedSignature() { if(!mySavedSignature) return; document.getElementById('drag-sig-img').src = mySavedSignature; document.getElementById('drag-signature').classList.remove('hidden'); Toast.fire({ icon: 'success', title: 'Tanda tangan dimuat' }); }
 
-        /* =========================================================
-            LOGIKA REFERRAL CODE (GENERATE & TRACKING)
-        ========================================================= */
-        async function fetchReferrals() {
-            const tbody = document.getElementById('referral-list');
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data referral...</td></tr>';
-
-            const { data: codes, error: errCodes } = await supabaseClient.from('referral_codes').select('*').order('id', { ascending: true });
+        // --- DASHBOARD & USER LOGIC ---
+        function switchTab(tabId) { 
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active')); 
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active')); 
+            document.getElementById('section-' + tabId).classList.add('active'); 
+            document.getElementById('menu-' + tabId).classList.add('active'); 
+            if (tabId === 'calendar') setTimeout(() => { !calendarInstance ? initCalendar() : calendarInstance.render(); }, 100); 
             
-            if (errCodes) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-red-500 py-6 text-xs">Gagal memuat kode referral. Pastikan tabel referral_codes sudah ada.</td></tr>';
-                return;
-            }
-
-            if (!codes || codes.length === 0) {
-                document.getElementById('ref-total').innerText = '0';
-                document.getElementById('ref-used').innerText = '0';
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-6 text-xs italic">Belum ada kode referral. Silakan klik Generate.</td></tr>';
-                return;
-            }
-
-            let usedCount = 0;
-            
-            const html = codes.map(c => {
-                const usersWithCode = allUsers.filter(u => u.referral_code && u.referral_code.toUpperCase() === c.code.toUpperCase());
-                
-                if(usersWithCode.length > 0) {
-                    usedCount += usersWithCode.length;
-                    return usersWithCode.map(user => `
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-4 font-bold text-gray-800 font-mono">${c.code}</td>
-                            <td class="px-6 py-4"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase border border-green-200">Terpakai</span></td>
-                            <td class="px-6 py-4 text-sm font-bold text-gray-800">${user.full_name || '-'}</td>
-                            <td class="px-6 py-4 text-xs text-blue-600 font-mono">${user.email || '-'}</td>
-                            <td class="px-6 py-4 text-xs text-gray-500">${new Date(user.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}</td>
-                            <td class="px-6 py-4 text-center">
-                                <button onclick="deleteReferral('${c.id}')" class="text-gray-400 hover:text-red-500 p-2 rounded hover:bg-red-50 transition" title="Hapus Kode"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `).join('');
-                } else {
-                    return `
-                        <tr class="hover:bg-gray-50 transition opacity-80">
-                            <td class="px-6 py-4 font-bold text-gray-800 font-mono">${c.code}</td>
-                            <td class="px-6 py-4"><span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase border border-gray-200">Tersedia</span></td>
-                            <td class="px-6 py-4 text-center text-gray-400">-</td>
-                            <td class="px-6 py-4 text-center text-gray-400">-</td>
-                            <td class="px-6 py-4 text-center text-gray-400">-</td>
-                            <td class="px-6 py-4 text-center">
-                                <button onclick="deleteReferral('${c.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
+            if(window.innerWidth < 768) {
+                const sidebar = document.getElementById('main-sidebar');
+                const backdrop = document.getElementById('mobile-backdrop');
+                if (!sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                    backdrop.classList.add('hidden');
                 }
-            }).join('');
-
-            document.getElementById('ref-total').innerText = codes.length;
-            document.getElementById('ref-used').innerText = usedCount;
-            tbody.innerHTML = html;
+            }
         }
 
-        async function generateReferrals() {
-            const { value: formValues } = await Swal.fire({
-                title: 'Buat Kode Referral',
-                html: `
-                    <div class="text-left space-y-4 mt-4">
-                        <div>
-                            <label class="text-xs font-bold text-gray-500">Kode / Prefix Baru</label>
-                            <input id="ref-prefix" class="swal2-input !m-0 mt-1 w-full text-sm rounded-lg border-gray-200 uppercase" placeholder="Contoh: YLOSAMB atau YLOSFON">
-                            <p class="text-[10px] text-gray-400 mt-1">Gunakan huruf tanpa spasi.</p>
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-500">Jumlah Generate</label>
-                            <input id="ref-count" type="number" min="1" max="500" value="1" class="swal2-input !m-0 mt-1 w-full text-sm rounded-lg border-gray-200" placeholder="1">
-                            <p class="text-[10px] text-gray-400 mt-1">Jika isi 1, kode persis seperti input di atas. Jika >1, akan berakhiran angka otomatis (contoh: YLOSAMB1, YLOSAMB2).</p>
-                        </div>
-                    </div>
-                `,
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonText: 'Generate Kode',
-                confirmButtonColor: '#DB2777',
-                cancelButtonText: 'Batal',
-                preConfirm: () => {
-                    const prefix = document.getElementById('ref-prefix').value.trim().toUpperCase().replace(/\s+/g, '');
-                    const count = parseInt(document.getElementById('ref-count').value);
-                    if (!prefix) { Swal.showValidationMessage('Kode / Prefix harus diisi!'); return false; }
-                    if (count < 1) { Swal.showValidationMessage('Jumlah minimal 1!'); return false; }
-                    return { prefix, count };
-                }
+        async function renderCurrentPage() {
+            if (!currentPdfObject) return;
+            document.getElementById('page-indicator').innerText = `Page ${currentPageNum}/${totalPdfPages}`;
+            document.getElementById('btn-prev-page').disabled = currentPageNum <= 1;
+            document.getElementById('btn-next-page').disabled = currentPageNum >= totalPdfPages;
+            const page = await currentPdfObject.getPage(currentPageNum);
+            const canvas = document.getElementById('the-canvas');
+            const ctx = canvas.getContext('2d');
+            const containerWidth = document.getElementById('pdf-wrapper').parentElement.clientWidth - 40;
+            const viewport = page.getViewport({scale: 1.0});
+            const scale = containerWidth < viewport.width ? containerWidth / viewport.width : 1.0;
+            const scaledViewport = page.getViewport({scale: scale});
+            canvas.height = scaledViewport.height; 
+            canvas.width = scaledViewport.width;
+            await page.render({canvasContext: ctx, viewport: scaledViewport}).promise;
+        }
+
+        async function fetchUsers() { 
+            const {data} = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false }); 
+            allUsers = data||[]; 
+            
+            filterTable(); 
+            renderVerificationList(allUsers); 
+            
+            document.getElementById('stat-total').innerText = allUsers.length; 
+            document.getElementById('stat-lunas').innerText = allUsers.filter(u => u.payment_status === 'Lunas').length; 
+            document.getElementById('stat-pending').innerText = allUsers.filter(u => u.payment_status !== 'Lunas').length; 
+            document.getElementById('table-total').innerText = allUsers.length; 
+
+            // KODE BARU: Panggil data referral agar tabelnya langsung terupdate
+            if(document.getElementById('section-referral')) {
+                fetchReferrals();
+            }
+        }
+        
+        function timeAgo(dateString) {
+            if(!dateString) return '<span class="text-gray-400 text-xs italic">-</span>';
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            if (seconds < 60) return `<span class="text-gray-500 text-xs">Baru saja</span>`;
+            
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `<span class="text-gray-500 text-xs">${minutes} mnt lalu</span>`;
+            
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `<span class="text-gray-500 text-xs">${hours} jam lalu</span>`;
+            
+            return `<span class="text-gray-400 text-xs">${date.toLocaleDateString('id-ID')}</span>`;
+        }
+
+        function filterTable() { 
+            const term = document.getElementById('searchInput').value.toLowerCase(); 
+            const paymentFilter = document.getElementById('filterPayment').value; 
+            const sortFilter = document.getElementById('sortUser').value; 
+            
+            let filteredUsers = allUsers.filter(u => {
+                const name = (u.full_name || '').toLowerCase();
+                const school = (u.school || '').toLowerCase();
+                
+                const matchTerm = name.includes(term) || school.includes(term);
+                const matchPayment = paymentFilter === "" || u.payment_status === paymentFilter;
+                
+                return matchTerm && matchPayment;
             });
 
-            if (formValues) {
-                Swal.showLoading();
-                let codesToInsert = [];
+            filteredUsers.sort((a, b) => {
+                if (sortFilter === 'terbaru') {
+                    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+                } else if (sortFilter === 'terlama') {
+                    return new Date(a.created_at || 0) - new Date(b.created_at || 0);
+                } else if (sortFilter === 'last_seen_new') {
+                    const dateA = a.last_seen ? new Date(a.last_seen).getTime() : 0;
+                    const dateB = b.last_seen ? new Date(b.last_seen).getTime() : 0;
+                    return dateB - dateA;
+                } else if (sortFilter === 'last_seen_old') {
+                    const dateA = a.last_seen ? new Date(a.last_seen).getTime() : 0;
+                    const dateB = b.last_seen ? new Date(b.last_seen).getTime() : 0;
+                    return dateA - dateB;
+                }
+                return 0;
+            });
+            
+            renderTable(filteredUsers); 
+        }
+
+        function renderTable(users) { 
+            document.getElementById('userTableBody').innerHTML = users.map(u => { 
+                const badge = u.payment_status === 'Lunas' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Lunas</span>' : '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">Pending</span>'; 
+                const action = u.payment_status === 'Lunas' ? `<button onclick="updateStatus('${u.id}', 'Pending')" class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition font-bold">Batalkan</button>` : `<button onclick="updateStatus('${u.id}', 'Lunas')" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition font-bold">Verifikasi</button>`; 
                 
-                if (formValues.count === 1) {
-                    codesToInsert.push({ code: formValues.prefix });
-                } else {
-                    for(let i = 1; i <= formValues.count; i++) {
-                        codesToInsert.push({ code: `${formValues.prefix}${i}` });
-                    }
+                const isOnline = onlineEmails.has(u.email);
+                const lastSeenUI = isOnline 
+                    ? '<span class="text-green-600 text-xs font-bold flex items-center justify-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Online</span>' 
+                    : timeAgo(u.last_seen);
+                
+                return `<tr class="hover:scale-[1.01] transition duration-200">
+                    <td class="p-4 font-bold text-gray-800">${u.full_name || '-'}</td>
+                    <td class="p-4 text-gray-500">${u.school || '-'}</td>
+                    <td class="p-4 text-xs font-mono text-gray-500">${u.phone || '-'}</td>
+                    <td class="p-4">${badge}</td>
+                    <td class="p-4 text-center">${lastSeenUI}</td>
+                    <td class="p-4 text-center flex gap-2 justify-center">${action}<button onclick="deleteUser('${u.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>`; 
+            }).join(''); 
+        }
+        
+        function filterVerification() {
+            const term = document.getElementById('searchVerification').value.toLowerCase();
+            const regFilter = document.getElementById('filterReg').value; 
+            
+            const filtered = allUsers.filter(u => {
+                const nameMatch = (u.full_name && u.full_name.toLowerCase().includes(term));
+                const emailMatch = (u.email && u.email.toLowerCase().includes(term));
+                
+                const matchTerm = nameMatch || emailMatch;
+                
+                let matchReg = true; 
+                if (regFilter === "registered") {
+                    matchReg = u.email ? true : false;
+                } else if (regFilter === "unregistered") {
+                    matchReg = !u.email ? true : false;
                 }
                 
-                const { error } = await supabaseClient.from('referral_codes').insert(codesToInsert);
-                
-                if (error) {
-                    if (error.code === '23505') { 
-                        Swal.fire('Peringatan', 'Sebagian atau semua kode tersebut sudah pernah dibuat (Duplikat).', 'warning');
-                    } else {
-                        Swal.fire('Error', error.message, 'error');
+                return matchTerm && matchReg;
+            });
+            
+            renderVerificationList(filtered);
+        }
+
+        function renderVerificationList(users) { 
+            document.getElementById('verification-list').innerHTML = users.map(u => { 
+                let statusLogin = u.email ? `<span class="text-green-500 text-[10px] font-bold bg-green-50 px-3 py-1 rounded-full">● Aktif</span>` : `<span class="text-gray-400 text-[10px] bg-gray-50 px-3 py-1 rounded-full">○ Belum</span>`; 
+                let regStatus = u.email 
+                    ? `<span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-bold border border-blue-200">Berhasil Mendaftar</span>` 
+                    : `<span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-[10px] font-bold border border-orange-200">Menunggu Konfirmasi</span>`;
+
+                return `<tr>
+                    <td class="p-4 font-bold text-gray-700">${u.full_name}</td>
+                    <td class="p-4 text-xs text-blue-600 font-mono">${u.email}</td>
+                    <td class="p-4 text-xs font-mono">${u.phone}</td>
+                    <td class="p-4 text-center">${regStatus}</td>
+                    <td class="p-4 text-center">${statusLogin}</td>
+                    <td class="p-4 text-center"><button onclick="resendEmail('${u.email}')" class="text-xs bg-gray-900 text-white px-4 py-1.5 rounded-lg shadow hover:bg-black transition flex items-center gap-2 mx-auto whitespace-nowrap"><i class="fa-regular fa-paper-plane"></i> Kirim Link</button></td>
+                </tr>`; 
+            }).join(''); 
+        }
+        
+        async function updateStatus(id, status) { Swal.showLoading(); await supabaseClient.from('profiles').update({ payment_status: status }).eq('id', id); Swal.close(); fetchUsers(); Toast.fire({ icon: 'success', title: 'Status diupdate' }); }
+        async function deleteUser(id) { if((await Swal.fire({title:'Hapus Data?', text:'Tindakan ini permanen', icon:'warning', showCancelButton:true})).isConfirmed) { await supabaseClient.from('profiles').delete().eq('id', id); fetchUsers(); Toast.fire({ icon: 'success', title: 'Data dihapus' }); } }
+        
+        async function resendEmail(email) { 
+            Swal.showLoading(); 
+            const { error } = await supabaseClient.auth.resend({ type: 'signup', email: email, options: { emailRedirectTo: window.location.origin + '/dashboard.html' } }); 
+            if (error) {
+                if(error.message.includes("already")) {
+                    const { error: magicLinkError } = await supabaseClient.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin + '/dashboard.html' } });
+                    if(magicLinkError) { Swal.fire('Gagal', magicLinkError.message, 'error'); } else { Swal.fire({ icon: 'success', title: 'Link Login Terkirim!', text: `User ongoing. Link login dikirim ke ${email}`, showConfirmButton: false, timer: 2000 }); }
+                } else { Swal.fire('Gagal', error.message, 'error'); }
+            } else { Swal.fire({ icon: 'success', title: 'Verifikasi Terkirim!', text: `Link verifikasi dikirim ke ${email}`, showConfirmButton: false, timer: 2000 }); }
+        }
+
+        // --- CALENDAR (GOOGLE STYLE) ---
+        function initCalendar() { 
+            const calendarEl = document.getElementById('calendar'); 
+            calendarInstance = new FullCalendar.Calendar(calendarEl, { 
+                initialView: 'dayGridMonth', 
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listWeek' }, 
+                locale: 'id', editable: true, selectable: true, selectMirror: true, dayMaxEvents: true, height: 'auto',
+                events: async (info, success, failure) => { 
+                    const { data, error } = await supabaseClient.from('admin_calendar').select('*'); 
+                    if (error) failure(error); 
+                    else success(data.map(evt => ({ id: evt.id, title: evt.title, start: evt.start_time, end: evt.end_time, description: evt.description }))); 
+                }, 
+                select: async (info) => { 
+                    let adjustedEndDate = new Date(info.end);
+                    if (info.allDay) adjustedEndDate.setDate(adjustedEndDate.getDate() - 0);
+                    const displayEndDate = adjustedEndDate.toISOString().split('T')[0];
+
+                    const { value: f } = await Swal.fire({ 
+                        title: 'Tambah Jadwal',
+                        html: `<div class="swal-cal-container"><div class="swal-cal-group"><label class="swal-cal-label">Judul Kegiatan</label><input id="cal-title" class="swal2-input swal-cal-input" placeholder="Contoh: Meeting Koordinasi"></div><div class="swal-cal-group"><label class="swal-cal-label">Detail</label><textarea id="cal-desc" class="swal2-textarea swal-cal-input" style="height: 80px" placeholder="Tambahkan deskripsi..."></textarea></div><div class="swal-cal-row"><div class="swal-cal-group"><label class="swal-cal-label">Mulai</label><input id="cal-start" type="datetime-local" class="swal2-input swal-cal-input" value="${info.startStr}T09:00"></div><div class="swal-cal-group"><label class="swal-cal-label">Selesai</label><input id="cal-end" type="datetime-local" class="swal2-input swal-cal-input" value="${displayEndDate}T17:00"></div></div></div>`, 
+                        focusConfirm: false, showCancelButton: true, confirmButtonText: 'Simpan Jadwal', confirmButtonColor: '#DB2777', cancelButtonText: 'Batal',
+                        customClass: { confirmButton: 'btn-press rounded-xl px-6', cancelButton: 'rounded-xl' },
+                        preConfirm: () => {
+                            const title = document.getElementById('cal-title').value;
+                            if (!title) { Swal.showValidationMessage('Judul tidak boleh kosong!'); return false; }
+                            return { title: title, description: document.getElementById('cal-desc').value, start: document.getElementById('cal-start').value, end: document.getElementById('cal-end').value }
+                        } 
+                    }); 
+                    if (f) { 
+                        await supabaseClient.from('admin_calendar').insert({ title: f.title, description: f.description, start_time: f.start, end_time: f.end }); 
+                        calendarInstance.refetchEvents(); Toast.fire({ icon: 'success', title: 'Jadwal Berhasil Ditambahkan' }); 
                     }
-                } else {
-                    Toast.fire({ icon: 'success', title: `${formValues.count} Kode berhasil dibuat!` });
+                    calendarInstance.unselect();
+                }, 
+                eventClick: async (info) => {
+                    const evt = info.event; 
+                    if ((await Swal.fire({ 
+                        title: evt.title, 
+                        html: `<div class="text-left text-sm text-gray-600"><p class="mb-2">${evt.extendedProps.description || 'Tidak ada deskripsi'}</p><hr class="my-2"><p class="text-[10px] font-bold text-gray-400 uppercase">Waktu:</p><p>${evt.start.toLocaleString('id-ID')}</p></div>`, 
+                        showDenyButton: true, confirmButtonText: 'Tutup', denyButtonText: 'Hapus Jadwal', confirmButtonColor: '#334155', denyButtonColor: '#DC2626' 
+                    })).isDenied) { 
+                        await supabaseClient.from('admin_calendar').delete().eq('id', evt.id); evt.remove(); Toast.fire({ icon: 'success', title: 'Jadwal Dihapus' }); 
+                    } 
                 }
-                fetchReferrals();
+            }); 
+            calendarInstance.render(); 
+        }
+        function initCalendarRealtime() { supabaseClient.channel('calendar-sync').on('postgres_changes', { event: '*', schema: 'public', table: 'admin_calendar' }, () => { if(calendarInstance) calendarInstance.refetchEvents(); }).subscribe(); }
+        
+        // --- ANNOUNCEMENTS LOGIC ---
+        async function fetchAnnouncements() { 
+            const { data } = await supabaseClient.from('announcements').select('*').order('order_index', {ascending: true}); 
+            
+            document.getElementById('announcement-list').innerHTML = data.map(item => `
+                <div data-id="${item.id}" class="glass-card p-4 flex items-center gap-4 group draggable-item cursor-move mb-3">
+                    <i class="fa-solid fa-grip-vertical text-gray-300 group-hover:text-pink-400 transition"></i>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-gray-800 text-sm truncate">${item.title}</h4>
+                        <div class="text-xs text-gray-500 truncate opacity-70">Klik edit untuk lihat isi...</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="editAnnounce('${item.id}')" class="text-blue-400 hover:text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="delAnnounce('${item.id}')" class="text-gray-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>`).join(''); 
+            
+            new Sortable(document.getElementById('announcement-list'), { 
+                animation: 200, 
+                handle: '.fa-grip-vertical', 
+                delay: 100, 
+                delayOnTouchOnly: true,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                onEnd: async (evt) => { await updateOrder(evt.to, 'announcements'); Toast.fire({ icon: 'success', title: 'Urutan Diperbarui' }); } 
+            });
+        }
+        
+        async function saveAnnounce() {
+            const title = document.getElementById('announce-title').value;
+            const content = quillAnnounce.root.innerHTML;
+            
+            if(!title || quillAnnounce.getText().trim().length === 0 && content.indexOf('<img') === -1) {
+                return Toast.fire({ icon: 'warning', title: 'Judul dan Konten wajib diisi' });
+            }
+
+            if(editingAnnounceId) {
+                await supabaseClient.from('announcements').update({ title, content }).eq('id', editingAnnounceId);
+                Toast.fire({ icon: 'success', title: 'Pengumuman Diperbarui' });
+            } else {
+                await supabaseClient.from('announcements').insert({ title, content });
+                Toast.fire({ icon: 'success', title: 'Pengumuman Diposting' });
+            }
+
+            cancelEditAnnounce();
+            fetchAnnouncements();
+        }
+
+        async function editAnnounce(id) {
+            Swal.showLoading();
+            const { data } = await supabaseClient.from('announcements').select('*').eq('id', id).single();
+            Swal.close();
+            
+            if(data) {
+                editingAnnounceId = id;
+                document.getElementById('announce-title').value = data.title;
+                quillAnnounce.root.innerHTML = data.content;
+                
+                document.getElementById('btn-save-announce').innerText = "Simpan Perubahan";
+                document.getElementById('btn-cancel-announce').classList.remove('hidden');
+                
+                document.getElementById('section-announcements').scrollIntoView({ behavior: 'smooth' });
             }
         }
 
-        async function deleteReferral(id) {
-            if((await Swal.fire({title:'Hapus Kode?', text: 'Kode yang dihapus tidak bisa digunakan lagi oleh peserta.', icon:'warning', showCancelButton:true, confirmButtonColor: '#d33'})).isConfirmed) {
-                await supabaseClient.from('referral_codes').delete().eq('id', id);
-                fetchReferrals();
-                Toast.fire({ icon: 'success', title: 'Kode dihapus' });
+        function cancelEditAnnounce() {
+            editingAnnounceId = null;
+            document.getElementById('announce-title').value = '';
+            quillAnnounce.setText('');
+            document.getElementById('btn-save-announce').innerText = "Posting";
+            document.getElementById('btn-cancel-announce').classList.add('hidden');
+        }
+
+        async function delAnnounce(id) { 
+            if((await Swal.fire({title:'Hapus Pengumuman?', icon:'warning', showCancelButton:true})).isConfirmed) {
+                await supabaseClient.from('announcements').delete().eq('id', id); 
+                fetchAnnouncements(); 
+                Toast.fire({ icon: 'success', title: 'Dihapus' }); 
             }
         }
+
+
+        // --- MODULES LOGIC ---
+        async function fetchModules() { 
+            const { data } = await supabaseClient.from('modules').select('*').order('order_index', {ascending: true}); 
+            
+            document.getElementById('module-list').innerHTML = data.map(mod => `
+                <div data-id="${mod.id}" class="glass-card p-4 flex items-center gap-4 group draggable-item cursor-move mb-3">
+                    <i class="fa-solid fa-grip-vertical text-gray-300 group-hover:text-pink-400 transition"></i>
+                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 flex-shrink-0"><i class="fa-solid fa-file-alt"></i></div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-gray-800 text-sm truncate">${mod.title}</h4>
+                        <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase">${mod.category}</span>
+                    </div>
+                    <div class="flex gap-2">
+                         <button onclick="editModule('${mod.id}')" class="text-blue-400 hover:text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="delModule('${mod.id}')" class="text-gray-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>`).join(''); 
+            
+            new Sortable(document.getElementById('module-list'), { 
+                animation: 200, 
+                handle: '.fa-grip-vertical',
+                delay: 100, 
+                delayOnTouchOnly: true,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                onEnd: async (evt) => { await updateOrder(evt.to, 'modules'); Toast.fire({ icon: 'success', title: 'Urutan Materi Diupdate' }); } 
+            });
+        }
+        
+        async function saveModule() {
+            const title = document.getElementById('mod-title').value;
+            const link_url = document.getElementById('mod-link').value;
+            const category = document.getElementById('mod-category').value;
+            const is_premium = document.getElementById('mod-premium').value === 'true';
+
+            if(!title || !link_url) return Toast.fire({icon: 'warning', title: 'Lengkapi Data Materi'});
+
+            if(editingModuleId) {
+                await supabaseClient.from('modules').update({ title, link_url, category, is_premium }).eq('id', editingModuleId);
+                Toast.fire({ icon: 'success', title: 'Materi Diperbarui' });
+            } else {
+                await supabaseClient.from('modules').insert({ title, link_url, category, is_premium });
+                Toast.fire({ icon: 'success', title: 'Materi Diupload' });
+            }
+            
+            cancelEditModule();
+            fetchModules();
+        }
+
+        async function editModule(id) {
+             Swal.showLoading();
+            const { data } = await supabaseClient.from('modules').select('*').eq('id', id).single();
+            Swal.close();
+            
+            if(data) {
+                editingModuleId = id;
+                document.getElementById('mod-title').value = data.title;
+                document.getElementById('mod-link').value = data.link_url;
+                document.getElementById('mod-category').value = data.category;
+                document.getElementById('mod-premium').value = data.is_premium.toString();
+                
+                document.getElementById('btn-save-module').innerText = "Simpan Perubahan";
+                document.getElementById('btn-save-module').classList.remove('bg-purple-600');
+                document.getElementById('btn-save-module').classList.add('bg-pink-600');
+                document.getElementById('btn-cancel-module').classList.remove('hidden');
+
+                document.getElementById('section-modules').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function cancelEditModule() {
+            editingModuleId = null;
+            document.getElementById('mod-title').value = '';
+            document.getElementById('mod-link').value = '';
+            document.getElementById('btn-save-module').innerText = "Upload Materi";
+            document.getElementById('btn-save-module').classList.add('bg-purple-600');
+            document.getElementById('btn-save-module').classList.remove('bg-pink-600');
+            document.getElementById('btn-cancel-module').classList.add('hidden');
+        }
+
+        async function delModule(id) { 
+            if((await Swal.fire({title:'Hapus Materi?', icon:'warning', showCancelButton:true})).isConfirmed) {
+                await supabaseClient.from('modules').delete().eq('id', id); 
+                fetchModules(); 
+                Toast.fire({ icon: 'success', title: 'Materi Dihapus' }); 
+            }
+        }
+
+        async function updateOrder(container, table) { const items = Array.from(container.children); for (let i = 0; i < items.length; i++) { await supabaseClient.from(table).update({ order_index: i }).eq('id', items[i].dataset.id); } }
+
+        function initChart() { const ctx = document.getElementById('userChart'); if(ctx) { activityChart = new Chart(ctx.getContext('2d'), { type: 'bar', data: { labels: ['Home', 'Dashboard', 'Trip', 'Tiket'], datasets: [{ label: 'User Aktif', data: [0,0,0,0], backgroundColor: '#DB2777', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } } } }); } }
+        
+        function initRealtimeDashboard() { 
+            const channel = supabaseClient.channel('online-users'); 
+            channel.on('presence', { event: 'sync' }, () => { 
+                const state = channel.presenceState(); 
+                
+                onlineEmails.clear();
+
+                let total = 0; 
+                let counts = {'Home':0, 'Dashboard':0, 'Trip':0, 'Tiket':0}; 
+                let html = ''; 
+
+                for (const id in state) { 
+                    if(state[id][0].email) { 
+                        total++; 
+                        
+                        onlineEmails.add(state[id][0].email);
+
+                        let p = state[id][0].page.replace('#',''); 
+                        p = p.charAt(0).toUpperCase() + p.slice(1); 
+                        if(counts[p] !== undefined) counts[p]++; 
+
+                        html += `<div class="flex items-center justify-between p-2 bg-gray-50 rounded-xl mb-1 border border-gray-100"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div><span class="text-xs font-bold text-gray-700">${state[id][0].email}</span></div><span class="text-[10px] text-gray-500 font-mono bg-white px-2 py-0.5 rounded border shadow-sm">${p}</span></div>`; 
+                    } 
+                } 
+
+                document.getElementById('online-count').innerText = total + " Online"; 
+                document.getElementById('active-user-list').innerHTML = html || '<div class="text-center text-xs text-gray-400 py-4">Sepi...</div>'; 
+                
+                if(activityChart) { 
+                    activityChart.data.datasets[0].data = Object.values(counts); 
+                    activityChart.update(); 
+                } 
+
+                if (allUsers.length > 0) {
+                    filterTable(); 
+                }
+
+            }).subscribe(); 
+        }
+
+        async function fetchVisitors() {
+            try {
+                const { count } = await supabaseClient.from('visitor_logs').select('*', { count: 'exact', head: true });
+                document.getElementById('stat-visitors').innerText = count || 0;
+
+                const { data } = await supabaseClient.from('visitor_logs').select('*').order('created_at', { ascending: false }).limit(10);
+                const tbody = document.getElementById('visitor-log-list');
+                
+                if(!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-6 text-xs italic">Belum ada data pengunjung anonim.</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = data.map(v => `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="font-mono text-xs text-gray-500 font-bold">${v.ip_address || 'Hidden'}</td>
+                        <td class="text-sm font-medium text-gray-800"><i class="fa-solid fa-location-dot text-red-400 mr-1"></i> ${v.city ? v.city + ', ' + v.country : 'Unknown'}</td>
+                        <td class="text-sm text-gray-600"><i class="fa-solid ${v.device === 'Mobile' ? 'fa-mobile-screen text-blue-400' : 'fa-desktop text-gray-400'} mr-1"></i> ${v.os || 'Unknown OS'}</td>
+                        <td class="text-sm text-gray-600"><i class="fa-brands fa-chrome text-yellow-500 mr-1"></i> ${v.browser || 'Unknown'}</td>
+                        <td class="text-xs text-gray-400">${new Date(v.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'})}</td>
+                    </tr>
+                `).join('');
+            } catch(e) {
+                console.log('Error memuat data visitor:', e);
+            }
+        }
+
+        function setPreviewMode(mode) { const w = document.getElementById('preview-wrapper'); if(mode==='mobile') { w.style.width = '375px'; w.style.margin = '0 auto'; } else { w.style.width = '100%'; w.style.margin = '0'; } }
+        function reloadPreview() { document.getElementById('preview-frame').contentWindow.location.reload(); Toast.fire({ icon: 'success', title: 'Preview Direfresh' }); }
+        function exportToExcel() { const ws = XLSX.utils.json_to_sheet(allUsers); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, "Data_Peserta.xlsx"); Toast.fire({ icon: 'success', title: 'Download Excel dimulai' }); }
+        async function logout() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
+
+        /* =========================================================
+    LOGIKA REFERRAL CODE (GENERATE & TRACKING)
+========================================================= */
+async function fetchReferrals() {
+    const tbody = document.getElementById('referral-list');
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data referral...</td></tr>';
+
+    // Ambil semua kode referral dari database
+    const { data: codes, error: errCodes } = await supabaseClient.from('referral_codes').select('*').order('id', { ascending: true });
+    
+    if (errCodes) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-red-500 py-6 text-xs">Gagal memuat kode referral. Pastikan tabel referral_codes sudah ada.</td></tr>';
+        return;
+    }
+
+    if (!codes || codes.length === 0) {
+        document.getElementById('ref-total').innerText = '0';
+        document.getElementById('ref-used').innerText = '0';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-6 text-xs italic">Belum ada kode referral. Silakan klik Generate.</td></tr>';
+        return;
+    }
+
+    let usedCount = 0;
+    
+    // Looping setiap kode dan cross-check dengan data allUsers (yang diambil dari fetchUsers)
+    const html = codes.map(c => {
+        // Cari apakah ada peserta di tabel profiles yang menggunakan kode ini
+        const usersWithCode = allUsers.filter(u => u.referral_code && u.referral_code.toUpperCase() === c.code.toUpperCase());
+        
+        if(usersWithCode.length > 0) {
+            usedCount += usersWithCode.length;
+            // Jika terpakai, tampilkan nama pesertanya
+            return usersWithCode.map(user => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 font-bold text-gray-800 font-mono">${c.code}</td>
+                    <td class="px-6 py-4"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase border border-green-200">Terpakai</span></td>
+                    <td class="px-6 py-4 text-sm font-bold text-gray-800">${user.full_name || '-'}</td>
+                    <td class="px-6 py-4 text-xs text-blue-600 font-mono">${user.email || '-'}</td>
+                    <td class="px-6 py-4 text-xs text-gray-500">${new Date(user.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}</td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="deleteReferral('${c.id}')" class="text-gray-400 hover:text-red-500 p-2 rounded hover:bg-red-50 transition" title="Hapus Kode"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            // Jika belum terpakai
+            return `
+                <tr class="hover:bg-gray-50 transition opacity-80">
+                    <td class="px-6 py-4 font-bold text-gray-800 font-mono">${c.code}</td>
+                    <td class="px-6 py-4"><span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase border border-gray-200">Tersedia</span></td>
+                    <td class="px-6 py-4 text-center text-gray-400">-</td>
+                    <td class="px-6 py-4 text-center text-gray-400">-</td>
+                    <td class="px-6 py-4 text-center text-gray-400">-</td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="deleteReferral('${c.id}')" class="text-red-400 hover:text-red-600 p-2 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        }
+    }).join('');
+
+    document.getElementById('ref-total').innerText = codes.length;
+    document.getElementById('ref-used').innerText = usedCount;
+    tbody.innerHTML = html;
+}
+
+async function generateReferrals() {
+    Swal.fire({
+        title: 'Generate 100 Kode?',
+        text: "Sistem akan otomatis membuat kode YLOSFON1 sampai YLOSFON100.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#DB2777',
+        cancelButtonText: 'Batal',
+        confirmButtonText: 'Ya, Generate!'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            Swal.showLoading();
+            
+            let codesToInsert = [];
+            for(let i = 1; i <= 100; i++) {
+                codesToInsert.push({ code: `YLOSFON${i}` });
+            }
+            
+            const { error } = await supabaseClient.from('referral_codes').insert(codesToInsert);
+            
+            if (error) {
+                if (error.code === '23505') { 
+                    Swal.fire('Peringatan', 'Kode (YLOSFON1 - 100) sudah pernah dibuat sebelumnya.', 'warning');
+                } else {
+                    Swal.fire('Error', error.message, 'error');
+                }
+            } else {
+                Toast.fire({ icon: 'success', title: '100 Kode berhasil dibuat!' });
+            }
+            fetchReferrals();
+        }
+    });
+}
+
+async function deleteReferral(id) {
+    if((await Swal.fire({title:'Hapus Kode?', text: 'Kode yang dihapus tidak bisa digunakan lagi oleh peserta.', icon:'warning', showCancelButton:true, confirmButtonColor: '#d33'})).isConfirmed) {
+        await supabaseClient.from('referral_codes').delete().eq('id', id);
+        fetchReferrals();
+        Toast.fire({ icon: 'success', title: 'Kode dihapus' });
+    }
+}
         
         // Start Security Check Immediately
         checkAdmin();
     </script>
 
-    <script>
-        // --- SCRIPT PELACAK PENGUNJUNG ANONIM ---
-        async function trackVisitor() {
-            if (sessionStorage.getItem('ylos_tracked')) return;
+<script>
+    // --- SCRIPT PELACAK PENGUNJUNG ANONIM ---
+    async function trackVisitor() {
+        if (sessionStorage.getItem('ylos_tracked')) return;
 
-            try {
-                const ipRes = await fetch('https://ipapi.co/json/');
-                const ipData = await ipRes.json();
-                
-                const ua = navigator.userAgent;
-                let device = /Mobile|Android|iP(ad|hone|od)/i.test(ua) ? 'Mobile' : 'Desktop';
-                
-                let os = 'Unknown';
-                if (ua.indexOf('Win') !== -1) os = 'Windows';
-                else if (ua.indexOf('Mac') !== -1) os = 'MacOS';
-                else if (ua.indexOf('Android') !== -1) os = 'Android';
-                else if (ua.indexOf('like Mac') !== -1) os = 'iOS';
-                else if (ua.indexOf('Linux') !== -1) os = 'Linux';
+        try {
+            const ipRes = await fetch('https://ipapi.co/json/');
+            const ipData = await ipRes.json();
+            
+            const ua = navigator.userAgent;
+            let device = /Mobile|Android|iP(ad|hone|od)/i.test(ua) ? 'Mobile' : 'Desktop';
+            
+            let os = 'Unknown';
+            if (ua.indexOf('Win') !== -1) os = 'Windows';
+            else if (ua.indexOf('Mac') !== -1) os = 'MacOS';
+            else if (ua.indexOf('Android') !== -1) os = 'Android';
+            else if (ua.indexOf('like Mac') !== -1) os = 'iOS';
+            else if (ua.indexOf('Linux') !== -1) os = 'Linux';
 
-                let browser = 'Unknown';
-                if (ua.indexOf('Chrome') !== -1) browser = 'Chrome';
-                else if (ua.indexOf('Safari') !== -1) browser = 'Safari';
-                else if (ua.indexOf('Firefox') !== -1) browser = 'Firefox';
-                else if (ua.indexOf('Edge') !== -1) browser = 'Edge';
+            let browser = 'Unknown';
+            if (ua.indexOf('Chrome') !== -1) browser = 'Chrome';
+            else if (ua.indexOf('Safari') !== -1) browser = 'Safari';
+            else if (ua.indexOf('Firefox') !== -1) browser = 'Firefox';
+            else if (ua.indexOf('Edge') !== -1) browser = 'Edge';
 
-                await supabaseClient.from('visitor_logs').insert({
-                    ip_address: ipData.ip || 'Unknown',
-                    city: ipData.city || 'Unknown',
-                    country: ipData.country_name || 'Unknown',
-                    device: device,
-                    os: os,
-                    browser: browser
-                });
+            await supabaseClient.from('visitor_logs').insert({
+                ip_address: ipData.ip || 'Unknown',
+                city: ipData.city || 'Unknown',
+                country: ipData.country_name || 'Unknown',
+                device: device,
+                os: os,
+                browser: browser
+            });
 
-                sessionStorage.setItem('ylos_tracked', 'true');
-            } catch (err) {
-                console.log('Tracking visitor gagal (mungkin terblokir AdBlocker):', err);
-            }
+            sessionStorage.setItem('ylos_tracked', 'true');
+        } catch (err) {
+            console.log('Tracking visitor gagal (mungkin terblokir AdBlocker):', err);
         }
+    }
 
-        setTimeout(trackVisitor, 2000);
-    </script>
+    setTimeout(trackVisitor, 2000);
+</script>
+
 </body>
 </html>
