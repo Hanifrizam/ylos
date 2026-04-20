@@ -943,7 +943,7 @@
             <form onsubmit="handleRegister(event)" class="space-y-5">
                 <div class="grid grid-cols-1 gap-5">
                     <input type="text" id="reg-name" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition" placeholder="Nama Lengkap">
-                    <input type="text" id="reg-school" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition" placeholder="Asal Sekolah/Universitas">
+                    <input type="text" id="reg-school" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition" placeholder="Asal Sekolah">
                     <input type="tel" id="reg-phone" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition" placeholder="Nomor WhatsApp">
                 </div>
                 <input type="email" id="reg-email" required class="w-full px-5 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:border-gray-200 outline-none transition" placeholder="Email Aktif">
@@ -1278,8 +1278,7 @@
         }
 
         // --- AUTH SUBMIT LOGIC ---
-       // --- AUTH SUBMIT LOGIC ---
-async function handleRegister(e) {
+        async function handleRegister(e) {
     e.preventDefault();
     if(parseInt(document.getElementById('captcha-input').value) !== captchaCorrectAnswer) {
         Swal.fire({ icon: 'error', title: 'Captcha Salah', text: 'Silakan periksa kembali hitungan Anda.'});
@@ -1307,10 +1306,9 @@ async function handleRegister(e) {
         }
     }
 
-    // 2. PROSES SIGNUP KE AUTHENTICATION
-    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-        email: email, 
-        password: document.getElementById('reg-password').value,
+    // 2. PROSES SIGNUP JIKA KODE VALID ATAU KOSONG
+    const { data, error } = await supabaseClient.auth.signUp({
+        email: email, password: document.getElementById('reg-password').value,
         options: { 
             emailRedirectTo: window.location.origin + '/dashboard.html',
             data: {
@@ -1318,34 +1316,15 @@ async function handleRegister(e) {
                 school: document.getElementById('reg-school').value,
                 phone: document.getElementById('reg-phone').value,
                 package_type: document.getElementById('reg-package').value,
-                referral_code: referralInput
+                referral_code: referralInput // Simpan kode referral ke metadata user
             }
         }
     });
 
-    if(authError) { 
-        Swal.fire('Gagal', authError.message, 'error'); 
+    if(error) { 
+        Swal.fire('Gagal', error.message, 'error'); 
         btn.innerText='Daftar Sekarang'; btn.disabled=false; generateCaptcha(); 
     } else { 
-        
-        // 3. LOGIKA BARU: INSERT DATA KE TABEL PROFILES
-        if (authData.user) {
-            const { error: profileError } = await supabaseClient.from('profiles').insert({
-                id: authData.user.id, // Wajib diisi agar nyambung dengan ID Auth
-                full_name: document.getElementById('reg-name').value,
-                school: document.getElementById('reg-school').value,
-                phone: document.getElementById('reg-phone').value,
-                payment_status: 'Pending', // Default status
-                referral_code: referralInput !== "" ? referralInput : null
-            });
-
-            if (profileError) {
-                console.error("Data sukses di Auth, tapi gagal masuk ke tabel Profiles:", profileError.message);
-                // Biarkan lanjut, tapi kita log errornya untuk evaluasi admin
-            }
-        }
-
-        // 4. TAMPILKAN NOTIFIKASI SUKSES
         Swal.fire({ 
             icon: 'success', 
             title: 'Berhasil!', 
@@ -1358,6 +1337,7 @@ async function handleRegister(e) {
         e.target.reset(); // Reset form
     }
 }
+
         async function logout() { await supabaseClient.auth.signOut(); window.location.reload(); }
 
         // --- AUTH STATE LISTENER ---
