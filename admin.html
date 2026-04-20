@@ -275,7 +275,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-                    <div class="lg:col-span-2 glass-card p-5 md:p-8"><h3 class="font-bold text-gray-800 mb-6 text-base md:text-lg">Analitik Pendaftaran</h3><div class="h-60 md:h-72"><canvas id="userChart"></canvas></div></div>
+                    <div class="lg:col-span-2 glass-card p-5 md:p-8"><h3 class="font-bold text-gray-800 mb-6 text-base md:text-lg">Tracking User Activity</h3><div class="h-60 md:h-72"><canvas id="userChart"></canvas></div></div>
                     <div class="glass-card p-5 md:p-8 flex flex-col h-80 md:h-[26rem]">
                         <div class="flex justify-between mb-6 items-center"><h3 class="font-bold text-gray-800 text-base md:text-lg">User Online</h3><span id="online-count" class="text-[10px] bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">0 Active</span></div>
                         <div id="active-user-list" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar"><div class="text-center py-12 text-gray-400 text-sm italic">Menunggu user login...</div></div>
@@ -309,7 +309,7 @@
 
             <div id="section-calendar" class="content-section space-y-6">
                 <div class="flex justify-between items-center">
-                    <div><h2 class="text-xl md:text-2xl font-bold text-gray-900">Jadwal</h2><p class="text-gray-500 text-xs mt-1">Klik tanggal untuk event.</p></div>
+                    <div><h2 class="text-xl md:text-2xl font-bold text-gray-900">Jadwal</h2><p class="text-gray-500 text-xs mt-1">All in One Jadwal Event.</p></div>
                 </div>
                 <div id="calendar" class="text-xs md:text-sm"></div>
             </div>
@@ -407,7 +407,7 @@
                         <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
                             <i class="fa-solid fa-paper-plane text-pink-600"></i> Email Blast
                         </h2>
-                        <p class="text-gray-500 text-xs mt-1">Kirim email massal ke peserta atau database.</p>
+                        <p class="text-gray-500 text-xs mt-1">Kirim blast email ke peserta.</p>
                     </div>
                 </div>
 
@@ -490,9 +490,9 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 glass-card p-6">
                     <div>
                         <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-ticket text-pink-600"></i> Manajemen Referral</h2>
-                        <p class="text-gray-600 text-xs mt-1">Generate kode dan lacak peserta yang menggunakannya (Dikelompokkan per Grup).</p>
+                        <p class="text-gray-600 text-xs mt-1">Generate kode serta lacak pengguna kode, dan simpan di excel.</p>
                     </div>
-                    <div class="flex gap-2 w-full md:w-auto">
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto">
                         <button onclick="fetchReferrals()" class="btn-press bg-white border border-gray-200 text-gray-600 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 flex items-center justify-center gap-2"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
                         <button onclick="generateReferrals()" class="btn-press w-full md:w-auto bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:bg-black flex items-center justify-center gap-2">
                             <i class="fa-solid fa-plus"></i> Generate Kode
@@ -502,7 +502,7 @@
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="glass-card p-5 flex flex-col justify-center h-24 relative overflow-hidden">
-                        <span class="text-xs font-bold text-gray-500 uppercase z-10">Total Semua Kode</span>
+                        <span class="text-xs font-bold text-gray-500 uppercase z-10">Jumlah Kode</span>
                         <span class="text-2xl md:text-3xl font-extrabold text-gray-900 z-10" id="ref-total">0</span>
                         <i class="fa-solid fa-ticket absolute -right-4 -bottom-4 text-6xl text-gray-50 opacity-50"></i>
                     </div>
@@ -513,10 +513,43 @@
                     </div>
                 </div>
 
-                <div id="referral-group-container">
-                    <div class="glass-card p-6 text-center text-gray-400 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data grup...</div>
+                <div class="glass-card p-6">
+                    <div class="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between">
+                        <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                            <select id="filterRefGroup" onchange="renderReferralTable()" class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-pink-500 transition shadow-sm w-full md:w-48 bg-white text-gray-600 cursor-pointer">
+                                <option value="ALL">Semua Grup</option>
+                            </select>
+                            <div class="relative w-full md:w-64">
+                                <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
+                                <input type="text" id="searchRef" onkeyup="renderReferralTable()" placeholder="Cari kode, nama, atau email..." class="pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-pink-500 transition shadow-sm w-full">
+                            </div>
+                        </div>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <button onclick="deleteSelectedReferralGroup()" id="btn-delete-ref-group" class="hidden btn-press text-xs bg-red-50 text-red-600 px-4 py-2.5 rounded-xl hover:bg-red-100 transition font-bold border border-red-100 flex items-center justify-center gap-2 w-full md:w-auto"><i class="fa-solid fa-trash"></i> Hapus Grup</button>
+                            <button onclick="exportReferralExcel()" class="btn-press text-xs bg-green-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm hover:bg-green-700 flex items-center justify-center gap-2 w-full md:w-auto"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto max-h-[500px] custom-scrollbar relative">
+                        <table class="w-full min-w-[700px] text-left border-collapse modern-table">
+                            <thead class="sticky top-0 bg-white z-10 shadow-sm border-b border-gray-100">
+                                <tr>
+                                    <th class="px-4 py-3 text-[10px] text-gray-400 font-bold uppercase tracking-wider">Kode Referral</th>
+                                    <th class="px-4 py-3 text-[10px] text-gray-400 font-bold uppercase tracking-wider">Grup</th>
+                                    <th class="px-4 py-3 text-[10px] text-gray-400 font-bold uppercase tracking-wider">Status</th>
+                                    <th class="px-4 py-3 text-[10px] text-gray-400 font-bold uppercase tracking-wider">Digunakan Oleh</th>
+                                    <th class="px-4 py-3 text-[10px] text-gray-400 font-bold uppercase tracking-wider">Email Peserta</th>
+                                    <th class="px-4 py-3 text-[10px] text-gray-400 font-bold uppercase tracking-wider text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="referral-table-body">
+                                <tr><td colspan="6" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
             <div id="section-ambassadors" class="content-section space-y-6">
                 <div class="glass-card p-4 md:p-6">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -751,6 +784,8 @@
         const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
         let allUsers=[], allAmbassadors=[], calendarInstance, signaturePad, currentDocId, pdfBytes, currentFilename, mySavedSignature = null, activityChart;
         let onlineEmails = new Set(); 
+        
+        let allReferralCodes = []; // NEW: Untuk menyimpan data referral global
         
         // Global var untuk Quill Editor
         var quillBlast, quillAnnounce;
@@ -1564,7 +1599,7 @@
             const recipients = updateRecipientCount(); 
 
             const SENDER_EMAIL = "admin@ylos.site"; 
-            const SENDER_NAME = "YLOS Official";    
+            const SENDER_NAME = "YLOS Official";   
             
             const isBodyEmpty = quillBlast.getText().trim().length === 0 && body.indexOf('<img') === -1;
 
@@ -2418,106 +2453,208 @@
             LOGIKA REFERRAL CODE (GENERATE & TRACKING) - DENGAN GROUPING
         ========================================================= */
         async function fetchReferrals() {
-            const container = document.getElementById('referral-group-container');
-            container.innerHTML = '<div class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data referral...</div>';
+            document.getElementById('referral-table-body').innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-6 text-xs italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data referral...</td></tr>';
 
             // Ambil semua kode referral
             const { data: codes, error: errCodes } = await supabaseClient.from('referral_codes').select('*').order('id', { ascending: true });
             
             if (errCodes) {
-                container.innerHTML = '<div class="text-center text-red-500 py-6 text-xs">Gagal memuat kode referral. Pastikan tabel referral_codes sudah ada dan kolom group_name sudah ditambahkan.</div>';
+                document.getElementById('referral-table-body').innerHTML = '<tr><td colspan="6" class="text-center text-red-500 py-6 text-xs">Gagal memuat kode referral. Pastikan tabel referral_codes sudah ada.</td></tr>';
                 return;
             }
 
-            if (!codes || codes.length === 0) {
+            allReferralCodes = codes || [];
+
+            // Extract unique groups
+            const groups = [...new Set(allReferralCodes.map(c => c.group_name || 'TANPA GRUP'))];
+            
+            // Populate dropdown
+            const groupSelect = document.getElementById('filterRefGroup');
+            const currentSelection = groupSelect.value;
+            
+            let options = '<option value="ALL">Semua Grup</option>';
+            groups.forEach(g => {
+                options += `<option value="${g}">${g}</option>`;
+            });
+            groupSelect.innerHTML = options;
+            
+            // Restore selection if it still exists
+            if(groups.includes(currentSelection)) {
+                groupSelect.value = currentSelection;
+            } else {
+                groupSelect.value = 'ALL';
+            }
+
+            renderReferralTable();
+        }
+
+        function renderReferralTable() {
+            const groupFilter = document.getElementById('filterRefGroup').value;
+            const searchTerm = document.getElementById('searchRef').value.toLowerCase();
+            const tbody = document.getElementById('referral-table-body');
+            const btnDeleteGroup = document.getElementById('btn-delete-ref-group');
+
+            // Show/hide delete group button
+            if(groupFilter === 'ALL') {
+                btnDeleteGroup.classList.add('hidden');
+            } else {
+                btnDeleteGroup.classList.remove('hidden');
+            }
+
+            if (allReferralCodes.length === 0) {
                 document.getElementById('ref-total').innerText = '0';
                 document.getElementById('ref-used').innerText = '0';
-                container.innerHTML = '<div class="text-center text-gray-400 py-6 text-xs italic">Belum ada kode referral. Silakan klik Generate.</div>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-6 text-xs italic">Belum ada kode referral. Silakan klik Generate.</td></tr>';
                 return;
             }
 
-            // Proses Grouping Data
-            const groupedCodes = {};
-            codes.forEach(c => {
-                const group = c.group_name || 'TANPA GRUP';
-                if (!groupedCodes[group]) groupedCodes[group] = [];
-                groupedCodes[group].push(c);
-            });
+            let filteredCodes = allReferralCodes;
 
-            let totalUsedCount = 0;
-            let html = '';
-
-            // Looping setiap grup
-            for (const [groupName, groupCodes] of Object.entries(groupedCodes)) {
-                let groupUsedCount = 0;
-                let tableRows = '';
-
-                groupCodes.forEach(c => {
-                    const usersWithCode = allUsers.filter(u => u.referral_code && u.referral_code.toUpperCase() === c.code.toUpperCase());
-                    
-                    if(usersWithCode.length > 0) {
-                        groupUsedCount += usersWithCode.length;
-                        totalUsedCount += usersWithCode.length;
-                        tableRows += usersWithCode.map(user => `
-                            <tr class="hover:bg-gray-100 transition border-b border-gray-100 last:border-0">
-                                <td class="px-4 py-3 font-bold text-gray-800 font-mono text-sm">${c.code}</td>
-                                <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border border-green-200">Terpakai</span></td>
-                                <td class="px-4 py-3 text-xs font-bold text-gray-800">${user.full_name || '-'}</td>
-                                <td class="px-4 py-3 text-xs text-blue-600 font-mono">${user.email || '-'}</td>
-                                <td class="px-4 py-3 text-center">
-                                    <button onclick="deleteReferral('${c.id}')" class="text-gray-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition" title="Hapus Kode"><i class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `).join('');
-                    } else {
-                        tableRows += `
-                            <tr class="hover:bg-gray-100 transition opacity-80 border-b border-gray-100 last:border-0">
-                                <td class="px-4 py-3 font-bold text-gray-800 font-mono text-sm">${c.code}</td>
-                                <td class="px-4 py-3"><span class="bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border border-gray-300">Tersedia</span></td>
-                                <td class="px-4 py-3 text-center text-gray-400 text-xs">-</td>
-                                <td class="px-4 py-3 text-center text-gray-400 text-xs">-</td>
-                                <td class="px-4 py-3 text-center">
-                                    <button onclick="deleteReferral('${c.id}')" class="text-red-400 hover:text-red-600 p-1.5 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `;
-                    }
-                });
-
-                // Bungkus dalam desain Akordion/Kartu per Grup
-                html += `
-                    <div class="bg-white p-4 rounded-xl border border-gray-200 mb-6 shadow-sm overflow-hidden">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 pb-3 border-b border-gray-100 gap-3">
-                            <h3 class="font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-layer-group text-pink-500"></i> Grup: ${groupName}</h3>
-                            <div class="flex gap-2 items-center flex-wrap">
-                                <span class="text-[10px] font-bold text-gray-500 bg-gray-50 border border-gray-100 px-2 py-1 rounded shadow-sm">Total Kode: ${groupCodes.length}</span>
-                                <span class="text-[10px] font-bold text-green-600 bg-green-50 border border-green-100 px-2 py-1 rounded shadow-sm">Terpakai: ${groupUsedCount}</span>
-                                <button onclick="deleteReferralGroup('${groupName}')" class="text-[10px] bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 transition font-bold border border-red-100"><i class="fa-solid fa-trash"></i> Hapus Grup</button>
-                            </div>
-                        </div>
-                        <div class="overflow-x-auto max-h-80 custom-scrollbar relative">
-                            <table class="w-full min-w-[600px] text-left border-collapse">
-                                <thead class="sticky top-0 bg-gray-50 z-10 shadow-sm">
-                                    <tr>
-                                        <th class="px-4 py-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider">Kode Referral</th>
-                                        <th class="px-4 py-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider">Status</th>
-                                        <th class="px-4 py-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider">Digunakan Oleh</th>
-                                        <th class="px-4 py-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider">Email Peserta</th>
-                                        <th class="px-4 py-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider text-center">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${tableRows}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
+            // Apply Group Filter
+            if (groupFilter !== 'ALL') {
+                filteredCodes = filteredCodes.filter(c => (c.group_name || 'TANPA GRUP') === groupFilter);
             }
 
-            document.getElementById('ref-total').innerText = codes.length;
-            document.getElementById('ref-used').innerText = totalUsedCount;
-            container.innerHTML = html;
+            // Combine with User Data & Apply Search Filter
+            let totalUsedCount = 0;
+            let displayData = [];
+
+            filteredCodes.forEach(c => {
+                // Match with allUsers
+                const usersWithCode = allUsers.filter(u => u.referral_code && u.referral_code.toUpperCase() === c.code.toUpperCase());
+                
+                if (usersWithCode.length > 0) {
+                    usersWithCode.forEach(user => {
+                        displayData.push({
+                            codeObj: c,
+                            user: user,
+                            isUsed: true
+                        });
+                        totalUsedCount++;
+                    });
+                } else {
+                    displayData.push({
+                        codeObj: c,
+                        user: null,
+                        isUsed: false
+                    });
+                }
+            });
+
+            // Apply Search Filter (Code, Name, Email)
+            if (searchTerm) {
+                displayData = displayData.filter(item => {
+                    const codeMatch = item.codeObj.code.toLowerCase().includes(searchTerm);
+                    const nameMatch = item.user && item.user.full_name ? item.user.full_name.toLowerCase().includes(searchTerm) : false;
+                    const emailMatch = item.user && item.user.email ? item.user.email.toLowerCase().includes(searchTerm) : false;
+                    return codeMatch || nameMatch || emailMatch;
+                });
+            }
+
+            // Update Stats
+            document.getElementById('ref-total').innerText = displayData.length;
+            document.getElementById('ref-used').innerText = displayData.filter(d => d.isUsed).length;
+
+            // Render Table
+            if (displayData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-6 text-xs italic">Tidak ada data yang cocok dengan filter pencarian.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = displayData.map(item => {
+                const c = item.codeObj;
+                const groupName = c.group_name || 'TANPA GRUP';
+                
+                if (item.isUsed) {
+                    return `
+                        <tr class="hover:bg-gray-50 transition border-b border-gray-50 last:border-0">
+                            <td class="px-4 py-3 font-bold text-gray-800 font-mono text-sm">${c.code}</td>
+                            <td class="px-4 py-3 text-xs font-bold text-gray-500">${groupName}</td>
+                            <td class="px-4 py-3"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border border-green-200">Terpakai</span></td>
+                            <td class="px-4 py-3 text-xs font-bold text-gray-800">${item.user.full_name || '-'}</td>
+                            <td class="px-4 py-3 text-xs text-blue-600 font-mono">${item.user.email || '-'}</td>
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="deleteReferral('${c.id}')" class="text-gray-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition" title="Hapus Kode"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    return `
+                        <tr class="hover:bg-gray-50 transition border-b border-gray-50 last:border-0 opacity-80">
+                            <td class="px-4 py-3 font-bold text-gray-800 font-mono text-sm">${c.code}</td>
+                            <td class="px-4 py-3 text-xs font-bold text-gray-500">${groupName}</td>
+                            <td class="px-4 py-3"><span class="bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border border-gray-300">Tersedia</span></td>
+                            <td class="px-4 py-3 text-center text-gray-400 text-xs">-</td>
+                            <td class="px-4 py-3 text-center text-gray-400 text-xs">-</td>
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="deleteReferral('${c.id}')" class="text-red-400 hover:text-red-600 p-1.5 rounded hover:bg-red-50 transition"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                }
+            }).join('');
+        }
+
+        async function deleteSelectedReferralGroup() {
+            const groupName = document.getElementById('filterRefGroup').value;
+            if(groupName === 'ALL') return;
+            deleteReferralGroup(groupName); 
+        }
+
+        function exportReferralExcel() {
+            const groupFilter = document.getElementById('filterRefGroup').value;
+            const searchTerm = document.getElementById('searchRef').value.toLowerCase();
+            
+            let filteredCodes = allReferralCodes;
+            if (groupFilter !== 'ALL') {
+                filteredCodes = filteredCodes.filter(c => (c.group_name || 'TANPA GRUP') === groupFilter);
+            }
+
+            let exportData = [];
+
+            filteredCodes.forEach(c => {
+                const usersWithCode = allUsers.filter(u => u.referral_code && u.referral_code.toUpperCase() === c.code.toUpperCase());
+                
+                if (usersWithCode.length > 0) {
+                    usersWithCode.forEach(user => {
+                        exportData.push({
+                            "Kode Referral": c.code,
+                            "Grup": c.group_name || 'TANPA GRUP',
+                            "Status": "Terpakai",
+                            "Nama Peserta": user.full_name || '-',
+                            "Email Peserta": user.email || '-',
+                            "Nomor WA": user.phone || '-'
+                        });
+                    });
+                } else {
+                    exportData.push({
+                        "Kode Referral": c.code,
+                        "Grup": c.group_name || 'TANPA GRUP',
+                        "Status": "Tersedia",
+                        "Nama Peserta": "-",
+                        "Email Peserta": "-",
+                        "Nomor WA": "-"
+                    });
+                }
+            });
+
+            if (searchTerm) {
+                exportData = exportData.filter(item => {
+                    return item["Kode Referral"].toLowerCase().includes(searchTerm) || 
+                           item["Nama Peserta"].toLowerCase().includes(searchTerm) || 
+                           item["Email Peserta"].toLowerCase().includes(searchTerm);
+                });
+            }
+
+            if(exportData.length === 0) {
+                return Toast.fire({ icon: 'warning', title: 'Tidak ada data untuk diexport' });
+            }
+
+            const ws = XLSX.utils.json_to_sheet(exportData); 
+            const wb = XLSX.utils.book_new(); 
+            XLSX.utils.book_append_sheet(wb, ws, "Data Referral"); 
+            XLSX.writeFile(wb, `Data_Referral_${groupFilter === 'ALL' ? 'Semua' : groupFilter}.xlsx`); 
+            Toast.fire({ icon: 'success', title: 'Download Excel Referral dimulai' });
         }
 
         async function generateReferrals() {
