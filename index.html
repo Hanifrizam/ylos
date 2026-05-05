@@ -119,6 +119,50 @@
 </head>
 <body class="font-sans text-gray-800 bg-gray-50 antialiased overflow-x-hidden selection:bg-ylosPink selection:text-white">
 
+    <!-- PENGUMUMAN DISCONTINUE (TIDAK BISA DI-CLOSE) -->
+    <div id="discontinue-overlay" class="fixed inset-0 z-[99999] flex items-center justify-center bg-gray-900/80 backdrop-blur-md px-4 pointer-events-auto">
+        <div class="bg-white rounded-[2rem] shadow-2xl max-w-2xl w-full p-8 md:p-12 text-center relative overflow-hidden border border-gray-100 animate-fade-in-up">
+            <!-- Dekorasi Background -->
+            <div class="absolute -top-10 -left-10 w-40 h-40 bg-ylosPink/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-ylosYellow/20 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="relative z-10">
+                <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm border border-red-100">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-4 tracking-tight">Pengumuman Penting YLOS 2026</h2>
+                
+                <p class="text-gray-600 mb-4 leading-relaxed font-medium">
+                    Terima kasih yang sebesar-besarnya atas antusiasme luar biasa dari teman-teman dalam meramaikan pendaftaran <b>YLOS 2026 Batch 1</b>.
+                </p>
+                
+                <p class="text-gray-600 mb-8 leading-relaxed font-medium">
+                    Dengan berat hati, kami sampaikan bahwa dikarenakan satu dan lain hal, pendaftaran pada bulan ini harus kami <span class="text-red-500 font-bold">tunda sementara (discontinue)</span>. Informasi lebih lanjut mengenai perpanjangan atau pembukaan kembali akan kami umumkan secara resmi melalui website dan media sosial kami.
+                </p>
+
+                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 mb-6">
+                    <p class="text-sm text-gray-700 font-bold mb-4">Punya pertanyaan atau butuh diskusi lebih lanjut? Hubungi kami di bawah ini:</p>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <a href="https://wa.me/6281290774332?text=Halo%20Admin%20YLOS,%20saya%20ingin%20bertanya%20terkait%20penundaan%20pendaftaran." 
+                           target="_blank" 
+                           class="flex items-center justify-center gap-2 px-6 py-3.5 bg-[#25D366] hover:bg-[#128C7E] text-white text-sm font-bold rounded-xl transition duration-300 shadow-lg transform hover:-translate-y-1">
+                            <i class="fa-brands fa-whatsapp text-lg"></i> Hubungi Admin
+                        </a>
+                        <a href="https://l.instagram.com/?u=https%3A%2F%2Fig.me%2Fj%2FAbbMXx3WKZZG-3OY%2F%3Futm_source%3Dig%26utm_medium%3Dsocial%26utm_content%3Dlink_in_bio%26fbclid%3DPAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnnmgV4M6SETgUdQgMuumuQouJ3-0quAaLkRrfJbVzrE7LFoc5RxbResBvuBI_aem_bC3_u56CkB6AEINNTUR3cA&e=AUAxFBSZFfM-mV36qEg1JAZjk7ZRLPLBQ8Ee7BYhVRlz8TPOtigg8YWMkKS5M_MKceCXIKLtv8lOGHlEc6QoH6i2ssNxuHOnvl75V1MVDw" 
+                           target="_blank" 
+                           class="flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-sm font-bold rounded-xl transition duration-300 shadow-lg transform hover:-translate-y-1">
+                            <i class="fa-brands fa-instagram text-lg"></i> Grup QnA IG
+                        </a>
+                    </div>
+                </div>
+                
+                <p class="text-xs text-gray-400 italic">Harap maklum, fitur halaman website saat ini ditutup hingga pemberitahuan selanjutnya.</p>
+            </div>
+        </div>
+    </div>
+    <!-- END PENGUMUMAN DISCONTINUE -->
+
     <div id="welcome-overlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/70 backdrop-blur-2xl transition-all duration-1000 ease-in-out">
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-ylosPink/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
